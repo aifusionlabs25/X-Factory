@@ -29,8 +29,8 @@
     </section>
 
     <nav class="owner-journey" aria-label="X-Factory owner workflow">
-      <article id="journey-define" class="active"><span>1</span><div><small>DESCRIBE</small><strong>Choose the job</strong><p>What should this agent do?</p></div><b>NOW</b></article>
-      <article id="journey-personalize"><span>2</span><div><small>PERSONALIZE</small><strong>Make it yours</strong><p>Name, company, knowledge, capabilities, and presence.</p></div><b>NEXT</b></article>
+      <article id="journey-define" class="active"><span>1</span><div><small>SYSTEM PROMPT</small><strong>Describe the job</strong><p>Give Troy the plain-English brief.</p></div><b>NOW</b></article>
+      <article id="journey-personalize"><span>2</span><div><small>KNOWLEDGE + IDENTITY</small><strong>Make it yours</strong><p>Name, company, Knowledge Bank, capabilities, and ANAM presence.</p></div><b>NEXT</b></article>
       <article id="journey-build"><span>3</span><div><small>BUILD</small><strong>Factory works</strong><p>We assemble and check the candidate.</p></div><b>WAITING</b></article>
       <article id="journey-preview"><span>4</span><div><small>PREVIEW</small><strong>Try the agent</strong><p>Ask what it knows and what it does not.</p></div><b>WAITING</b></article>
       <article id="journey-release"><span>5</span><div><small>RELEASE</small><strong>Prepare the repo</strong><p>Create the complete local application package.</p></div><b>LOCKED</b></article>
@@ -42,8 +42,8 @@
         <div class="depot-counter"><span id="chassis-count">01</span><b>PROVEN<br>ROLE</b></div>
       </div>
       <form id="purpose-form" class="purpose-intake">
-        <label for="owner-purpose">What should this X-Agent do?</label>
-        <p id="owner-purpose-help">Describe its job in your own words.</p>
+        <label for="owner-purpose">System Prompt Brief — What should this X-Agent do?</label>
+        <p id="owner-purpose-help">Describe its job in your own words. Troy turns this short brief into the complete System Prompt later in the Factory.</p>
         <textarea id="owner-purpose" required minlength="10" maxlength="3000" rows="6" aria-describedby="owner-purpose-help purpose-error" placeholder="For example: Answer approved customer questions, collect the details our team needs, and prepare a clear handoff for staff review."></textarea>
         <div class="purpose-actions"><p id="purpose-recommendation" role="status">Tell us the job first. Atlas will recommend the closest proven starting point.</p><button id="recommend-chassis" type="submit">FIND THE BEST STARTING POINT →</button></div>
         <article id="recommended-fit" class="recommended-fit" hidden>
@@ -71,7 +71,7 @@
           </div>
           <fieldset class="commission-presence"><legend>How should your agent appear?</legend><div class="presence-options" role="radiogroup" aria-label="Commissioned agent presence"><button type="button" class="selected" data-commission-presence="EXISTING_ANAM" role="radio" aria-checked="true">Mia avatar</button><button type="button" data-commission-presence="CREATE_NEW_ANAM" role="radio" aria-checked="false">Create later</button><button type="button" data-commission-presence="STOCK_IMAGE" role="radio" aria-checked="false">Stock image</button><button type="button" data-commission-presence="TEXT_ONLY" role="radio" aria-checked="false">Text only</button></div></fieldset>
           <section class="quick-knowledge" aria-labelledby="quick-knowledge-title">
-            <div><small>KNOWLEDGE</small><h4 id="quick-knowledge-title">What should this agent know?</h4><p>Paste a few approved facts or question-and-answer pairs. One click prepares them for this local build.</p></div>
+            <div><small>KNOWLEDGE BANK</small><h4 id="quick-knowledge-title">What should this agent know?</h4><p>Paste approved facts or question-and-answer pairs. The Factory prepares the Knowledge Bank that Troy's System Prompt will govern.</p></div>
             <textarea id="quick-knowledge-text" rows="6" placeholder="Q: What services are approved?&#10;A: Add the owner-approved answer here.&#10;&#10;Q: Can this agent promise availability?&#10;A: Add the approved boundary here."></textarea>
             <div class="quick-knowledge-actions"><button id="fill-sample-knowledge" type="button">USE SAMPLE</button><button id="prepare-quick-knowledge" type="button">ADD THIS KNOWLEDGE →</button></div>
             <p id="quick-knowledge-status" role="status">Knowledge: Missing — you can still build, but the preview will be limited.</p>
@@ -182,9 +182,10 @@
           <article data-stage="02"><div class="station-icon aria">A</div><div><small>SYSTEM ARCHITECT</small><h2>Aria</h2><p>Assembles the blueprint and selects modules.</p></div><mark>QUEUED</mark></article>
           <article data-stage="03"><div class="station-icon vera">V</div><div><small>SPECIFICATION GATE</small><h2>Vera</h2><p>Validates schema, authority, and boundaries.</p></div><mark>QUEUED</mark></article>
           <article data-stage="04"><div class="station-icon mason">M</div><div><small>MASTER BUILDER</small><h2>Mason</h2><p>Compiles two candidate bundles for comparison.</p></div><mark>QUEUED</mark></article>
-          <article data-stage="05"><div class="station-icon vera final">V</div><div><small>FINAL CERTIFICATION</small><h2>Vera</h2><p>Runs the generated test and certifies repeatability.</p></div><mark>QUEUED</mark></article>
-          <article data-stage="06"><div class="station-icon forge">K</div><div><small>INSTANCE KNOWLEDGE FORGE</small><h2>Knowledge Core</h2><p>Builds reviewed client material into the named candidate.</p></div><mark>QUEUED</mark></article>
-          <article data-stage="07"><div class="station-icon runtime">R</div><div><small>INSTANCE RUNTIME FOUNDRY</small><h2>Hermes Console</h2><p>Seals the profile blueprint and one-call Luna canary.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="05"><div class="station-icon forge">K</div><div><small>INSTANCE KNOWLEDGE FORGE</small><h2>Knowledge Core</h2><p>Builds reviewed client material into the named candidate.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="06"><div class="station-icon troy">T</div><div><small>PROMPT ENGINEERING LEAD</small><h2>Troy</h2><p>Turns the brief, blueprint, and approved Knowledge Bank into the complete System Prompt.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="07"><div class="station-icon vera final">V</div><div><small>FINAL CERTIFICATION</small><h2>Vera</h2><p>Certifies the candidate, generated tests, and Troy's System Prompt package.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="08"><div class="station-icon runtime">R</div><div><small>INSTANCE RUNTIME FOUNDRY</small><h2>Hermes Console</h2><p>Seals the profile blueprint and one-call Luna canary.</p></div><mark>QUEUED</mark></article>
         </div>
         <div class="boundary-strip"><span><small>MODEL REVIEW</small><b>GPT-5.6 LUNA</b><em>Atlas · Aria · Vera passed</em></span><span><small>EXPERIENCE</small><b>ANAM / X-LINK</b><em>Mia transport proven</em></span><span><small>AUTHORITY</small><b>LOCAL DRAFT</b><em>Production not approved</em></span></div>
         </div>

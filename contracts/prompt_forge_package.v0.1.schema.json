@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/prompt_forge_package.v0.1.schema.json",
+  "title": "Troy Prompt Forge Package v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "mission_id", "status", "specialist", "mode", "input_binding", "outputs", "quality", "authority", "package_sha256"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{3,95}$"},
+    "status": {"const": "SYSTEM_PROMPT_COMPILED_LOCAL_CANDIDATE"},
+    "specialist": {"const": "Troy"},
+    "mode": {"const": "ARIA_CONTROLLED_PROMPT_FORGE_SIDECAR"},
+    "input_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_brief_sha256", "knowledge_entry_ids", "knowledge_entry_count", "knowledge_bound"],
+      "properties": {
+        "owner_brief_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "knowledge_entry_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 2, "maxLength": 80}},
+        "knowledge_entry_count": {"type": "integer", "minimum": 0, "maximum": 200},
+        "knowledge_bound": {"type": "boolean"}
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system_prompt_sha256", "assumptions_sha256", "tests_sha256", "owner_summary_sha256"],
+      "properties": {
+        "system_prompt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "assumptions_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "tests_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "owner_summary_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_sections_present", "knowledge_ids_bound", "personality_normalized", "test_count"],
+      "properties": {
+        "required_sections_present": {"const": true},
+        "knowledge_ids_bound": {"type": "boolean"},
+        "personality_normalized": {"const": true},
+        "test_count": {"type": "integer", "minimum": 7}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_calls", "invent_client_facts", "self_approval", "runtime_installed", "deployment_authorized", "production_approved"],
+      "properties": {
+        "provider_calls": {"const": 0},
+        "invent_client_facts": {"const": false},
+        "self_approval": {"const": false},
+        "runtime_installed": {"const": false},
+        "deployment_authorized": {"const": false},
+        "production_approved": {"const": false}
+      }
+    },
+    "package_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

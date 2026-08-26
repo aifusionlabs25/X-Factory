@@ -229,7 +229,9 @@ def main() -> int:
     second_root = factory.INTERACTIVE_ROOT / second["mission_id"]
     second_record = json.loads((second_root / "mission-record.json").read_text(encoding="utf-8"))
     assert not (second_root / "input/knowledge-package-reference.v0.1.json").exists()
-    assert not (second_root / "instance").exists()
+    assert not (second_root / "instance/knowledge").exists()
+    assert (second_root / "instance/system-prompt/SYSTEM_PROMPT.md").is_file()
+    assert (second_root / "instance/system-prompt/PROMPT_FORGE_MANIFEST.v0.1.json").is_file()
     assert not (second_root / "runtime-foundry").exists()
     assert second_record["knowledge"]["package"] is None
     assert second_record["runtime_foundry"]["status"] == "KNOWLEDGE_CORE_REQUIRED"

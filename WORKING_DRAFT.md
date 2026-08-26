@@ -41,14 +41,15 @@ Mission Control binds only to `http://127.0.0.1:8877/`.
 - One-screen owner brief with purpose, identity/client, target users, personality, required behavior, prohibited behavior, and primary output.
 - Presence choice for an existing ANAM persona, a new ANAM creation brief, a stock image, or text-only.
 - Mia from ANAM's stock catalog is the default Factory recommendation, with her captured avatar and voice identifiers.
-- A real seven-stage contained build:
+- A real eight-stage contained build:
   1. Atlas normalizes and bounds the brief.
   2. Aria creates a schema-valid X-Agent blueprint and selects reusable modules.
   3. Vera validates the blueprint and authority boundary.
   4. Mason compiles the candidate twice and compares every output byte.
-  5. Vera runs the generated acceptance test and writes final certification.
-  6. Knowledge Forge either builds the exact owner-reviewed entries into the named instance or proves that client knowledge remains gated.
-  7. Runtime Foundry seals the personalized prompt and KB into a named Hermes profile blueprint plus an exact inactive one-call GPT-5.6 Luna canary.
+  5. Knowledge Forge either builds the exact owner-reviewed entries into the named instance or proves that client knowledge remains gated.
+  6. Troy compiles the complete governed System Prompt package from the brief, design, approved knowledge, and ANAM boundaries.
+  7. Vera runs the generated acceptance test and certifies Troy's Prompt Forge package.
+  8. Runtime Foundry seals the personalized prompt and KB into a named Hermes profile blueprint plus an exact inactive one-call GPT-5.6 Luna canary.
 - Every successful submission creates a new immutable directory under `runs/interactive/`.
 - Any completed mission can be loaded back into the owner brief with **Revise this agent**. Running the revision creates a new immutable mission and preserves the source mission.
 - The completed screen links to fifteen artifacts: the owner brief, full blueprint, Mason compatibility input, agent instructions, agent specification, bundle manifest, generated test, certification, persona binding, Control Center handoff, X-Link candidate package, X-Link registry entry, X-Link scenario pack, contained ANAM canary plan, and sealed Hermes/Luna review packet.

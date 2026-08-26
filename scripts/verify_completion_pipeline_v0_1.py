@@ -60,7 +60,7 @@ def main() -> int:
 
         assert first == second
         assert first["status"] == "LOCAL_DRAFT_COMPLETE"
-        assert [item["specialist"] for item in first["route"]] == ["Atlas", "Aria", "Vera", "Mason", "Vera", "Rook", "Porter"]
+        assert [item["specialist"] for item in first["route"]] == ["Atlas", "Aria", "Vera", "Mason", "Knowledge Studio", "Troy", "Vera", "Runtime Foundry", "Rook", "Porter"]
         assert all(item["status"] == "PASS" for item in first["route"])
         assert independent and independent["verdict"] == "READY_FOR_PORTER_PACKAGING"
         assert independent["reviewer"]["provider_calls"] == 0

@@ -709,21 +709,6 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
         stages.append(stage("04", "Mason", "PASS", "Candidate compiled twice with identical outputs", round((time.perf_counter() - tick) * 1000)))
 
         tick = time.perf_counter()
-        test_result = run_child(
-            [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(staging / "build/run-1/output/tests"), "-p", "test_*.py"],
-            extra_env={
-                "X_FACTORY_BLUEPRINT_PATH": str(generator_blueprint_path),
-                "X_FACTORY_CONTRACTS_DIR": str(CONTRACT_ROOT),
-                "X_FACTORY_FIXTURE_ROOT": str(staging / "certification/acceptance-fixture"),
-            },
-        )
-        if test_result["returncode"]:
-            raise MissionControlError(f"Final Vera certification failed: {test_result['stderr'] or test_result['stdout']}")
-        certification = {"schema_version": "0.1", "verdict": "LOCAL_CANDIDATE_CERTIFIED", "deterministic_outputs": True, "unit_test_status": "PASS", "unit_test_output": test_result["stderr"] or test_result["stdout"], "provider_calls": 0, "network_attempts": 0, "deployment_authorized": False, "production_approved": False}
-        write_new(staging / "certification/vera-final.v0.1.json", certification)
-        stages.append(stage("05", "Vera", "PASS", "Determinism and generated bundle test certified", round((time.perf_counter() - tick) * 1000)))
-
-        tick = time.perf_counter()
         knowledge_build = None
         if brief.get("knowledge_package"):
             # Imported here to avoid a module cycle while retaining the Factory's
@@ -734,7 +719,43 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
             knowledge_detail = f"{knowledge_build['entry_count']} owner-approved entries built into the named instance knowledge core"
         else:
             knowledge_detail = "No client knowledge package attached; instance knowledge remains correctly gated"
-        stages.append(stage("06", "Knowledge Forge", "PASS", knowledge_detail, round((time.perf_counter() - tick) * 1000)))
+        stages.append(stage("05", "Knowledge Forge", "PASS", knowledge_detail, round((time.perf_counter() - tick) * 1000)))
+
+        tick = time.perf_counter()
+        if knowledge_build:
+            prompt_forge = deepcopy(knowledge_build["prompt_forge"])
+            prompt_forge["artifacts"] = {
+                key: value for key, value in knowledge_build["artifacts"].items()
+                if key.startswith("prompt_") or key == "instance_system_prompt"
+            }
+        else:
+            from x_factory.prompt_forge_v0_1 import write_prompt_package
+
+            prompt_forge = write_prompt_package(staging, brief, [], mission_id)
+        prompt_detail = (
+            f"System Prompt compiled with {prompt_forge.get('knowledge_entry_count', knowledge_build['entry_count'] if knowledge_build else 0)} approved knowledge bindings"
+            if knowledge_build
+            else "Complete limited-intake System Prompt compiled; Knowledge Bank remains clearly unbound"
+        )
+        stages.append(stage("06", "Troy", "PASS", prompt_detail, round((time.perf_counter() - tick) * 1000)))
+
+        tick = time.perf_counter()
+        test_result = run_child(
+            [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(staging / "build/run-1/output/tests"), "-p", "test_*.py"],
+            extra_env={
+                "X_FACTORY_BLUEPRINT_PATH": str(generator_blueprint_path),
+                "X_FACTORY_CONTRACTS_DIR": str(CONTRACT_ROOT),
+                "X_FACTORY_FIXTURE_ROOT": str(staging / "certification/acceptance-fixture"),
+            },
+        )
+        if test_result["returncode"]:
+            raise MissionControlError(f"Final Vera certification failed: {test_result['stderr'] or test_result['stdout']}")
+        prompt_manifest = load_json(staging / prompt_forge["artifacts"]["prompt_forge_manifest"])
+        if prompt_manifest.get("status") != "SYSTEM_PROMPT_COMPILED_LOCAL_CANDIDATE" or prompt_manifest.get("quality", {}).get("test_count", 0) < 7:
+            raise MissionControlError("Final Vera certification rejected the Troy Prompt Forge package")
+        certification = {"schema_version": "0.1", "verdict": "LOCAL_CANDIDATE_CERTIFIED", "deterministic_outputs": True, "unit_test_status": "PASS", "unit_test_output": test_result["stderr"] or test_result["stdout"], "prompt_forge_status": "PASS", "prompt_forge_sha256": prompt_forge["package_sha256"], "provider_calls": 0, "network_attempts": 0, "deployment_authorized": False, "production_approved": False}
+        write_new(staging / "certification/vera-final.v0.1.json", certification)
+        stages.append(stage("07", "Vera", "PASS", "Candidate, generated tests, and Troy System Prompt package certified", round((time.perf_counter() - tick) * 1000)))
 
         shell = blueprint["implementation_inputs"]["experience_shell"]
         persona_binding = {
@@ -758,7 +779,7 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
             runtime_detail = "Named-instance runtime contract locked; profile install and provider transport remain inactive"
         else:
             runtime_detail = "Runtime Foundry correctly gated until an owner-reviewed knowledge core exists"
-        stages.append(stage("07", "Runtime Foundry", "PASS", runtime_detail, round((time.perf_counter() - tick) * 1000)))
+        stages.append(stage("08", "Runtime Foundry", "PASS", runtime_detail, round((time.perf_counter() - tick) * 1000)))
         x_link_package = x_link_candidate_package(brief, blueprint)
         write_new(staging / "compatibility/x-link-candidate.v0.1.json", x_link_package)
         registry_candidate, scenario_candidate = x_link_registry_candidate(brief, blueprint)
@@ -807,6 +828,8 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
             artifact_paths.update(knowledge_build["artifacts"])
         if runtime_package:
             artifact_paths.update(runtime_package["artifacts"])
+        if not knowledge_build:
+            artifact_paths.update(prompt_forge["artifacts"])
         elapsed_ms = round((time.perf_counter() - started) * 1000)
         owner_active_input_ms = brief.get("commissioning", {}).get("owner_active_input_ms") if brief.get("commissioning") else None
         inferred_fields = 5 if brief.get("commissioning") else 0
@@ -828,6 +851,16 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
                 "verification": knowledge_build["verification"] if knowledge_build else "NOT_RUN",
                 "runtime_candidate": bool(knowledge_build),
                 "runtime_installed": False,
+            },
+            "prompt_forge": {
+                "specialist": "Troy",
+                "mode": "ARIA_CONTROLLED_PROMPT_FORGE_SIDECAR",
+                "status": prompt_forge["status"],
+                "knowledge_entry_count": knowledge_build["entry_count"] if knowledge_build else 0,
+                "package_sha256": prompt_forge["package_sha256"],
+                "system_prompt_sha256": prompt_forge["system_prompt_sha256"],
+                "provider_calls": 0,
+                "self_approved": False,
             },
             "build": {"repeatable": True, "output_files": build_results[0]["files"], "root_digest": build_results[0]["result"]["root_digest"], "unit_tests": "PASS"},
             "provider": {"harness": "Hermes Desktop", "provider": "openai-codex", "model": "gpt-5.6-luna", "calls": 0, "status": "SEMANTIC_REVIEW_PENDING"},

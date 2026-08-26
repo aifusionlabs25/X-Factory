@@ -45,6 +45,10 @@ const artifactLabels = {
   instance_knowledge_bundle: "Approved knowledge bundle",
   instance_knowledge_bank: "Client knowledge bank",
   instance_system_prompt: "Personalized system prompt",
+  prompt_forge_manifest: "Troy Prompt Forge manifest",
+  prompt_assumptions: "Troy prompt assumptions",
+  prompt_tests: "Troy prompt tests",
+  prompt_owner_summary: "Troy owner summary",
   instance_traceability: "Knowledge traceability map",
   instance_knowledge_tests: "Knowledge tests",
   instance_knowledge_report: "Instance build report",
@@ -913,7 +917,7 @@ function setCompletionWorking() {
   $("#mission-runner").hidden = false;
   $("#runner-status").textContent = "REVIEWING";
   $("#runner-review").textContent = "Rook is checking the certified candidate";
-  $("#runner-copy").textContent = "The first five stations are already complete. Rook is independently rerunning the generated tests and checking the evidence boundary before Porter may package anything.";
+  $("#runner-copy").textContent = "The eight Factory stations are already complete, including Troy's System Prompt and Vera's certification. Rook is independently rerunning tests and checking the evidence boundary before Porter may package anything.";
   $("#retry-completion").hidden = true;
   $$("#runner-route article").forEach((item, index) => {
     item.classList.remove("working", "done", "failed");
@@ -1090,7 +1094,7 @@ function renderRepoFoundry(repo) {
   }
   const holder = $("#repo-artifacts");
   holder.textContent = "";
-  const labels = {readme: "README", porter_handoff: "Porter handoff", independent_review: "Rook independent review", agent_instructions: "Agent instructions", agent_spec: "Agent specification", knowledge_bank: "Client knowledge bank", system_prompt: "System prompt", knowledge_traceability: "Knowledge traceability", knowledge_tests: "Knowledge tests", runtime_plan: "Runtime plan", runtime_profile_blueprint: "Hermes profile blueprint", runtime_canary_prompt: "Exact Luna canary prompt", runtime_canary_payload: "Exact Luna canary payload", runtime_activation_packet: "Inactive runtime canary packet", instance_runtime_contract: "Locked instance contract", runtime_behavior_plan: "Behavior proof plan", local_behavior_certification: "Local multi-turn certification", repo_manifest: "Repo manifest"};
+  const labels = {readme: "README", porter_handoff: "Porter handoff", independent_review: "Rook independent review", agent_instructions: "Agent instructions", agent_spec: "Agent specification", knowledge_bank: "Client Knowledge Bank", system_prompt: "Troy System Prompt", prompt_forge_manifest: "Troy Prompt Forge manifest", prompt_assumptions: "Troy assumptions", prompt_tests: "Troy prompt tests", prompt_owner_summary: "Troy build receipt", knowledge_traceability: "Knowledge traceability", knowledge_tests: "Knowledge tests", runtime_plan: "Runtime plan", runtime_profile_blueprint: "Hermes profile blueprint", runtime_canary_prompt: "Exact Luna canary prompt", runtime_canary_payload: "Exact Luna canary payload", runtime_activation_packet: "Inactive runtime canary packet", instance_runtime_contract: "Locked instance contract", runtime_behavior_plan: "Behavior proof plan", local_behavior_certification: "Local multi-turn certification", repo_manifest: "Repo manifest"};
   Object.entries(repo.artifacts || {}).forEach(([key, relative]) => {
     const link = document.createElement("a");
     link.href = repoArtifactUrl(repo, relative);

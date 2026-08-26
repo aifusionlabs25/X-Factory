@@ -128,7 +128,7 @@ def main() -> int:
             },
             compilation["entries"],
         )
-        assert "Exact content is bound in the separate approved Knowledge Bank" in sample_prompt
+        assert "use the exact approved statement in the separate Knowledge Bank" in sample_prompt
         assert "We repair water heaters" not in sample_prompt
         decisions = [{"entry_id": item["entry_id"], "decision": "APPROVE"} for item in compilation["entries"]]
         reviewed = review_compilation(package["package_id"], {"compilation_id": compilation["compilation_id"], "decisions": decisions})

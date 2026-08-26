@@ -42,11 +42,17 @@ def main() -> int:
             factory.INTERACTIVE_ROOT = original_root
         mission = temporary / record["mission_id"]
         assert record["status"] == "LOCAL_CANDIDATE_BUILT"
-        assert len(record["specialists"]) == 7
+        assert len(record["specialists"]) == 8
         assert all(stage["status"] == "PASS" for stage in record["specialists"])
+        assert record["specialists"][5]["specialist"] == "Troy"
+        assert record["specialists"][6]["specialist"] == "Vera"
+        assert record["prompt_forge"]["status"] == "SYSTEM_PROMPT_COMPILED_LOCAL_CANDIDATE"
+        assert record["prompt_forge"]["knowledge_entry_count"] == 0
+        assert (mission / record["artifacts"]["instance_system_prompt"]).is_file()
+        assert (mission / record["artifacts"]["prompt_forge_manifest"]).is_file()
         assert record["provider"]["calls"] == 0
         assert record["anam"]["provider_actions"] == 0
-        assert len(record["artifacts"]) == 15
+        assert len(record["artifacts"]) == 20
 
         x_link = load(mission / record["artifacts"]["x_link_package"])
         semantic = load(mission / record["artifacts"]["hermes_review_packet"])
