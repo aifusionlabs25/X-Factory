@@ -116,9 +116,9 @@ def run_independent_review(mission_id: str, mission_root: Path | None = None, re
         _check(checks, "REQUIRED_ARTIFACTS", not missing, "All required Factory handoff artifacts are present" if not missing else f"Missing: {', '.join(missing)}")
 
         specialists = record.get("specialists") or []
-        build_route = [item.get("specialist") for item in specialists[:7]]
-        expected_build_route = ["Atlas", "Aria", "Vera", "Mason", "Knowledge Forge", "Troy", "Vera"]
-        _check(checks, "FACTORY_ROUTE", len(specialists) >= 7 and build_route == expected_build_route and all(item.get("status") == "PASS" for item in specialists), "The certified build and Prompt Forge route passed before the independent review and packaging gates")
+        build_route = [item.get("specialist") for item in specialists[:8]]
+        expected_build_route = ["Atlas", "Aria", "Vera", "Mason", "Source Vault", "OMNARA", "Troy", "Vera"]
+        _check(checks, "FACTORY_ROUTE", len(specialists) >= 8 and build_route == expected_build_route and all(item.get("status") == "PASS" for item in specialists), "The certified Source Vault, Knowledge Studio, and Prompt Forge route passed before the independent review and packaging gates")
         certification = load_json(mission_root / "certification/vera-final.v0.1.json") if not missing else {}
         _check(checks, "VERA_CERTIFICATION", certification.get("verdict") == "LOCAL_CANDIDATE_CERTIFIED", "Vera certified the deterministic local candidate")
         _check(checks, "BUILD_REPEATABILITY", record.get("build", {}).get("repeatable") is True and record.get("build", {}).get("unit_tests") == "PASS", "Two Mason outputs matched and generated tests passed")
@@ -144,7 +144,7 @@ def run_independent_review(mission_id: str, mission_root: Path | None = None, re
             "review_id": f"local-review-{sha256(canonical({'mission_id': mission_id, 'mission_sha': mission_sha}))[:16]}",
             "mission_id": mission_id,
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "reviewer": {"name": "Rook", "mode": "INDEPENDENT_PROVIDER_FREE_REVIEW", "independent_from": ["Atlas", "Aria", "Troy", "Vera", "Mason", "Porter"], "provider_calls": 0},
+            "reviewer": {"name": "Rook", "mode": "INDEPENDENT_PROVIDER_FREE_REVIEW", "independent_from": ["Atlas", "Aria", "OMNARA", "Troy", "Vera", "Mason", "Porter"], "provider_calls": 0},
             "source": {"mission_record_sha256": mission_sha, "build_root_digest": record["build"]["root_digest"]},
             "verdict": verdict,
             "checks": checks,

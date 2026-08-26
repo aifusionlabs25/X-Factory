@@ -9,6 +9,7 @@ from typing import Any
 from jsonschema import Draft202012Validator
 
 from x_factory.knowledge_compiler_v0_1 import KnowledgeCompilerError, get_compilation
+from x_factory.knowledge_studio_v0_1 import compile_knowledge_studio
 from x_factory.mission_control_factory_v0_1 import ROOT, canonical, load_json, sha256, slugify, write_new
 from x_factory.prompt_forge_v0_1 import _system_prompt, compile_prompt_package
 
@@ -49,9 +50,9 @@ def _validate_reference(reference: dict[str, Any]) -> tuple[dict[str, Any], dict
     return compilation, review, entries
 
 
-def _knowledge_markdown(identity: dict[str, str], entries: list[dict[str, Any]]) -> tuple[str, dict[str, dict[str, int]]]:
+def _knowledge_markdown(identity: dict[str, str], entries: list[dict[str, Any]], *, source_vault: bool = False) -> tuple[str, dict[str, dict[str, int]]]:
     lines = [
-        f"# {identity['agent_name']} — Approved Knowledge Bank",
+        f"# {identity['agent_name']} — {'Immutable Source Vault' if source_vault else 'Curated Knowledge Bank'}",
         "",
         f"Client: {identity['client_name']}",
         f"Role: {identity['role_title']}",
@@ -103,8 +104,11 @@ def build_instance_knowledge(mission_root: Path, mission_id: str, brief: dict[st
     bundle["bundle_sha256"] = _digest_without(bundle, "bundle_sha256")
     Draft202012Validator(load_json(BUNDLE_SCHEMA)).validate(bundle)
 
-    kb_markdown, anchors = _knowledge_markdown(identity, entries)
-    prompt_package = compile_prompt_package(brief, entries, mission_id)
+    source_vault_markdown, source_anchors = _knowledge_markdown(identity, entries, source_vault=True)
+    knowledge_studio = compile_knowledge_studio(bundle, mission_id)
+    curated_entries = knowledge_studio["entries"]
+    kb_markdown, anchors = _knowledge_markdown(identity, curated_entries)
+    prompt_package = compile_prompt_package(brief, curated_entries, mission_id)
     system_prompt = prompt_package["prompt"]
     traceability = {
         "schema_version": "0.1",
@@ -114,20 +118,27 @@ def build_instance_knowledge(mission_root: Path, mission_id: str, brief: dict[st
             {
                 "entry_id": item["entry_id"],
                 "source": item["source"],
+                "source_entry_ids": item["source_entry_ids"],
+                "source_statement_sha256": item["source_statement_sha256"],
+                "transformation": item["transformation"],
                 "knowledge_bank": {"file": "knowledge/KB.md", **anchors[item["entry_id"]]},
+                "source_vault": {"file": "knowledge/SOURCE_VAULT.md", **source_anchors[item["entry_id"]]},
                 "system_prompt_marker": f"[{item['entry_id']}]",
             }
-            for item in entries
+            for item in curated_entries
         ],
     }
     checks = []
-    for item in entries:
+    for item in curated_entries:
+        source_item = next(entry for entry in entries if entry["entry_id"] == item["entry_id"])
         checks.append({
             "test_id": f"T-{item['entry_id']}",
             "entry_id": item["entry_id"],
             "statement_exact_in_kb": item["statement"] in kb_markdown,
+            "source_statement_exact_in_vault": source_item["statement"] in source_vault_markdown,
             "entry_marker_in_system_prompt": f"[{item['entry_id']}]" in system_prompt,
-            "source_hash_preserved": item["source"]["file_sha256"] == next(entry["source"]["file_sha256"] for entry in bundle["entries"] if entry["entry_id"] == item["entry_id"]),
+            "source_hash_preserved": item["source"]["file_sha256"] == source_item["source"]["file_sha256"],
+            "curated_answer_traceable": item["source_statement_sha256"] == sha256(" ".join(source_item["statement"].split()).encode("utf-8")),
         })
     test_pack = {
         "schema_version": "0.1",
@@ -143,15 +154,19 @@ def build_instance_knowledge(mission_root: Path, mission_id: str, brief: dict[st
     relative_artifacts = {
         "instance_knowledge_bundle": "instance/knowledge/approved-knowledge.v0.1.json",
         "instance_knowledge_bank": "instance/knowledge/KB.md",
+        "instance_source_vault": "instance/knowledge/SOURCE_VAULT.md",
         "instance_traceability": "instance/traceability/knowledge-traceability.v0.1.json",
         "instance_knowledge_tests": "instance/tests/knowledge-tests.v0.1.json",
+        **knowledge_studio["artifacts"],
         **prompt_package["artifacts"],
     }
     values: dict[str, bytes] = {
         relative_artifacts["instance_knowledge_bundle"]: canonical(bundle),
         relative_artifacts["instance_knowledge_bank"]: kb_markdown.encode("utf-8"),
+        relative_artifacts["instance_source_vault"]: source_vault_markdown.encode("utf-8"),
         relative_artifacts["instance_traceability"]: canonical(traceability),
         relative_artifacts["instance_knowledge_tests"]: canonical(test_pack),
+        **knowledge_studio["values"],
         **prompt_package["values"],
     }
     artifact_hashes = {path: sha256(data) for path, data in values.items()}
@@ -188,6 +203,12 @@ def build_instance_knowledge(mission_root: Path, mission_id: str, brief: dict[st
             "status": prompt_package["status"],
             "package_sha256": prompt_package["package_sha256"],
             "system_prompt_sha256": prompt_package["system_prompt_sha256"],
+        },
+        "knowledge_studio": {
+            "specialist": "OMNARA",
+            "status": knowledge_studio["status"],
+            "package_sha256": knowledge_studio["package_sha256"],
+            "entry_count": knowledge_studio["entry_count"],
         },
         "artifacts": relative_artifacts,
     }

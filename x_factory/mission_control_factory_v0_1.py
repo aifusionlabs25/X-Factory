@@ -375,7 +375,7 @@ def build_blueprint(brief: dict[str, Any], mission_id: str) -> dict[str, Any]:
             **deepcopy(brief),
             "experience_shell": shell,
             "execution_mode": "LOCAL_DETERMINISTIC_DRAFT",
-            "approved_knowledge_scope": "An owner-reviewed, source-linked compilation is approved for the deterministic Knowledge Forge station in this contained build; deployment remains prohibited." if brief.get("knowledge_package") else "Only the owner-supplied purpose FAQ is approved; all operational domain facts remain unknown.",
+            "approved_knowledge_scope": "An owner-reviewed, source-linked compilation is approved for the immutable Source Vault and deterministic OMNARA Knowledge Studio in this contained build; deployment remains prohibited." if brief.get("knowledge_package") else "Only the owner-supplied purpose FAQ is approved; all operational domain facts remain unknown.",
             "component_provenance": component_provenance,
         },
         "explicit_requirements": [*brief["must_accomplish"]],
@@ -392,7 +392,7 @@ def build_blueprint(brief: dict[str, Any], mission_id: str) -> dict[str, Any]:
             "closing_behavior": f"Summarize the {brief['output_artifact']} and request owner or staff review.",
             "escalation_behavior": "For every request outside the single approved purpose FAQ, respond exactly: I only have the approved information about what I can help with. I can note your question for human review, but I won't guess.",
         },
-        "knowledge": {"required_domains": ["Owner-approved purpose and reviewed client entries" if brief.get("knowledge_package") else "Owner-approved purpose only"], "authoritative_sources": ["Owner brief", "The single generated purpose FAQ in implementation_inputs.approved_faqs", *([f"Owner-reviewed compilation {brief['knowledge_package']['compilation_id']} for the contained Knowledge Forge station"] if brief.get("knowledge_package") else [])], "unsupported_or_unknown_topics": [f"Any operational fact about {brief['client_name']} absent from the approved entries", "Any answer beyond the purpose FAQ and approved client entries", "Any fact not present in owner-approved knowledge"]},
+        "knowledge": {"required_domains": ["Owner-approved purpose and reviewed client entries" if brief.get("knowledge_package") else "Owner-approved purpose only"], "authoritative_sources": ["Owner brief", "The single generated purpose FAQ in implementation_inputs.approved_faqs", *([f"Owner-reviewed compilation {brief['knowledge_package']['compilation_id']} preserved by Source Vault and curated by OMNARA"] if brief.get("knowledge_package") else [])], "unsupported_or_unknown_topics": [f"Any operational fact about {brief['client_name']} absent from the approved entries", "Any answer beyond the purpose FAQ and approved client entries", "Any fact not present in owner-approved knowledge"]},
         "capabilities": {"required": brief["must_accomplish"], "optional": ["ANAM visual presence through X-Link"], "explicitly_excluded": brief["never_do"]},
         "components": {"selected": components, "rejected": [{"component_id": "CMP-EXTERNAL-ACTION-RUNTIME", "reason": "External action is outside the contained draft boundary"}]},
         "tools_and_actions": {"allowed": ["Collect local draft inputs", f"Render one local {brief['output_artifact']}", "Copy an artifact when the user explicitly requests it"], "approval_required": ["Provider calls", "Persistent storage", "Deployment", "Any external action"], "prohibited": [*brief["never_do"], "Network calls during contained compilation", "Provider or authentication mutation"]},
@@ -716,10 +716,19 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
             from x_factory.instance_knowledge_builder_v0_1 import build_instance_knowledge
 
             knowledge_build = build_instance_knowledge(staging, mission_id, brief)
-            knowledge_detail = f"{knowledge_build['entry_count']} owner-approved entries built into the named instance knowledge core"
+            knowledge_detail = f"{knowledge_build['entry_count']} owner-approved entries preserved unchanged in the immutable Source Vault"
         else:
             knowledge_detail = "No client knowledge package attached; instance knowledge remains correctly gated"
-        stages.append(stage("05", "Knowledge Forge", "PASS", knowledge_detail, round((time.perf_counter() - tick) * 1000)))
+        stages.append(stage("05", "Source Vault", "PASS", knowledge_detail, round((time.perf_counter() - tick) * 1000)))
+
+        tick = time.perf_counter()
+        if knowledge_build:
+            knowledge_studio = deepcopy(knowledge_build["knowledge_studio"])
+            knowledge_detail = f"{knowledge_studio['entry_count']} traceable customer-ready entries organized into the Knowledge Bank"
+        else:
+            knowledge_studio = None
+            knowledge_detail = "OMNARA correctly gated until owner-approved source evidence is attached"
+        stages.append(stage("06", "OMNARA", "PASS", knowledge_detail, round((time.perf_counter() - tick) * 1000)))
 
         tick = time.perf_counter()
         if knowledge_build:
@@ -737,7 +746,7 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
             if knowledge_build
             else "Complete limited-intake System Prompt compiled; Knowledge Bank remains clearly unbound"
         )
-        stages.append(stage("06", "Troy", "PASS", prompt_detail, round((time.perf_counter() - tick) * 1000)))
+        stages.append(stage("07", "Troy", "PASS", prompt_detail, round((time.perf_counter() - tick) * 1000)))
 
         tick = time.perf_counter()
         test_result = run_child(
@@ -753,9 +762,15 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
         prompt_manifest = load_json(staging / prompt_forge["artifacts"]["prompt_forge_manifest"])
         if prompt_manifest.get("status") != "SYSTEM_PROMPT_COMPILED_LOCAL_CANDIDATE" or prompt_manifest.get("quality", {}).get("test_count", 0) < 7:
             raise MissionControlError("Final Vera certification rejected the Troy Prompt Forge package")
-        certification = {"schema_version": "0.1", "verdict": "LOCAL_CANDIDATE_CERTIFIED", "deterministic_outputs": True, "unit_test_status": "PASS", "unit_test_output": test_result["stderr"] or test_result["stdout"], "prompt_forge_status": "PASS", "prompt_forge_sha256": prompt_forge["package_sha256"], "provider_calls": 0, "network_attempts": 0, "deployment_authorized": False, "production_approved": False}
+        if knowledge_studio:
+            knowledge_manifest = load_json(staging / knowledge_build["artifacts"]["knowledge_studio_package"])
+            quality = knowledge_manifest.get("quality", {})
+            quality_pass = quality.get("source_entries_preserved") and quality.get("curated_entries_traceable") and quality.get("unsupported_facts_added") == 0 and quality.get("duplicate_entry_ids") == 0 and quality.get("customer_answers_present")
+            if knowledge_manifest.get("status") != "CURATED_KNOWLEDGE_BANK_READY_LOCAL_CANDIDATE" or not quality_pass:
+                raise MissionControlError("Final Vera certification rejected the OMNARA Knowledge Studio package")
+        certification = {"schema_version": "0.1", "verdict": "LOCAL_CANDIDATE_CERTIFIED", "deterministic_outputs": True, "unit_test_status": "PASS", "unit_test_output": test_result["stderr"] or test_result["stdout"], "knowledge_studio_status": "PASS" if knowledge_studio else "NOT_APPLICABLE", "knowledge_studio_sha256": knowledge_studio["package_sha256"] if knowledge_studio else None, "prompt_forge_status": "PASS", "prompt_forge_sha256": prompt_forge["package_sha256"], "provider_calls": 0, "network_attempts": 0, "deployment_authorized": False, "production_approved": False}
         write_new(staging / "certification/vera-final.v0.1.json", certification)
-        stages.append(stage("07", "Vera", "PASS", "Candidate, generated tests, and Troy System Prompt package certified", round((time.perf_counter() - tick) * 1000)))
+        stages.append(stage("08", "Vera", "PASS", "Candidate, OMNARA Knowledge Bank, generated tests, and Troy System Prompt certified", round((time.perf_counter() - tick) * 1000)))
 
         shell = blueprint["implementation_inputs"]["experience_shell"]
         persona_binding = {
@@ -779,7 +794,7 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
             runtime_detail = "Named-instance runtime contract locked; profile install and provider transport remain inactive"
         else:
             runtime_detail = "Runtime Foundry correctly gated until an owner-reviewed knowledge core exists"
-        stages.append(stage("08", "Runtime Foundry", "PASS", runtime_detail, round((time.perf_counter() - tick) * 1000)))
+        stages.append(stage("09", "Runtime Foundry", "PASS", runtime_detail, round((time.perf_counter() - tick) * 1000)))
         x_link_package = x_link_candidate_package(brief, blueprint)
         write_new(staging / "compatibility/x-link-candidate.v0.1.json", x_link_package)
         registry_candidate, scenario_candidate = x_link_registry_candidate(brief, blueprint)
@@ -860,6 +875,16 @@ def create_mission(raw_brief: Any, mission_id: str | None = None) -> dict[str, A
                 "package_sha256": prompt_forge["package_sha256"],
                 "system_prompt_sha256": prompt_forge["system_prompt_sha256"],
                 "provider_calls": 0,
+                "self_approved": False,
+            },
+            "knowledge_studio": {
+                "specialist": "OMNARA",
+                "mode": "ARIA_CONTROLLED_KNOWLEDGE_ENGINEERING_SIDECAR",
+                "status": knowledge_studio["status"] if knowledge_studio else "SOURCE_EVIDENCE_REQUIRED",
+                "entry_count": knowledge_studio["entry_count"] if knowledge_studio else 0,
+                "package_sha256": knowledge_studio["package_sha256"] if knowledge_studio else None,
+                "provider_calls": 0,
+                "source_mutation": False,
                 "self_approved": False,
             },
             "build": {"repeatable": True, "output_files": build_results[0]["files"], "root_digest": build_results[0]["result"]["root_digest"], "unit_tests": "PASS"},

@@ -117,7 +117,7 @@ def _repo_preview_agent(record: dict[str, Any], brief: dict[str, Any], spec: dic
         "requirements": spec["requirements"],
         "knowledge_status": record.get("knowledge", {}).get("status"),
         "knowledge_entries": [
-            {key: item[key] for key in ("entry_id", "kind", "title", "statement")}
+            {key: item[key] for key in ("entry_id", "kind", "category", "title", "statement") if key in item}
             for item in (knowledge or {}).get("entries", [])
         ],
         "matching_contract": deepcopy(MATCHING_CONTRACT),
@@ -340,7 +340,7 @@ WEB_MATCHER_JS = r"""(function attachGroundedMatcher(root, factory) {
   const SERVICE_ENTITIES = ["waterheater", "airconditioning", "plumbing", "electrical", "heating"];
   const POLICY_MARKERS = ["pricing", "hours", "availability"];
   const CAPABILITY_QUERY = /(?:what|which).{0,30}(?:service|services|capabilities).{0,30}(?:offer|provide|available|have)|(?:service|services|capabilities).{0,20}(?:offer|provide|available)|what can you help with/i;
-  const LOCATION_QUERY = /\b(?:work\s+in|serve|served|serving|located|location|area)\b/i;
+  const LOCATION_QUERY = /\b(?:work\s+in|serve|served|serving|located|location|area|service\s+area|provide\s+service|operate)\b/i;
 
   function normalized(text) {
     return String(text || "").toLowerCase()
@@ -414,7 +414,8 @@ WEB_MATCHER_JS = r"""(function attachGroundedMatcher(root, factory) {
     }
 
     if (LOCATION_QUERY.test(clean)) {
-      const candidates = prepared.filter((item) => overlap(queryTerms, item.statementTerms) >= 1);
+      const explicit = prepared.filter((item) => item.entry.category === "SERVICE_AREA");
+      const candidates = explicit.length ? explicit : prepared.filter((item) => overlap(queryTerms, item.statementTerms) >= 1);
       if (candidates.length) {
         candidates.sort((a, b) => overlap(queryTerms, new Set([...b.titleTerms, ...b.statementTerms])) - overlap(queryTerms, new Set([...a.titleTerms, ...a.statementTerms])));
         return {entry: candidates[0].entry, reason: "APPROVED_LOCATION_TERM"};
@@ -733,7 +734,9 @@ if __name__ == "__main__":
 def _assemble(mission_root: Path, target: Path, record: dict[str, Any], repo_id: str, independent_review: dict[str, Any]) -> None:
     brief = load_json(mission_root / "input/owner-brief.v0.1.json")
     spec = load_json(mission_root / "build/run-1/output/agent/agent.spec.json")
-    knowledge_path = mission_root / "instance/knowledge/approved-knowledge.v0.1.json"
+    knowledge_path = mission_root / "instance/knowledge/curated-knowledge.v0.1.json"
+    if not knowledge_path.is_file():
+        knowledge_path = mission_root / "instance/knowledge/approved-knowledge.v0.1.json"
     knowledge = load_json(knowledge_path) if knowledge_path.is_file() else None
 
     copies = {
@@ -753,7 +756,19 @@ def _assemble(mission_root: Path, target: Path, record: dict[str, Any], repo_id:
         _copy_known(mission_root / source, target / destination)
     optional_copies = {
         "instance/knowledge/approved-knowledge.v0.1.json": "knowledge/approved-knowledge.json",
+        "instance/knowledge/curated-knowledge.v0.1.json": "knowledge/curated-knowledge.json",
         "instance/knowledge/KB.md": "knowledge/KB.md",
+        "instance/knowledge/SOURCE_VAULT.md": "knowledge/SOURCE_VAULT.md",
+        "instance/knowledge/SOURCE-TRACEABILITY.json": "factory-record/SOURCE-TRACEABILITY.json",
+        "instance/knowledge/00-KNOWLEDGE-INDEX.md": "knowledge/00-KNOWLEDGE-INDEX.md",
+        "instance/knowledge/01-COMPANY-OVERVIEW.md": "knowledge/01-COMPANY-OVERVIEW.md",
+        "instance/knowledge/02-SERVICES.md": "knowledge/02-SERVICES.md",
+        "instance/knowledge/03-SERVICE-AREA.md": "knowledge/03-SERVICE-AREA.md",
+        "instance/knowledge/04-APPROVED-FAQS.md": "knowledge/04-APPROVED-FAQS.md",
+        "instance/knowledge/05-POLICIES-AND-BOUNDARIES.md": "knowledge/05-POLICIES-AND-BOUNDARIES.md",
+        "instance/knowledge/06-QUALIFICATION-GUIDE.md": "knowledge/06-QUALIFICATION-GUIDE.md",
+        "instance/knowledge/07-ESCALATION-GUIDE.md": "knowledge/07-ESCALATION-GUIDE.md",
+        "instance/knowledge/08-GLOSSARY-AND-ALIASES.md": "knowledge/08-GLOSSARY-AND-ALIASES.md",
         "instance/system-prompt/SYSTEM_PROMPT.md": "config/SYSTEM_PROMPT.md",
         "instance/system-prompt/PROMPT_FORGE_MANIFEST.v0.1.json": "factory-record/prompt-forge-manifest.json",
         "instance/system-prompt/PROMPT_ASSUMPTIONS.v0.1.json": "config/PROMPT_ASSUMPTIONS.json",

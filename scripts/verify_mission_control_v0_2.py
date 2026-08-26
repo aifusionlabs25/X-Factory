@@ -42,10 +42,13 @@ def main() -> int:
             factory.INTERACTIVE_ROOT = original_root
         mission = temporary / record["mission_id"]
         assert record["status"] == "LOCAL_CANDIDATE_BUILT"
-        assert len(record["specialists"]) == 8
+        assert len(record["specialists"]) == 9
         assert all(stage["status"] == "PASS" for stage in record["specialists"])
-        assert record["specialists"][5]["specialist"] == "Troy"
-        assert record["specialists"][6]["specialist"] == "Vera"
+        assert record["specialists"][4]["specialist"] == "Source Vault"
+        assert record["specialists"][5]["specialist"] == "OMNARA"
+        assert record["specialists"][6]["specialist"] == "Troy"
+        assert record["specialists"][7]["specialist"] == "Vera"
+        assert record["knowledge_studio"]["specialist"] == "OMNARA"
         assert record["prompt_forge"]["status"] == "SYSTEM_PROMPT_COMPILED_LOCAL_CANDIDATE"
         assert record["prompt_forge"]["knowledge_entry_count"] == 0
         assert (mission / record["artifacts"]["instance_system_prompt"]).is_file()

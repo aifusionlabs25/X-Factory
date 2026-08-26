@@ -1,0 +1,22 @@
+model:
+  default: gpt-5.6-luna
+  provider: openai-codex
+  base_url: https://chatgpt.com/backend-api/codex
+terminal:
+  cwd: C:\AI Fusion Labs\X AGENTS\HERMES_X_FACTORY
+memory:
+  memory_enabled: false
+  user_profile_enabled: false
+delegation:
+  orchestrator_enabled: false
+approvals:
+  mode: manual
+  cron_mode: deny
+kanban:
+  auto_decompose: false
+_config_version: 37
+platform_toolsets:
+  cli: [no_mcp]
+agent:
+  reasoning_effort: high
+  disabled_toolsets: [a2a, bfl, browser, clarify, code_execution, computer_use, context_engine, cronjob, delegation, desktop_ui, discord, discord_admin, file, homeassistant, image_gen, kanban, memory, project, session_search, skills, spotify, stt, terminal, todo, tts, video, video_gen, vision, web, x_search, yuanbao]

@@ -29,6 +29,13 @@ def _hash_file(path: Path) -> str:
     return sha256(path.read_bytes())
 
 
+def _runtime_bundle(mission_root: Path) -> dict[str, Any]:
+    curated = mission_root / "instance/knowledge/curated-knowledge.v0.1.json"
+    if curated.is_file():
+        return load_json(curated)
+    return load_json(mission_root / "instance/knowledge/approved-knowledge.v0.1.json")
+
+
 def _canary_case(bundle: dict[str, Any]) -> tuple[dict[str, Any], str]:
     suggestions = suggested_questions(bundle["entries"], limit=1)
     if not suggestions:
@@ -50,7 +57,8 @@ def build_runtime_package(mission_root: Path, mission_id: str, brief: dict[str, 
     if report.get("report_sha256") != knowledge_build.get("report_sha256"):
         raise RuntimeFoundryError("Knowledge report changed before runtime packaging")
 
-    entry, question = _canary_case(bundle)
+    runtime_bundle = _runtime_bundle(mission_root)
+    entry, question = _canary_case(runtime_bundle)
     prompt = (
         system_prompt_path.read_text(encoding="utf-8")
         + "\n\n# Contained runtime canary\n"
@@ -215,7 +223,7 @@ def runtime_status(mission_root: Path) -> dict[str, Any]:
     else:
         local_behavior_status = "LOCAL_BEHAVIOR_HARNESS_NOT_RUN"
         local_behavior_sha256 = None
-    bundle = load_json(mission_root / "instance/knowledge/approved-knowledge.v0.1.json")
+    bundle = _runtime_bundle(mission_root)
     return {
         **plan,
         "instance_id": contract["instance_id"],
@@ -238,9 +246,10 @@ def simulate_turn(mission_root: Path, message: str) -> dict[str, Any]:
     clean = " ".join(str(message).split()).strip()
     if not 2 <= len(clean) <= 2000:
         raise RuntimeFoundryError("Enter a local test message between 2 and 2,000 characters")
-    bundle = load_json(mission_root / "instance/knowledge/approved-knowledge.v0.1.json")
-    if bundle["bundle_sha256"] != plan["source_binding"]["knowledge_bundle_sha256"]:
+    source_bundle = load_json(mission_root / "instance/knowledge/approved-knowledge.v0.1.json")
+    if source_bundle["bundle_sha256"] != plan["source_binding"]["knowledge_bundle_sha256"]:
         raise RuntimeFoundryError("Knowledge bundle drifted after runtime packaging")
+    bundle = _runtime_bundle(mission_root)
     match, match_reason = match_approved_entry(bundle["entries"], clean)
     if match:
         response = match["statement"]

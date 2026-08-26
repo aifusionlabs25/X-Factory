@@ -95,7 +95,7 @@ CAPABILITY_QUERY = re.compile(
     r"(?:service|services|capabilities).{0,20}(?:offer|provide|available)|what can you help with",
     re.IGNORECASE,
 )
-LOCATION_QUERY = re.compile(r"\b(?:work\s+in|serve|served|serving|located|location|area)\b", re.IGNORECASE)
+LOCATION_QUERY = re.compile(r"\b(?:work\s+in|serve|served|serving|located|location|area|service\s+area|provide\s+service|operate)\b", re.IGNORECASE)
 
 
 def match_approved_entry(entries: list[dict[str, Any]], message: str) -> tuple[dict[str, Any] | None, str]:
@@ -140,10 +140,11 @@ def match_approved_entry(entries: list[dict[str, Any]], message: str) -> tuple[d
             return best[0], "APPROVED_CAPABILITY_SUMMARY"
 
     if LOCATION_QUERY.search(clean):
-        location_candidates = [item for item in prepared if message_terms & item[2]]
+        explicit = [item for item in prepared if item[0].get("category") == "SERVICE_AREA"]
+        location_candidates = explicit or [item for item in prepared if message_terms & item[2]]
         if location_candidates:
             best = max(location_candidates, key=lambda item: len(message_terms & (item[1] | item[2])))
-            if len(message_terms & best[2]) >= 1:
+            if explicit or len(message_terms & best[2]) >= 1:
                 return best[0], "APPROVED_LOCATION_TERM"
 
     best_entry = None
