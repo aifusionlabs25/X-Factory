@@ -1,0 +1,75 @@
+{
+  "schema_version": "0.1",
+  "card_id": "CARD-DETERMINISTIC-BUNDLE-GENERATOR-V1",
+  "component_id": "CMP-DETERMINISTIC-BUNDLE-GENERATOR-V1",
+  "evidence_id": "EVD-SAFE-DETERMINISTIC-BUNDLE-GENERATOR-V1",
+  "display_name": "Deterministic Candidate Bundle Generator",
+  "provenance": {
+    "sealed_source_ref": "SEALED-C1FFC76ED7822CB5",
+    "source_artifact_hash": "sha256:3b8d8014b6525740656186b223448a6fd8d304a4620fbe033876d3ce8586a123",
+    "derivation_hash": "sha256:c1ffc76ed7822cb5c208481c24d0ca6d99805f1fd5ee0847a0eec2f5cfc04503",
+    "observed_date": "2026-08-18",
+    "source_kind": "PRIVATE_REPOSITORY_EVIDENCE"
+  },
+  "verification_class": "VERIFIED_HISTORICAL",
+  "capabilities": [
+    {
+      "capability_id": "CAP-001",
+      "statement": "Generate a deterministic multi-file candidate bundle from a validated specification"
+    },
+    {
+      "capability_id": "CAP-002",
+      "statement": "Produce byte-equivalent repeated builds for identical approved inputs"
+    },
+    {
+      "capability_id": "CAP-003",
+      "statement": "Evaluate a static adapter contract without invoking an external provider"
+    },
+    {
+      "capability_id": "CAP-004",
+      "statement": "Generate and test a provider-free scaffold before any runtime integration"
+    }
+  ],
+  "dependencies": [
+    "Validated X-Agent blueprint",
+    "Versioned output manifest",
+    "Deterministic template and test runner"
+  ],
+  "limitations": [
+    "Natural-language runtime behavior has not been evaluated",
+    "Production approval has not been granted",
+    "The pattern required significant first-time engineering",
+    "Source compatibility must be re-verified before implementation reuse"
+  ],
+  "tests": [
+    {
+      "test_id": "TEST-001",
+      "statement": "Run the generator twice with identical approved inputs and compare every emitted byte",
+      "evidence_class": "DETERMINISTIC_REPEAT"
+    },
+    {
+      "test_id": "TEST-002",
+      "statement": "Validate the candidate bundle contains the expected manifest-governed file set",
+      "evidence_class": "STATIC"
+    },
+    {
+      "test_id": "TEST-003",
+      "statement": "Execute scaffold tests without provider credentials or external actions",
+      "evidence_class": "STATIC"
+    }
+  ],
+  "excluded_authority": {
+    "external_actions": false,
+    "build": false,
+    "deployment": false,
+    "production": false
+  },
+  "disclosure": {
+    "contains_private_names": false,
+    "contains_repo_or_local_paths": false,
+    "contains_source_code": false,
+    "contains_credentials": false,
+    "sanitizer": "x-factory-local-sanitizer/0.1"
+  },
+  "lifecycle": "PENDING_EXACT_PAYLOAD_APPROVAL"
+}

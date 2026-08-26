@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/x_link_candidate_package.v0.1.schema.json",
+  "title": "X-Link Candidate Package v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "candidate_id", "status", "agent", "conversation", "knowledge", "capabilities", "handoff", "presence", "runtime", "authority"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "status": {"const": "CANDIDATE_NOT_INSTALLED"},
+    "agent": {"type": "object"},
+    "conversation": {"type": "object"},
+    "knowledge": {"type": "object"},
+    "capabilities": {"type": "object"},
+    "handoff": {"type": "object"},
+    "presence": {"type": "object"},
+    "runtime": {"type": "object"},
+    "authority": {"type": "object"}
+  }
+}

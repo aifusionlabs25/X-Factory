@@ -1,0 +1,53 @@
+# Mutable Factory-floor state is deliberately not canonical source.
+approvals/
+builds/
+canaries/
+disclosures/
+install-images/
+knowledge-packages/
+logs/
+outputs/
+repos/
+reviews/
+runs/
+runtime-sandbox/
+sealed/
+verification/
+
+# Local server output.
+mission-control*.log
+mission-control*.out.log
+mission-control*.err.log
+*.log
+
+# Credentials, authentication, and environment state.
+.env
+.env.*
+!.env.example
+**/runtime.env
+**/auth.json
+**/auth.lock
+**/*credential*
+**/*secret*
+
+# Sessions, caches, locks, and local databases.
+**/__pycache__/
+*.py[cod]
+*.lock
+*.wal
+*.db
+*.sqlite
+*.sqlite3
+*.tmp
+*.temp
+tmp/
+temp/
+.cache/
+**/.npm-cache/
+**/node_modules/
+
+# Recovery artifacts are stored outside this repository.
+*.zip
+*.tar
+*.tar.gz
+checkpoint-output/

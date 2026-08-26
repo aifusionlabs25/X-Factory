@@ -1,0 +1,36 @@
+schema_version: "0.2"
+default_policy: DENY
+shared:
+  model_read:
+    - exact_inline_payload_from_contained_broker
+  local_broker_read:
+    - contracts
+    - cards/approved
+    - intakes/approved
+    - prior_stage_output_for_same_run
+  local_broker_write:
+    - runs/contained/<run_id>
+  prohibited:
+    - general_shell
+    - git_write
+    - production_repository_write
+    - credentials_or_env_read
+    - provider_or_api_action
+    - email_crm_booking_action
+    - deployment
+    - cron_creation
+    - autonomous_loop
+    - self_profile_edit
+    - model_file_tool
+    - model_kanban_tool
+    - model_desktop_ui_tool
+    - model_mcp_tool
+atlas:
+  model_write: []
+  workflow: [return_intake_envelope_to_broker]
+aria:
+  model_write: []
+  workflow: [return_blueprint_to_broker]
+vera:
+  model_write: []
+  workflow: [return_evaluation_to_broker]

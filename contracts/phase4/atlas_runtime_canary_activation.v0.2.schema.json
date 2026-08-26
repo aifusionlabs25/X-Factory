@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/atlas_runtime_canary_activation.v0.2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "mission_id", "stage", "profile", "provider", "model", "reasoning", "maximum_physical_requests", "retry_authorized", "approved_revision_disclosure_sha256", "activation_schema_sha256", "base_live_manifest_sha256", "controller_sha256", "owner_intake_file_sha256", "payload_sha256", "prompt_sha256", "output_schema_sha256", "codex_cli_auth_policy", "write_boundary", "authority", "failure_policy"],
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}},
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "status": {"const": "PENDING_OWNER_APPROVAL_NOT_ACTIVE"},
+    "mission_id": {"const": "phase4-atlas-canary-002"},
+    "stage": {"const": "ATLAS_TRIAGE"},
+    "profile": {"const": "atlas"},
+    "provider": {"const": "openai-codex"},
+    "model": {"const": "gpt-5.6-luna"},
+    "reasoning": {"const": "low"},
+    "maximum_physical_requests": {"const": 1},
+    "retry_authorized": {"const": false},
+    "approved_revision_disclosure_sha256": {"$ref": "#/$defs/digest"},
+    "activation_schema_sha256": {"$ref": "#/$defs/digest"},
+    "base_live_manifest_sha256": {"$ref": "#/$defs/digest"},
+    "controller_sha256": {"$ref": "#/$defs/digest"},
+    "owner_intake_file_sha256": {"$ref": "#/$defs/digest"},
+    "payload_sha256": {"$ref": "#/$defs/digest"},
+    "prompt_sha256": {"$ref": "#/$defs/digest"},
+    "output_schema_sha256": {"$ref": "#/$defs/digest"},
+    "codex_cli_auth_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["participates", "read_authorized", "import_authorized", "mutation_authorized"],
+      "properties": {
+        "participates": {"const": false}, "read_authorized": {"const": false},
+        "import_authorized": {"const": false}, "mutation_authorized": {"const": false}
+      }
+    },
+    "write_boundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["new_contained_mission_root", "atlas_profile_root", "ordinary_atlas_runtime_state", "authentication_content_mutation"],
+      "properties": {
+        "new_contained_mission_root": {"type": "string", "minLength": 20},
+        "atlas_profile_root": {"type": "string", "minLength": 20},
+        "ordinary_atlas_runtime_state": {"const": true},
+        "authentication_content_mutation": {"const": false}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["one_atlas_transaction", "provider_transport", "tools", "mcp", "memory", "delegation", "oauth_refresh", "authentication_mutation", "retry", "later_factory_stages", "build", "installation", "deployment", "release", "production", "live_factory_write"],
+      "properties": {
+        "one_atlas_transaction": {"const": true}, "provider_transport": {"const": true},
+        "tools": {"const": false}, "mcp": {"const": false}, "memory": {"const": false}, "delegation": {"const": false},
+        "oauth_refresh": {"const": false}, "authentication_mutation": {"const": false}, "retry": {"const": false},
+        "later_factory_stages": {"const": false}, "build": {"const": false}, "installation": {"const": false},
+        "deployment": {"const": false}, "release": {"const": false}, "production": {"const": false}, "live_factory_write": {"const": false}
+      }
+    },
+    "failure_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["baseline_drift", "guard_event", "transport_failure", "invalid_output"],
+      "properties": {
+        "baseline_drift": {"const": "BLOCK_BEFORE_TRANSMISSION"},
+        "guard_event": {"const": "FAIL_TERMINAL_SLOT_CONSUMED"},
+        "transport_failure": {"const": "FAIL_TERMINAL_SLOT_CONSUMED"},
+        "invalid_output": {"const": "FAIL_TERMINAL_SLOT_CONSUMED"}
+      }
+    }
+  }
+}

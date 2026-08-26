@@ -1,0 +1,10 @@
+name: porter
+version: 0.1.0
+description: "Cognition-only repository packaging steward for the X-Agent Factory"
+hermes_requires: ">=0.20.5"
+author: "AI Fusion Labs"
+license: "Proprietary"
+distribution_owned:
+  - distribution.yaml
+  - SOUL.md
+  - config.yaml

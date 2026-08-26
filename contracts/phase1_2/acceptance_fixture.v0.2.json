@@ -1,0 +1,36 @@
+{
+  "schema_version": "0.2",
+  "contract_id": "CONTRACT-ACCEPTANCE-FIXTURE-V2",
+  "fixture_id": "FIXTURE-SYNTHETIC-BUNDLE-V2",
+  "runner": "python -m unittest tests.test_bundle -v",
+  "fixture_process": {
+    "steps": [
+      "Create distinct empty run-1/output, run-1/evidence, run-2/output, and run-2/evidence directories beneath one temporary fixture root",
+      "Remove OPENAI_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY, NVIDIA_API_KEY, NOUS_API_KEY, and HERMES_API_KEY from each child environment and fail if any remains",
+      "Invoke the exact generator command once for run-1 and once for run-2 using subprocess.run with shell false, captured output, and a 120-second timeout",
+      "Require exit code zero for both runs, then evaluate ASSERT-001 through ASSERT-006 in numeric order",
+      "Write the two generator evidence pairs, repeatability report, and test results only beneath the declared evidence roots"
+    ],
+    "generator_command_source": "CONTRACT-DETERMINISTIC-GENERATION-V2.generator_interface.command",
+    "process_boundary": "TWO_CHILD_PROCESSES_ONLY_NO_SHELL_NO_NETWORK_SANITIZED_ENVIRONMENT",
+    "failure_rule": "ANY_NONZERO_EXIT_TIMEOUT_SCHEMA_ERROR_HASH_MISMATCH_EXTRA_PATH_OR_FAILED_ASSERTION_FAILS_THE_FIXTURE"
+  },
+  "environment": {"network": "DISABLED_BY_TEST_HARNESS", "provider_credentials": "REMOVED_AND_ASSERTED_ABSENT", "external_actions": "PROHIBITED", "filesystem_scope": "ONE_EPHEMERAL_FIXTURE_ROOT_ONLY"},
+  "input": {"blueprint_fixture": "tests/fixtures/smoke.input.json", "manifest_contract": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V2", "generation_contract": "CONTRACT-DETERMINISTIC-GENERATION-V2", "template_set": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V2"},
+  "assertions": [
+    {"id": "ASSERT-001", "procedure": "Compare sorted relative output paths for run-1 and run-2 against the five manifest paths.", "pass_condition": "Both sets exactly equal the manifest set with no additional path.", "evidence": ["run-1/file-hashes.json", "run-2/file-hashes.json"]},
+    {"id": "ASSERT-002", "procedure": "Compare every corresponding normalized output file as raw bytes.", "pass_condition": "Every byte sequence and both root digests are identical.", "evidence": ["repeatability-report.json"]},
+    {"id": "ASSERT-003", "procedure": "Recompute SHA-256 for each of the five outputs and compare with each run's file-hashes record.", "pass_condition": "All five hashes match in both runs and manifest self-hash is separately recorded.", "evidence": ["run-1/file-hashes.json", "run-2/file-hashes.json"]},
+    {"id": "ASSERT-004", "procedure": "Recompute root digest from UTF-8 path, NUL, and SHA-256 lines sorted by path, excluding bundle.manifest.json.", "pass_condition": "Both computed roots match both file-hashes records and repeatability-report.json.", "evidence": ["repeatability-report.json"]},
+    {"id": "ASSERT-005", "procedure": "Verify sanitized child environments and read both execution-audit records.", "pass_condition": "Credential keys present is empty, network policy is disabled, and network-attempt and external-action counts are zero for both runs.", "evidence": ["run-1/execution-audit.json", "run-2/execution-audit.json"]},
+    {"id": "ASSERT-006", "procedure": "Parse JSON outputs and inspect all text bytes for UTF-8 without BOM, NFC, LF-only endings, and exactly one final newline.", "pass_condition": "Every output passes its media parser and every normalization rule.", "evidence": ["test-results.json"]}
+  ],
+  "evidence_outputs": [
+    {"path": "run-1/execution-audit.json", "producer": "GENERATOR", "write_timing": "ONCE_AFTER_RUN_1_BEFORE_EXIT", "schema": {"required": ["schema_version", "run_label", "network_policy", "credential_keys_scanned", "credential_keys_present", "network_attempt_count", "external_action_count", "output_paths"], "constants": {"schema_version": "0.1", "run_label": "RUN_1", "network_policy": "DISABLED_BY_TEST_HARNESS", "credential_keys_present": [], "network_attempt_count": 0, "external_action_count": 0}}},
+    {"path": "run-2/execution-audit.json", "producer": "GENERATOR", "write_timing": "ONCE_AFTER_RUN_2_BEFORE_EXIT", "schema": {"required": ["schema_version", "run_label", "network_policy", "credential_keys_scanned", "credential_keys_present", "network_attempt_count", "external_action_count", "output_paths"], "constants": {"schema_version": "0.1", "run_label": "RUN_2", "network_policy": "DISABLED_BY_TEST_HARNESS", "credential_keys_present": [], "network_attempt_count": 0, "external_action_count": 0}}},
+    {"path": "run-1/file-hashes.json", "producer": "GENERATOR", "write_timing": "AFTER_ALL_RUN_1_OUTPUTS_ARE_NORMALIZED", "schema": {"required": ["schema_version", "run_label", "algorithm", "files", "root_digest", "manifest_self_hash"], "constants": {"schema_version": "0.1", "run_label": "RUN_1", "algorithm": "SHA-256", "files_count": 5}}},
+    {"path": "run-2/file-hashes.json", "producer": "GENERATOR", "write_timing": "AFTER_ALL_RUN_2_OUTPUTS_ARE_NORMALIZED", "schema": {"required": ["schema_version", "run_label", "algorithm", "files", "root_digest", "manifest_self_hash"], "constants": {"schema_version": "0.1", "run_label": "RUN_2", "algorithm": "SHA-256", "files_count": 5}}},
+    {"path": "repeatability-report.json", "producer": "TEST_RUNNER", "write_timing": "AFTER_ASSERT_001_THROUGH_ASSERT_004", "schema": {"required": ["schema_version", "run_1_root_digest", "run_2_root_digest", "file_sets_equal", "bytes_equal", "root_digests_equal"], "constants": {"schema_version": "0.1", "file_sets_equal": true, "bytes_equal": true, "root_digests_equal": true}}},
+    {"path": "test-results.json", "producer": "TEST_RUNNER", "write_timing": "AFTER_ASSERT_006", "schema": {"required": ["schema_version", "runner", "exit_code", "assertions"], "constants": {"schema_version": "0.1", "runner": "python -m unittest tests.test_bundle -v", "exit_code": 0, "assertion_ids": ["ASSERT-001", "ASSERT-002", "ASSERT-003", "ASSERT-004", "ASSERT-005", "ASSERT-006"], "status": "PASS"}}}
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/acceptance_fixture.v0.1.schema.json",
+  "title": "Executable Acceptance Fixture Contract v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_id", "fixture_id", "runner", "environment", "input", "assertions", "evidence_outputs"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "contract_id": {"const": "CONTRACT-ACCEPTANCE-FIXTURE-V1"},
+    "fixture_id": {"const": "FIXTURE-SYNTHETIC-BUNDLE-V1"},
+    "runner": {"const": "python -m unittest tests.test_bundle -v"},
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network", "provider_credentials", "external_actions", "filesystem_scope"],
+      "properties": {
+        "network": {"const": "DISABLED"},
+        "provider_credentials": {"const": "ABSENT"},
+        "external_actions": {"const": "PROHIBITED"},
+        "filesystem_scope": {"const": "EPHEMERAL_FIXTURE_WORKSPACE_ONLY"}
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blueprint_fixture", "manifest_contract", "template_set"],
+      "properties": {
+        "blueprint_fixture": {"const": "tests/fixtures/smoke.input.json"},
+        "manifest_contract": {"const": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V1"},
+        "template_set": {"const": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V1"}
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "minItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "procedure", "pass_condition"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^ASSERT-[0-9]{3}$"},
+          "procedure": {"type": "string"},
+          "pass_condition": {"type": "string"}
+        }
+      }
+    },
+    "evidence_outputs": {"const": ["file-hashes.json", "repeatability-report.json", "test-results.json"]}
+  }
+}

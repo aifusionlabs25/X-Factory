@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/knowledge_compilation.v0.1.schema.json",
+  "title": "X-Factory Knowledge Compilation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "compilation_id", "package_id", "status", "created_at", "source_manifest_sha256", "entries", "conflicts", "truncation", "authority", "compilation_sha256"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "compilation_id": {"type": "string", "pattern": "^kc-[a-z0-9][a-z0-9-]{2,72}$"},
+    "package_id": {"type": "string", "pattern": "^kp-[a-z0-9][a-z0-9-]{2,72}$"},
+    "status": {"const": "COMPILED_PENDING_OWNER_REVIEW"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "source_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["entry_id", "kind", "title", "statement", "source", "extraction_method", "potential_conflict_group"],
+        "properties": {
+          "entry_id": {"type": "string", "pattern": "^K-[0-9]{4}$"},
+          "kind": {"enum": ["FAQ", "POLICY", "CAPABILITY", "REFERENCE"]},
+          "title": {"type": "string", "minLength": 1, "maxLength": 300},
+          "statement": {"type": "string", "minLength": 1, "maxLength": 2000},
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["file", "file_sha256", "line_start", "line_end"],
+            "properties": {
+              "file": {"type": "string", "minLength": 1, "maxLength": 120},
+              "file_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+              "line_start": {"type": "integer", "minimum": 1},
+              "line_end": {"type": "integer", "minimum": 1}
+            }
+          },
+          "extraction_method": {"enum": ["EXACT_PARAGRAPH", "STRUCTURED_QA", "STRUCTURED_FIELD", "CSV_ROW"]},
+          "potential_conflict_group": {"type": ["string", "null"], "pattern": "^CONFLICT-[0-9]{3}$"}
+          ,"relevance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["category", "recommended_target", "owner_selection_required"],
+            "properties": {
+              "category": {"enum": ["FAQ", "SERVICE_OR_CAPABILITY", "BUSINESS_POLICY", "HOURS_OR_AVAILABILITY", "LOCATION_OR_CONTACT", "BRAND_REFERENCE", "GENERAL_REFERENCE"]},
+              "recommended_target": {"const": "KNOWLEDGE_BANK_ONLY"},
+              "owner_selection_required": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["conflict_id", "entry_ids", "reason"],
+        "properties": {
+          "conflict_id": {"type": "string", "pattern": "^CONFLICT-[0-9]{3}$"},
+          "entry_ids": {"type": "array", "minItems": 2, "items": {"type": "string", "pattern": "^K-[0-9]{4}$"}},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 500}
+        }
+      }
+    },
+    "truncation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entry_limit", "discarded_entries"],
+      "properties": {
+        "entry_limit": {"const": 200},
+        "discarded_entries": {"type": "integer", "minimum": 0}
+      }
+    },
+    "quality_filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "source_type", "input_entries", "boilerplate_removed", "grouped_fragments", "duplicates_removed", "kept_entries", "categories", "system_prompt_candidates"],
+      "properties": {
+        "version": {"const": "WEBSITE_RELEVANCE_V0_1"},
+        "source_type": {"const": "PUBLIC_WEBSITE_CAPTURE"},
+        "input_entries": {"type": "integer", "minimum": 1},
+        "boilerplate_removed": {"type": "integer", "minimum": 0},
+        "grouped_fragments": {"type": "integer", "minimum": 0},
+        "duplicates_removed": {"type": "integer", "minimum": 0},
+        "kept_entries": {"type": "integer", "minimum": 1, "maximum": 200},
+        "categories": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 1},
+          "propertyNames": {"enum": ["FAQ", "SERVICE_OR_CAPABILITY", "BUSINESS_POLICY", "HOURS_OR_AVAILABILITY", "LOCATION_OR_CONTACT", "BRAND_REFERENCE", "GENERAL_REFERENCE"]}
+        },
+        "system_prompt_candidates": {"const": 0}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "semantic_inference", "runtime_truth", "provider_calls", "owner_review_required", "production_approved"],
+      "properties": {
+        "method": {"const": "LOCAL_DETERMINISTIC_EXTRACTION"},
+        "semantic_inference": {"const": false},
+        "runtime_truth": {"const": false},
+        "provider_calls": {"const": 0},
+        "owner_review_required": {"const": true},
+        "production_approved": {"const": false}
+      }
+    },
+    "compilation_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

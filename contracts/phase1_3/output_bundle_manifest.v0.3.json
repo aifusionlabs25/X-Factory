@@ -1,0 +1,51 @@
+{
+  "schema_version": "0.3",
+  "contract_id": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V3",
+  "manifest_filename": "bundle.manifest.json",
+  "canonical_order": "LEXICOGRAPHIC_PATH_ASCENDING",
+  "files": [
+    {"path": "agent/AGENT.md", "media_type": "text/markdown", "source_template": "TPL-AGENT-MD-V3", "required": true, "manifest_payload": true},
+    {"path": "agent/agent.spec.json", "media_type": "application/json", "source_template": "TPL-AGENT-SPEC-V3", "required": true, "manifest_payload": true},
+    {"path": "bundle.manifest.json", "media_type": "application/json", "source_template": "TPL-BUNDLE-MANIFEST-V3", "required": true, "manifest_payload": false},
+    {"path": "tests/fixtures/smoke.input.json", "media_type": "application/json", "source_template": "TPL-SMOKE-INPUT-V3", "required": true, "manifest_payload": true},
+    {"path": "tests/test_bundle.py", "media_type": "text/x-python", "source_template": "TPL-TEST-BUNDLE-PY-V3", "required": true, "manifest_payload": true}
+  ],
+  "hashing": {
+    "algorithm": "SHA-256",
+    "digest_format": "LOWERCASE_HEX_64_NO_PREFIX",
+    "per_file_bytes": "HASH_EXACT_NORMALIZED_OUTPUT_BYTES",
+    "manifest_payload_paths": ["agent/AGENT.md", "agent/agent.spec.json", "tests/fixtures/smoke.input.json", "tests/test_bundle.py"],
+    "root_digest_record": "SHA256_OF_CONCATENATED_UTF8_PATH_NUL_LOWERCASE_SHA256_LF_RECORDS_SORTED_BY_PATH_FOR_FOUR_MANIFEST_PAYLOAD_PATHS",
+    "manifest_self_hash": "SHA256_OF_FINAL_BUNDLE_MANIFEST_BYTES_RECORDED_ONLY_IN_FILE_HASHES_EVIDENCE",
+    "self_reference_rule": "BUNDLE_MANIFEST_NEVER_CONTAINS_ITS_OWN_HASH_AND_IS_EXCLUDED_FROM_ROOT_DIGEST"
+  },
+  "generated_manifest_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["schema_version", "manifest_contract_id", "generation_contract_id", "template_set_id", "template_set_sha256", "files", "root_digest", "authority"],
+    "properties": {
+      "schema_version": {"const": "0.3"},
+      "manifest_contract_id": {"const": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V3"},
+      "generation_contract_id": {"const": "CONTRACT-DETERMINISTIC-GENERATION-V3"},
+      "template_set_id": {"const": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V3"},
+      "template_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "files": {
+        "type": "array", "minItems": 4, "maxItems": 4,
+        "prefixItems": [
+          {"$ref": "#/$defs/agentMdHash"}, {"$ref": "#/$defs/agentSpecHash"}, {"$ref": "#/$defs/smokeHash"}, {"$ref": "#/$defs/testHash"}
+        ], "items": false
+      },
+      "root_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "authority": {"type": "object", "additionalProperties": false, "required": ["build_authorized", "deployment_authorized", "production_approved"], "properties": {"build_authorized": {"const": false}, "deployment_authorized": {"const": false}, "production_approved": {"const": false}}}
+    },
+    "$defs": {
+      "hashRecord": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+      "agentMdHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "agent/AGENT.md"}}}]},
+      "agentSpecHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "agent/agent.spec.json"}}}]},
+      "smokeHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "tests/fixtures/smoke.input.json"}}}]},
+      "testHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "tests/test_bundle.py"}}}]}
+    }
+  },
+  "authority": {"build_authorized": false, "deployment_authorized": false, "production_approved": false}
+}

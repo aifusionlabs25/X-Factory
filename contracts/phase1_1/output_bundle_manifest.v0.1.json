@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1",
+  "contract_id": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V1",
+  "manifest_filename": "bundle.manifest.json",
+  "canonical_order": "LEXICOGRAPHIC_PATH_ASCENDING",
+  "files": [
+    {"path": "agent/AGENT.md", "media_type": "text/markdown", "source_template": "TPL-AGENT-MD-V1", "required": true},
+    {"path": "agent/agent.spec.json", "media_type": "application/json", "source_template": "TPL-AGENT-SPEC-V1", "required": true},
+    {"path": "bundle.manifest.json", "media_type": "application/json", "source_template": "TPL-BUNDLE-MANIFEST-V1", "required": true},
+    {"path": "tests/fixtures/smoke.input.json", "media_type": "application/json", "source_template": "TPL-SMOKE-INPUT-V1", "required": true},
+    {"path": "tests/test_bundle.py", "media_type": "text/x-python", "source_template": "TPL-TEST-BUNDLE-PY-V1", "required": true}
+  ],
+  "hashing": {
+    "algorithm": "SHA-256",
+    "per_file_bytes": "HASH_EXACT_NORMALIZED_OUTPUT_BYTES",
+    "root_digest_record": "SHA256_UTF8_LINES_OF_PATH_NUL_SHA256_SORTED_BY_PATH",
+    "manifest_self_hash": "EXCLUDED_FROM_ROOT_DIGEST_RECORDED_SEPARATELY_AFTER_SERIALIZATION"
+  },
+  "authority": {"build_authorized": false, "deployment_authorized": false, "production_approved": false}
+}

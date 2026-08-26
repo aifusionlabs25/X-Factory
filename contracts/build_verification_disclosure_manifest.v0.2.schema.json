@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/build_verification_disclosure_manifest.v0.2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "manifest_id", "approval_id", "purpose", "build_id", "payload_sha256", "evidence_catalog_sha256", "bound_hashes", "provider", "model", "profiles", "profile_config_hashes", "scope", "execution_mode", "tool_policy", "authority"],
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "manifest_id": {"const": "DISCLOSURE-CONTROLLED-BUILD-004-VERA-V2"},
+    "approval_id": {"const": "APPROVAL-CONTROLLED-BUILD-004-VERA-V2"},
+    "purpose": {"type": "string", "minLength": 1},
+    "build_id": {"const": "controlled-build-004"},
+    "payload_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "evidence_catalog_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "bound_hashes": {"type": "object", "additionalProperties": false, "required": ["blueprint", "build_record", "candidate_root_digest", "prior_vera_evaluation", "post_run_validation", "evaluation_schema"], "properties": {"blueprint": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "build_record": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "candidate_root_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "prior_vera_evaluation": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "post_run_validation": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "evaluation_schema": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}}},
+    "provider": {"const": "openai-codex"},
+    "model": {"const": "gpt-5.6-luna"},
+    "profiles": {"const": ["vera"]},
+    "profile_config_hashes": {"type": "object", "additionalProperties": false, "required": ["vera"], "properties": {"vera": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}}},
+    "scope": {"const": "EXACT_CATALOG_BOUND_CONTROLLED_BUILD_004_PAYLOAD_FOR_ONE_CONTAINED_VERA_PHASE2_1_REVISION_PROOF"},
+    "execution_mode": {"const": "BROKERED_NO_TOOLS"},
+    "tool_policy": {"const": "ZERO_TOOLS_NO_MCP_NO_DESKTOP_UI"},
+    "authority": {"type": "object", "additionalProperties": false, "required": ["verification_only", "install_to_live_factory_authorized", "deployment_authorized", "production_approved"], "properties": {"verification_only": {"const": true}, "install_to_live_factory_authorized": {"const": false}, "deployment_authorized": {"const": false}, "production_approved": {"const": false}}}
+  }
+}

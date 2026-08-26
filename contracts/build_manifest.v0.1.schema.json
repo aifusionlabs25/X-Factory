@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/build_manifest.v0.1.schema.json",
+  "title": "Factory Build Manifest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "candidate_id", "lifecycle", "runtime_evaluated", "build_authorized", "deployment_authorized", "production_approved", "blueprint_hash", "evidence_hash"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "run_id": {"type": "string"},
+    "candidate_id": {"type": "string"},
+    "lifecycle": {"const": "SPECIFICATION_ONLY"},
+    "runtime_evaluated": {"const": false},
+    "build_authorized": {"const": false},
+    "deployment_authorized": {"const": false},
+    "production_approved": {"const": false},
+    "blueprint_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "evidence_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+  }
+}
+

@@ -1,0 +1,34 @@
+{
+  "contract_version": "0.1",
+  "board_slug": "x-agent-factory-v0-1",
+  "dispatch_mode": "explicit_authorization_only",
+  "legal_dispatch_states": [
+    "ROUTE_TO_ARIA",
+    "ROUTE_TO_VERA"
+  ],
+  "non_dispatching_states": [
+    "NEEDS_INPUT",
+    "OWNER_DECISION_REQUIRED",
+    "REVISION_REQUIRED",
+    "BLOCKED_NEEDS_OWNER",
+    "BLOCKED_MISSING_EVIDENCE",
+    "BLOCKED_INVALID_CONTRACT",
+    "PAUSED_NO_DISPATCH",
+    "SPECIFICATION_READY_FOR_BUILD",
+    "CLOSED"
+  ],
+  "owner_decision_block_kind": "needs_input",
+  "generic_block_allowed": false,
+  "dispatch_record_required": true,
+  "dispatch_record_fields": [
+    "dispatch_id",
+    "run_id",
+    "profile",
+    "trigger_state",
+    "handoff_hash",
+    "authorized_by",
+    "started_at",
+    "terminated_at",
+    "result"
+  ]
+}

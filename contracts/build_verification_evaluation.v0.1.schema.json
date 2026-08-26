@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/build_verification_evaluation.v0.1.schema.json",
+  "title": "Independent Vera Build Verification v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluation_id",
+    "evaluated_build_id",
+    "evaluated_blueprint_sha256",
+    "evaluated_build_record_sha256",
+    "evaluated_candidate_root_digest",
+    "gates",
+    "defects",
+    "verdict",
+    "authority_statement"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "evaluation_id": {"type": "string", "pattern": "^VERA-BUILD-EVALUATION-[A-Z0-9-]+$"},
+    "evaluated_build_id": {"const": "controlled-build-004"},
+    "evaluated_blueprint_sha256": {"const": "sha256:3d2302ae05794d06d6a527a43fcf1515cc3e2a87f094afa2398d84c0c07e908a"},
+    "evaluated_build_record_sha256": {"const": "sha256:a13f57baa8608a8e1b612cc29f823fcba8e15d68ec75f7a1ef4edb0fd3927b76"},
+    "evaluated_candidate_root_digest": {"const": "sha256:379e7cdd8fab6df6fda8a9fb74d5f5a087effa0562fd5f5f585b8afe07db7e79"},
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blueprint_fidelity",
+        "required_files_present",
+        "no_undeclared_files",
+        "no_unauthorized_features",
+        "excluded_capabilities_absent",
+        "origin_policy_honored",
+        "no_reference_contamination",
+        "schema_conformance",
+        "deterministic_acceptance_passed",
+        "repeatability_passed",
+        "zero_external_activity",
+        "staging_boundary_preserved",
+        "authority_boundary_preserved",
+        "evidence_chain_complete"
+      ],
+      "properties": {
+        "blueprint_fidelity": {"$ref": "#/$defs/gate"},
+        "required_files_present": {"$ref": "#/$defs/gate"},
+        "no_undeclared_files": {"$ref": "#/$defs/gate"},
+        "no_unauthorized_features": {"$ref": "#/$defs/gate"},
+        "excluded_capabilities_absent": {"$ref": "#/$defs/gate"},
+        "origin_policy_honored": {"$ref": "#/$defs/gate"},
+        "no_reference_contamination": {"$ref": "#/$defs/gate"},
+        "schema_conformance": {"$ref": "#/$defs/gate"},
+        "deterministic_acceptance_passed": {"$ref": "#/$defs/gate"},
+        "repeatability_passed": {"$ref": "#/$defs/gate"},
+        "zero_external_activity": {"$ref": "#/$defs/gate"},
+        "staging_boundary_preserved": {"$ref": "#/$defs/gate"},
+        "authority_boundary_preserved": {"$ref": "#/$defs/gate"},
+        "evidence_chain_complete": {"$ref": "#/$defs/gate"}
+      }
+    },
+    "defects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "severity", "finding", "evidence"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^BUILD-DEFECT-[0-9]{3}$"},
+          "severity": {"enum": ["BLOCKING", "NON_BLOCKING"]},
+          "finding": {"type": "string", "minLength": 1},
+          "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "verdict": {"enum": ["BUILD_VERIFIED", "REVISION_REQUIRED"]},
+    "authority_statement": {"const": "BUILD_VERIFICATION_ONLY_NO_INSTALL_DEPLOYMENT_OR_PRODUCTION_AUTHORITY"}
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL"]},
+        "evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"verdict": {"const": "BUILD_VERIFIED"}}},
+      "then": {
+        "properties": {
+          "defects": {"maxItems": 0},
+          "gates": {
+            "properties": {
+              "blueprint_fidelity": {"properties": {"status": {"const": "PASS"}}},
+              "required_files_present": {"properties": {"status": {"const": "PASS"}}},
+              "no_undeclared_files": {"properties": {"status": {"const": "PASS"}}},
+              "no_unauthorized_features": {"properties": {"status": {"const": "PASS"}}},
+              "excluded_capabilities_absent": {"properties": {"status": {"const": "PASS"}}},
+              "origin_policy_honored": {"properties": {"status": {"const": "PASS"}}},
+              "no_reference_contamination": {"properties": {"status": {"const": "PASS"}}},
+              "schema_conformance": {"properties": {"status": {"const": "PASS"}}},
+              "deterministic_acceptance_passed": {"properties": {"status": {"const": "PASS"}}},
+              "repeatability_passed": {"properties": {"status": {"const": "PASS"}}},
+              "zero_external_activity": {"properties": {"status": {"const": "PASS"}}},
+              "staging_boundary_preserved": {"properties": {"status": {"const": "PASS"}}},
+              "authority_boundary_preserved": {"properties": {"status": {"const": "PASS"}}},
+              "evidence_chain_complete": {"properties": {"status": {"const": "PASS"}}}
+            }
+          }
+        }
+      }
+    }
+  ]
+}

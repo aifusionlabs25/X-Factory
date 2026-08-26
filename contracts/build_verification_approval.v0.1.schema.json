@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/build_verification_approval.v0.1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "approval_id", "disclosure_manifest_sha256", "payload_sha256", "build_id", "approval_status", "approved_by", "approved_at", "destination", "allowed_payload_scope"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "approval_id": {"const": "APPROVAL-CONTROLLED-BUILD-004-VERA-V1"},
+    "disclosure_manifest_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "payload_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "build_id": {"const": "controlled-build-004"},
+    "approval_status": {"const": "APPROVED"},
+    "approved_by": {"type": "string", "minLength": 2},
+    "approved_at": {"type": "string", "format": "date-time"},
+    "destination": {"type": "object", "additionalProperties": false, "required": ["provider", "model", "profiles"], "properties": {"provider": {"const": "openai-codex"}, "model": {"const": "gpt-5.6-luna"}, "profiles": {"const": ["vera"]}}},
+    "allowed_payload_scope": {"const": "EXACT_SANITIZED_CONTROLLED_BUILD_004_PAYLOAD_FOR_ONE_CONTAINED_VERA_BUILD_VERIFICATION"}
+  }
+}

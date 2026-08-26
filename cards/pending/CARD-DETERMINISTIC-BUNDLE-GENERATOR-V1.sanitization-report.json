@@ -1,0 +1,45 @@
+{
+  "schema_version": "0.1",
+  "sanitizer": "x-factory-local-sanitizer/0.1",
+  "generated_at": "2026-08-19T04:13:51.546560+00:00",
+  "sealed_record_hash": "sha256:c1ffc76ed7822cb5c208481c24d0ca6d99805f1fd5ee0847a0eec2f5cfc04503",
+  "output_card_sha256": "sha256:ee93aabebbf1bd844695bf9a0a43ca12bebf0b5ddad06f4d1b5746482ed16d67",
+  "source_capability_mappings": 4,
+  "source_limitation_mappings": 4,
+  "mapping_summary": {
+    "included": {
+      "sanitized_capabilities": 4,
+      "sanitized_limitations": 4,
+      "dependencies": 3,
+      "tests": 3
+    },
+    "removed_source_fields": [
+      "evidence_id",
+      "source_repo",
+      "source_path",
+      "source_commit",
+      "working_tree_state"
+    ],
+    "rejected_fields": [],
+    "unmapped_source_capabilities": 0,
+    "unmapped_source_limitations": 0
+  },
+  "semantic_privacy_classification": {
+    "DIRECT_IDENTIFIERS": "none",
+    "CREDENTIAL_MATERIAL": "none",
+    "PRIVATE_PATHS": "none",
+    "UNIQUE_CLIENT_IDENTIFIERS": "none",
+    "SOURCE_CODE": "none",
+    "RAW_PRIVATE_TEXT": "none"
+  },
+  "checks": {
+    "schema_valid": true,
+    "private_markers_absent": true,
+    "repo_or_local_paths_absent": true,
+    "source_code_absent": true,
+    "credentials_absent": true,
+    "all_source_statements_mapped_once": true
+  },
+  "provider_transmission_performed": false,
+  "approval_status": "PENDING_EXACT_PAYLOAD_APPROVAL"
+}

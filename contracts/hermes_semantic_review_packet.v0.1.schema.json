@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/hermes_semantic_review_packet.v0.1.schema.json",
+  "title": "Hermes Semantic Review Packet v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "mission_id", "status", "provider", "model", "execution_policy", "stages", "input_hashes", "authority"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "mission_id": {"type": "string", "minLength": 1},
+    "status": {"const": "PREPARED_NOT_TRANSMITTED"},
+    "provider": {"const": "openai-codex"},
+    "model": {"const": "gpt-5.6-luna"},
+    "execution_policy": {"type": "object"},
+    "stages": {"type": "array", "minItems": 3},
+    "input_hashes": {"type": "object"},
+    "authority": {"type": "object"}
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.1",
+  "fictional_fixture": true,
+  "client": "Desert Home Services",
+  "approved_faqs": [
+    {"question": "What kinds of requests can you help with?", "answer": "I can help collect details for routine home-service requests and prepare them for staff review."},
+    {"question": "Can you give me a final price?", "answer": "No. Final pricing requires staff review after the request details are confirmed."},
+    {"question": "Can you guarantee an appointment time?", "answer": "No. I can record timing preferences, but staff must confirm availability."}
+  ],
+  "qualification_fields": ["visitor_name", "preferred_contact_method", "service_category", "service_zip_code", "issue_summary", "urgency", "property_type"],
+  "handoff_fields": ["request_summary", "faq_answers_given", "qualification_details", "known_unknowns", "promises_not_made", "recommended_staff_queue"],
+  "handoff_presentation": "A concise structured JSON object displayed for staff review; it is not transmitted.",
+  "recommended_staff_queue_value": "GENERAL_REVIEW",
+  "external_actions": "PROHIBITED",
+  "pricing_authority": "STAFF_ONLY",
+  "availability_authority": "STAFF_ONLY"
+}

@@ -1,0 +1,69 @@
+{
+  "schema_version": "0.3",
+  "contract_id": "CONTRACT-DETERMINISTIC-GENERATION-V3",
+  "runtime": "CPYTHON-3.11-STANDARD-LIBRARY-ONLY",
+  "template_engine": "TYPED_EXACT_TEMPLATE_V3",
+  "inputs": ["VALIDATED_BLUEPRINT_JSON", "OUTPUT_BUNDLE_MANIFEST_CONTRACT_V3", "VERSIONED_TEMPLATE_SET_V3"],
+  "origin_policy": {
+    "allowed_origin_kinds": ["DIRECT_BLUEPRINT", "DECLARED_FALLBACK", "DECLARED_CONSTANT", "DETERMINISTIC_DERIVATION"],
+    "precedence": ["DIRECT_BLUEPRINT_NONEMPTY", "DECLARED_FALLBACK", "DECLARED_CONSTANT", "DETERMINISTIC_DERIVATION"],
+    "rule": "Every generated value declares exactly one origin kind. A fallback is one declared mapping with ordered branches, not two sources. Integrity values are deterministic derivations and are exempt from the direct-blueprint-or-constant rule.",
+    "prohibited": ["UNDECLARED_SOURCE", "IMPLICIT_DEFAULT", "BUILDER_CHOICE", "PROVIDER_DERIVATION"]
+  },
+  "blueprint_field_mappings": [
+    {"output": "agent/AGENT.md.name", "origin_kind": "DECLARED_FALLBACK", "source": ["identity.agent_name", "candidate_id"], "transform": "FIRST_NONEMPTY_STRING", "precedence": 1},
+    {"output": "agent/AGENT.md.purpose", "origin_kind": "DIRECT_BLUEPRINT", "source": ["objectives.primary_job"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/AGENT.md.role", "origin_kind": "DIRECT_BLUEPRINT", "source": ["identity.role"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/AGENT.md.hard_rules", "origin_kind": "DIRECT_BLUEPRINT", "source": ["evaluation_plan.hard_rules"], "transform": "LEXICOGRAPHIC_SORT_THEN_HYPHEN_BULLETS", "precedence": 1},
+    {"output": "agent/agent.spec.json.schema_version", "origin_kind": "DIRECT_BLUEPRINT", "source": ["schema_version"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/agent.spec.json.candidate_id", "origin_kind": "DIRECT_BLUEPRINT", "source": ["candidate_id"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/agent.spec.json.identity", "origin_kind": "DIRECT_BLUEPRINT", "source": ["identity"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/agent.spec.json.objectives", "origin_kind": "DIRECT_BLUEPRINT", "source": ["objectives"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/agent.spec.json.capabilities", "origin_kind": "DIRECT_BLUEPRINT", "source": ["capabilities"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/agent.spec.json.boundaries", "origin_kind": "DIRECT_BLUEPRINT", "source": ["boundaries"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/agent.spec.json.requirements", "origin_kind": "DIRECT_BLUEPRINT", "source": ["requirements"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "agent/agent.spec.json.authority", "origin_kind": "DIRECT_BLUEPRINT", "source": ["authority"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "tests/fixtures/smoke.input.json.fixture_id", "origin_kind": "DECLARED_CONSTANT", "source": ["FIXTURE-SYNTHETIC-BUNDLE-V3"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "tests/fixtures/smoke.input.json.candidate_id", "origin_kind": "DIRECT_BLUEPRINT", "source": ["candidate_id"], "transform": "IDENTITY", "precedence": 1},
+    {"output": "tests/fixtures/smoke.input.json.user_input", "origin_kind": "DECLARED_CONSTANT", "source": ["Create the approved deterministic synthetic bundle."], "transform": "IDENTITY", "precedence": 1},
+    {"output": "tests/fixtures/smoke.input.json.provider_free", "origin_kind": "DECLARED_CONSTANT", "source": ["true"], "transform": "JSON_BOOLEAN", "precedence": 1},
+    {"output": "bundle.manifest.json.files[].sha256", "origin_kind": "DETERMINISTIC_DERIVATION", "source": ["EXACT_NORMALIZED_BYTES_OF_FOUR_MANIFEST_PAYLOAD_PATHS"], "transform": "SHA256_LOWERCASE_HEX", "precedence": 1},
+    {"output": "bundle.manifest.json.root_digest", "origin_kind": "DETERMINISTIC_DERIVATION", "source": ["SORTED_PATH_NUL_SHA256_LF_RECORDS"], "transform": "SHA256_LOWERCASE_HEX", "precedence": 1},
+    {"output": "bundle.manifest.json.template_set_sha256", "origin_kind": "DETERMINISTIC_DERIVATION", "source": ["SORTED_TEMPLATE_ID_NUL_SOURCE_SHA256_LF_RECORDS"], "transform": "SHA256_LOWERCASE_HEX", "precedence": 1}
+  ],
+  "generator_interface": {
+    "module": "x_factory.bundle_generator",
+    "command": "python -m x_factory.bundle_generator generate --blueprint <blueprint.json> --contracts <phase1_3-contract-dir> --output <empty-output-dir> --evidence <empty-run-evidence-dir> --run-label <RUN_1|RUN_2>",
+    "callable": "generate(blueprint_bytes, contract_bytes_by_name, output_dir, evidence_dir, run_label) -> GenerationResult",
+    "arguments": {
+      "blueprint": "Existing UTF-8 JSON file valid against x_agent_blueprint.v0.1.schema.json",
+      "contracts": "Directory containing exactly the three approved Phase 1.3 contract instances with matching hashes",
+      "output": "Existing empty run-N/output directory used only for the five bundle files",
+      "evidence": "Existing empty run-N/evidence directory used only for execution-audit.json and file-hashes.json",
+      "run_label": "Exactly RUN_1 or RUN_2 and consistent with the evidence root"
+    },
+    "preconditions": ["All input hashes match the governed run record", "Output and evidence directories exist, are empty, distinct, and share the declared run-N parent", "Network is disabled and provider credentials are absent", "No path resolves outside its declared output or evidence root"],
+    "exit_codes": {"0": "SUCCESS", "2": "INVALID_INPUT_OR_CONTRACT", "3": "BOUNDARY_OR_SAFETY_VIOLATION", "4": "DETERMINISM_OR_ACCEPTANCE_FAILURE"},
+    "output_boundary": "WRITE_ONLY_THE_FIVE_MANIFEST_PATHS_BENEATH_RUN_N_OUTPUT",
+    "evidence_boundary": "WRITE_ONLY_EXECUTION_AUDIT_AND_FILE_HASHES_BENEATH_THE_PAIRED_RUN_N_EVIDENCE"
+  },
+  "template_set": {
+    "template_set_id": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V3",
+    "template_set_sha256": "974e0f939f86be0f8ea0b49829e6d8fa476cac154e6c873d92e25055af7b907b",
+    "hash_rule": "SHA256_OF_CONCATENATED_UTF8_TEMPLATE_ID_NUL_SOURCE_SHA256_LF_RECORDS_SORTED_BY_TEMPLATE_ID",
+    "render_order": ["agent/AGENT.md", "agent/agent.spec.json", "tests/fixtures/smoke.input.json", "tests/test_bundle.py", "bundle.manifest.json"],
+    "placeholder_rules": {"markdown_scalar": "NFC_STRING_WITH_CRLF_AND_CR_REPLACED_BY_LF", "markdown_list": "LEXICOGRAPHIC_NFC_VALUES_RENDERED_AS_HYPHEN_SPACE_VALUE", "json_object_constructor": "RESOLVE_TYPED_PLACEHOLDERS_THEN_CANONICAL_JSON_SERIALIZE", "python_static": "COPY_EXACT_SOURCE_BYTES"},
+    "definitions": [
+      {"template_id": "TPL-AGENT-MD-V3", "output_path": "agent/AGENT.md", "kind": "MARKDOWN_STRING_TEMPLATE", "source_utf8": "# $name\n\n## Purpose\n\n$purpose\n\n## Role\n\n$role\n\n## Hard rules\n\n$hard_rules\n", "source_sha256": "93323c437b3ff98b1dcac0da69ca160e1b2d88795b8b873d8565118fabdd1cf0"},
+      {"template_id": "TPL-AGENT-SPEC-V3", "output_path": "agent/agent.spec.json", "kind": "JSON_OBJECT_CONSTRUCTOR", "source_utf8": "{\"authority\":\"$authority\",\"boundaries\":\"$boundaries\",\"candidate_id\":\"$candidate_id\",\"capabilities\":\"$capabilities\",\"identity\":\"$identity\",\"objectives\":\"$objectives\",\"requirements\":\"$requirements\",\"schema_version\":\"$schema_version\"}\n", "source_sha256": "5237ff26f456f4f13cd74a3685d1172f81b7778c90eae1e42846c7360e630e01"},
+      {"template_id": "TPL-SMOKE-INPUT-V3", "output_path": "tests/fixtures/smoke.input.json", "kind": "JSON_OBJECT_CONSTRUCTOR", "source_utf8": "{\"candidate_id\":\"$candidate_id\",\"fixture_id\":\"FIXTURE-SYNTHETIC-BUNDLE-V3\",\"provider_free\":true,\"user_input\":\"Create the approved deterministic synthetic bundle.\"}\n", "source_sha256": "8087949c06c78ceb5b1f64df0e59edd90b7dab5356101e216a1766e431cfdf97"},
+      {"template_id": "TPL-TEST-BUNDLE-PY-V3", "output_path": "tests/test_bundle.py", "kind": "PYTHON_STATIC", "source_utf8": "from pathlib import Path\nimport unittest\nfrom x_factory.acceptance import run_contract_fixture\n\n\nclass TestBundle(unittest.TestCase):\n    def test_phase1_3_contract(self):\n        result = run_contract_fixture(Path(__file__).resolve().parents[1])\n        self.assertEqual(result[\"status\"], \"PASS\")\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n", "source_sha256": "fce8b07ee13cfd94df1d565d5d21b8025dbdf69ce296a6c302e9279e8a58df1d"},
+      {"template_id": "TPL-BUNDLE-MANIFEST-V3", "output_path": "bundle.manifest.json", "kind": "JSON_OBJECT_CONSTRUCTOR", "source_utf8": "{\"authority\":{\"build_authorized\":false,\"deployment_authorized\":false,\"production_approved\":false},\"files\":\"$four_payload_file_records\",\"generation_contract_id\":\"CONTRACT-DETERMINISTIC-GENERATION-V3\",\"manifest_contract_id\":\"CONTRACT-OUTPUT-BUNDLE-MANIFEST-V3\",\"root_digest\":\"$root_digest\",\"schema_version\":\"0.3\",\"template_set_id\":\"TEMPLATE-SET-SYNTHETIC-BUNDLE-V3\",\"template_set_sha256\":\"$template_set_sha256\"}\n", "source_sha256": "68cb71e8b7a017eb6ef2e965f2211362912fc6be02c142db545200b2b69e951e"}
+    ]
+  },
+  "canonical_json": {"encoding": "UTF-8-NO-BOM", "sort_keys": true, "indent": 2, "ensure_ascii": false, "separators": [",", ": "], "final_newline": "EXACTLY_ONE_LF", "unicode": "NFC"},
+  "test_runner": {"technology": "PYTHON-3.11-UNITTEST-STANDARD-LIBRARY", "command": "python -m unittest tests.test_bundle -v", "allowed_imports": ["hashlib", "json", "os", "pathlib", "subprocess", "tempfile", "unicodedata", "unittest", "x_factory.acceptance"], "normative_assertions": ["ASSERT-001", "ASSERT-002", "ASSERT-003", "ASSERT-004", "ASSERT-005", "ASSERT-006"]},
+  "normalization": {"text_encoding": "UTF-8-NO-BOM", "line_endings": "LF", "unicode": "NFC", "final_newline": "EXACTLY_ONE", "json_serialization": "SORT_KEYS_TRUE_INDENT_2_ENSURE_ASCII_FALSE_SEPARATORS_COMMA_COLON_SPACE", "path_separator": "/", "file_order": "LEXICOGRAPHIC_PATH_ASCENDING"},
+  "forbidden_nondeterminism": ["CLOCK", "RANDOMNESS", "UNDECLARED_ENVIRONMENT_VARIABLES", "NETWORK", "LOCALE", "HOST_PATHS", "UNORDERED_ITERATION", "PROVIDER_CALLS"],
+  "repeatability": {"runs": 2, "workspace_reset_between_runs": true, "comparison": "EVERY_RELATIVE_PATH_AND_EVERY_OUTPUT_BYTE", "success": "IDENTICAL_FILE_SET_IDENTICAL_BYTES_IDENTICAL_ROOT_DIGEST"}
+}

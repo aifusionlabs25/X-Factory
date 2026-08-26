@@ -1,0 +1,23 @@
+{
+  "schema_version": "0.1",
+  "run_id": "synthetic-local-concierge-001",
+  "candidate_id": "candidate-bad-synthetic-001",
+  "owner_intent": "A lean local-service concierge.",
+  "raw_intake": {"purpose": "FAQ, qualification, notes, and staff handoff without external actions"},
+  "explicit_requirements": ["Answer approved FAQs", "Qualify requests", "Keep notes", "Prepare handoff", "Never promise availability", "No booking, email, or CRM"],
+  "inferred_requirements": ["Automatically book appointments in Reference Client Alpha's calendar"],
+  "assumptions": ["The business uses Reference Agent Alpha's persona and heavyweight recovery stack"],
+  "unresolved_questions": [],
+  "identity": {"agent_name": "Reference Agent Alpha", "client": "Reference Client Alpha", "role": "Concierge", "persona": "Reuse the reference persona", "target_users": ["Local-service prospects"]},
+  "objectives": {"primary_job": "Qualify and book", "secondary_jobs": ["Send email"], "success_outcomes": ["Appointment booked automatically"]},
+  "conversation": {"opening_behavior": "Use the reference client's greeting", "discovery_behavior": "Qualify", "response_style": "Friendly", "correction_behavior": "Correct notes", "closing_behavior": "Promise availability", "escalation_behavior": "None"},
+  "knowledge": {"required_domains": ["Pricing"], "authoritative_sources": [], "unsupported_or_unknown_topics": []},
+  "capabilities": {"required": ["FAQ", "qualification", "notes", "handoff", "booking", "email", "CRM write", "heavyweight recovery"], "optional": [], "explicitly_excluded": []},
+  "components": {"selected": [{"component_id": "CMP-UNVERIFIED-EVERYTHING", "reason": "The reference agent has it", "evidence_refs": ["EVD-MISSING"]}], "rejected": []},
+  "tools_and_actions": {"allowed": ["send email", "book appointment", "write CRM"], "approval_required": [], "prohibited": []},
+  "boundaries": {"prohibited_claims": [], "prohibited_actions": [], "escalation_triggers": []},
+  "requirements": [{"id": "REQ-001", "statement": "Be friendly", "source": "OWNER_EXPLICIT", "type": "BEHAVIOR", "acceptance_test": "Seems friendly"}],
+  "evaluation_plan": {"scenarios": [], "hard_rules": [], "semantic_rubrics": []},
+  "implementation_handoff": {"runtime_target": "production", "reusable_patterns": ["all reference-agent modules"], "new_work_required": [], "dependencies": ["credentials"], "unresolved_implementation_questions": []},
+  "authority": {"specification_status": "SPECIFICATION_READY_FOR_BUILD", "build_authorized": false, "deployment_authorized": false, "production_approved": false}
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/intake.v0.1.schema.json",
+  "title": "X-Agent Factory Intake v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "purpose"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "run_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{5,79}$"},
+    "agent_or_client": {"type": ["string", "null"]},
+    "purpose": {"type": "string", "minLength": 10},
+    "role_and_behavior": {"type": ["string", "null"]},
+    "must_have_capabilities": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "never_do": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "sources": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "raw_owner_text": {"type": "string"},
+    "default_external_actions": {"const": "PROHIBITED_UNLESS_EXPLICITLY_APPROVED"}
+  }
+}
+

@@ -1,0 +1,55 @@
+{
+  "schema_version": "0.2",
+  "contract_id": "CONTRACT-DETERMINISTIC-GENERATION-V2",
+  "runtime": "CPYTHON-3.11-STANDARD-LIBRARY-ONLY",
+  "template_engine": "PYTHON-STRING-TEMPLATE-V1",
+  "inputs": ["VALIDATED_BLUEPRINT_JSON", "OUTPUT_BUNDLE_MANIFEST_CONTRACT_V2", "VERSIONED_TEMPLATE_SET_V2"],
+  "blueprint_field_mappings": {
+    "agent/AGENT.md.name": "identity.agent_name WHEN non-null and non-empty ELSE candidate_id",
+    "agent/AGENT.md.purpose": "objectives.primary_job",
+    "agent/AGENT.md.role": "identity.role",
+    "agent/AGENT.md.hard_rules": "evaluation_plan.hard_rules sorted lexicographically",
+    "agent/agent.spec.json.schema_version": "schema_version",
+    "agent/agent.spec.json.candidate_id": "candidate_id",
+    "agent/agent.spec.json.identity": "identity",
+    "agent/agent.spec.json.objectives": "objectives",
+    "agent/agent.spec.json.capabilities": "capabilities",
+    "agent/agent.spec.json.boundaries": "boundaries",
+    "agent/agent.spec.json.requirements": "requirements",
+    "agent/agent.spec.json.authority": "authority",
+    "tests/fixtures/smoke.input.json.fixture_id": "CONSTANT FIXTURE-SYNTHETIC-BUNDLE-V2",
+    "tests/fixtures/smoke.input.json.candidate_id": "candidate_id",
+    "tests/fixtures/smoke.input.json.user_input": "CONSTANT Create the approved deterministic synthetic bundle.",
+    "tests/fixtures/smoke.input.json.provider_free": "CONSTANT true"
+  },
+  "generator_interface": {
+    "module": "x_factory.bundle_generator",
+    "command": "python -m x_factory.bundle_generator generate --blueprint <blueprint.json> --contracts <phase1_2-contract-dir> --output <empty-output-dir> --evidence <empty-evidence-dir>",
+    "callable": "generate(blueprint_bytes, contract_bytes_by_name, output_dir, evidence_dir) -> GenerationResult",
+    "arguments": {
+      "blueprint": "Existing UTF-8 JSON file valid against x_agent_blueprint.v0.1.schema.json",
+      "contracts": "Directory containing exactly the three approved Phase 1.2 contract instances with matching hashes",
+      "output": "Existing empty directory used only for the five bundle files",
+      "evidence": "Existing empty directory used only for declared evidence files"
+    },
+    "preconditions": ["All input hashes match the governed run record", "Output and evidence directories exist, are empty, and are distinct", "Network is disabled and provider credentials are absent", "No path resolves outside its declared output or evidence root"],
+    "exit_codes": {"0": "SUCCESS", "2": "INVALID_INPUT_OR_CONTRACT", "3": "BOUNDARY_OR_SAFETY_VIOLATION", "4": "DETERMINISM_OR_ACCEPTANCE_FAILURE"},
+    "output_boundary": "WRITE_ONLY_THE_FIVE_MANIFEST_PATHS_BENEATH_EMPTY_OUTPUT_DIR",
+    "evidence_boundary": "WRITE_ONLY_DECLARED_EVIDENCE_PATHS_BENEATH_EMPTY_EVIDENCE_DIR"
+  },
+  "template_set": {
+    "template_set_id": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V2",
+    "render_order": ["agent/AGENT.md", "agent/agent.spec.json", "tests/fixtures/smoke.input.json", "tests/test_bundle.py", "bundle.manifest.json"],
+    "definitions": [
+      {"template_id": "TPL-AGENT-MD-V2", "output_path": "agent/AGENT.md", "render_rule": "Render headings Name, Purpose, Role, Hard rules in that order using only the exact blueprint_field_mappings; hard rules are hyphen bullets in lexical order."},
+      {"template_id": "TPL-AGENT-SPEC-V2", "output_path": "agent/agent.spec.json", "render_rule": "Render canonical JSON using exactly the eight mapped top-level blueprint fields; requirements means blueprint.requirements and no alternate source is allowed."},
+      {"template_id": "TPL-SMOKE-INPUT-V2", "output_path": "tests/fixtures/smoke.input.json", "render_rule": "Render canonical JSON using exactly the four smoke-input mappings."},
+      {"template_id": "TPL-TEST-BUNDLE-PY-V2", "output_path": "tests/test_bundle.py", "render_rule": "Render a unittest module that creates two reset temp output/evidence pairs, invokes the exact generator command with subprocess.run(check=False), and evaluates ASSERT-001 through ASSERT-006 from the declared evidence schemas."},
+      {"template_id": "TPL-BUNDLE-MANIFEST-V2", "output_path": "bundle.manifest.json", "render_rule": "Render canonical JSON using CONTRACT-OUTPUT-BUNDLE-MANIFEST-V2, computed exact-byte SHA-256 records, root digest excluding the manifest, post-serialization manifest SHA-256, contract IDs, template-set ID, and false authority flags."}
+    ]
+  },
+  "test_runner": {"technology": "PYTHON-3.11-UNITTEST-STANDARD-LIBRARY", "command": "python -m unittest tests.test_bundle -v", "allowed_imports": ["hashlib", "json", "os", "pathlib", "subprocess", "tempfile", "unicodedata", "unittest"], "normative_assertions": ["ASSERT-001", "ASSERT-002", "ASSERT-003", "ASSERT-004", "ASSERT-005", "ASSERT-006"]},
+  "normalization": {"text_encoding": "UTF-8-NO-BOM", "line_endings": "LF", "unicode": "NFC", "final_newline": "EXACTLY_ONE", "json_serialization": "SORT_KEYS_TRUE_INDENT_2_ENSURE_ASCII_FALSE_SEPARATORS_COMMA_COLON_DEFAULT", "path_separator": "/", "file_order": "LEXICOGRAPHIC_PATH_ASCENDING"},
+  "forbidden_nondeterminism": ["CLOCK", "RANDOMNESS", "UNDECLARED_ENVIRONMENT_VARIABLES", "NETWORK", "LOCALE", "HOST_PATHS", "UNORDERED_ITERATION", "PROVIDER_CALLS"],
+  "repeatability": {"runs": 2, "workspace_reset_between_runs": true, "comparison": "EVERY_RELATIVE_PATH_AND_EVERY_OUTPUT_BYTE", "success": "IDENTICAL_FILE_SET_IDENTICAL_BYTES_IDENTICAL_ROOT_DIGEST"}
+}

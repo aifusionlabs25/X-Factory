@@ -1,0 +1,18 @@
+{
+  "contract_version": "0.1",
+  "governed_run_marker": "X_FACTORY_GOVERNED_RUN_V0_1",
+  "interactive_profile_conversation": {
+    "factory_lifecycle_authority": false,
+    "allowed": ["brainstorming", "explanation", "demonstration"],
+    "prohibited_assertions": ["SPECIFICATION_READY_FOR_BUILD", "build_authorized", "deployment_authorized", "production_approved"]
+  },
+  "governed_execution_requirements": [
+    "Broker-issued disclosure manifest hash",
+    "Exact matching owner approval record",
+    "Runtime allow-none preflight for Atlas, Aria, and Vera",
+    "Virgin Atlas, Aria, and Vera sessions",
+    "Zero tool calls recorded for every stage",
+    "Broker-authored contained run record with complete hash chain"
+  ],
+  "authority_rule": "Only the deterministic broker can write a governed run record. A model response or ordinary Hermes chat has no Factory lifecycle authority by itself."
+}

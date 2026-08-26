@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/evidence_matrix.v0.1.schema.json",
+  "title": "Factory Evidence Matrix v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "records"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_id", "source_repo", "source_path", "source_commit", "working_tree_state", "artifact_hash", "observed_date", "verification_class", "capability_proven", "limitations"],
+        "properties": {
+          "evidence_id": {"type": "string", "pattern": "^EVD-[A-Z0-9-]+$"},
+          "source_repo": {"type": "string"},
+          "source_path": {"type": "string"},
+          "source_commit": {"type": "string"},
+          "working_tree_state": {"enum": ["CLEAN", "DIRTY", "UNKNOWN"]},
+          "artifact_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+          "observed_date": {"type": "string", "format": "date"},
+          "verification_class": {"enum": ["VERIFIED_CURRENT", "VERIFIED_HISTORICAL", "EXPERIMENTAL", "DECLARED_ONLY", "UNKNOWN"]},
+          "capability_proven": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "limitations": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}
+

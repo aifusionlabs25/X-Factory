@@ -1,0 +1,23 @@
+{
+  "credential_keys_present": [],
+  "credential_keys_scanned": [
+    "ANTHROPIC_API_KEY",
+    "HERMES_API_KEY",
+    "NVIDIA_API_KEY",
+    "NOUS_API_KEY",
+    "OPENAI_API_KEY",
+    "OPENROUTER_API_KEY"
+  ],
+  "external_action_count": 0,
+  "network_attempt_count": 0,
+  "network_policy": "DISABLED_BY_TEST_HARNESS",
+  "output_paths": [
+    "agent/AGENT.md",
+    "agent/agent.spec.json",
+    "bundle.manifest.json",
+    "tests/fixtures/smoke.input.json",
+    "tests/test_bundle.py"
+  ],
+  "run_label": "RUN_2",
+  "schema_version": "0.3"
+}

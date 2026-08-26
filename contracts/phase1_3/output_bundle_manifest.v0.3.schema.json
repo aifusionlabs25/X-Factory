@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/output_bundle_manifest.v0.3.schema.json",
+  "title": "Deterministic Output Bundle Manifest Contract v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_id", "manifest_filename", "canonical_order", "files", "hashing", "generated_manifest_schema", "authority"],
+  "properties": {
+    "schema_version": {"const": "0.3"}, "contract_id": {"const": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V3"},
+    "manifest_filename": {"const": "bundle.manifest.json"}, "canonical_order": {"const": "LEXICOGRAPHIC_PATH_ASCENDING"},
+    "files": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"type": "object", "additionalProperties": false, "required": ["path", "media_type", "source_template", "required", "manifest_payload"], "properties": {"path": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]+$"}, "media_type": {"enum": ["application/json", "text/markdown", "text/x-python"]}, "source_template": {"type": "string", "pattern": "^TPL-[A-Z0-9-]+$"}, "required": {"const": true}, "manifest_payload": {"type": "boolean"}}}},
+    "hashing": {"type": "object", "additionalProperties": false, "required": ["algorithm", "digest_format", "per_file_bytes", "manifest_payload_paths", "root_digest_record", "manifest_self_hash", "self_reference_rule"], "properties": {"algorithm": {"const": "SHA-256"}, "digest_format": {"const": "LOWERCASE_HEX_64_NO_PREFIX"}, "per_file_bytes": {"const": "HASH_EXACT_NORMALIZED_OUTPUT_BYTES"}, "manifest_payload_paths": {"const": ["agent/AGENT.md", "agent/agent.spec.json", "tests/fixtures/smoke.input.json", "tests/test_bundle.py"]}, "root_digest_record": {"const": "SHA256_OF_CONCATENATED_UTF8_PATH_NUL_LOWERCASE_SHA256_LF_RECORDS_SORTED_BY_PATH_FOR_FOUR_MANIFEST_PAYLOAD_PATHS"}, "manifest_self_hash": {"const": "SHA256_OF_FINAL_BUNDLE_MANIFEST_BYTES_RECORDED_ONLY_IN_FILE_HASHES_EVIDENCE"}, "self_reference_rule": {"const": "BUNDLE_MANIFEST_NEVER_CONTAINS_ITS_OWN_HASH_AND_IS_EXCLUDED_FROM_ROOT_DIGEST"}}},
+    "generated_manifest_schema": {"type": "object", "required": ["$schema", "type", "additionalProperties", "required", "properties"]},
+    "authority": {"type": "object", "additionalProperties": false, "required": ["build_authorized", "deployment_authorized", "production_approved"], "properties": {"build_authorized": {"const": false}, "deployment_authorized": {"const": false}, "production_approved": {"const": false}}}
+  }
+}

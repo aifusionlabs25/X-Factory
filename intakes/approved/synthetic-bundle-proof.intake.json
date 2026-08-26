@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.1",
+  "run_id": "contained-real-card-proof-001",
+  "agent_or_client": "Fictional Bundle Workshop",
+  "purpose": "Specify a provider-free X-Agent scaffold generator that creates a deterministic candidate bundle from an approved blueprint.",
+  "role_and_behavior": "Transform an already-approved specification into a repeatable candidate bundle while preserving hashes, boundaries, and tests.",
+  "must_have_capabilities": [
+    "Generate a versioned multi-file candidate bundle",
+    "Produce byte-equivalent output for identical approved inputs",
+    "Validate the output manifest and scaffold tests",
+    "Remain provider-free and perform no external actions"
+  ],
+  "never_do": [
+    "Read raw private repositories",
+    "Call an external provider",
+    "Deploy or modify production",
+    "Claim build authorization"
+  ],
+  "sources": [
+    "One exact owner-approved model-safe component card"
+  ],
+  "raw_owner_text": "Create the smallest deterministic, provider-free bundle generator specification. Reuse the approved component only when its evidence supports the requirement. Stop at specification-ready-for-build.",
+  "default_external_actions": "PROHIBITED_UNLESS_EXPLICITLY_APPROVED"
+}

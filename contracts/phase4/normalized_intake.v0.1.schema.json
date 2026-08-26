@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/normalized_intake.v0.1.schema.json",
+  "title": "Atlas Normalized Intake v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "agent_or_client", "purpose", "role_and_behavior", "must_have_capabilities", "never_do", "sources", "raw_owner_text", "default_external_actions"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "run_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{5,79}$"},
+    "agent_or_client": {"type": ["string", "null"]},
+    "purpose": {"type": "string", "minLength": 10},
+    "role_and_behavior": {"type": ["string", "null"]},
+    "must_have_capabilities": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "never_do": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "sources": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "raw_owner_text": {"type": "string", "minLength": 1},
+    "default_external_actions": {"const": "PROHIBITED_UNLESS_EXPLICITLY_APPROVED"}
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1",
+  "run_id": "contained-real-card-proof-003",
+  "agent_or_client": "Fictional Bundle Workshop",
+  "purpose": "Produce a final provider-free scaffold-generator specification using exact Phase 1.2 field mappings, generator interfaces, audit evidence, and report schemas without leaving implementation choices unresolved.",
+  "role_and_behavior": "Preserve the approved intent and component evidence, incorporate every Phase 1.2 contract literally, and correct the prior evaluator confusion by mapping agent.spec requirements only from the blueprint's top-level requirements array.",
+  "must_have_capabilities": [
+    "Map every generated field to one exact blueprint field or declared constant",
+    "Expose the exact generator module, command, callable, arguments, preconditions, boundaries, and exit codes",
+    "Generate exactly the five manifest-governed bundle paths",
+    "Produce the six exact evidence files through their declared producer",
+    "Run two isolated subprocess builds with sanitized credentials and network disabled",
+    "Pass ASSERT-001 through ASSERT-006 without provider or external actions"
+  ],
+  "never_do": [
+    "Use explicit_requirements or raw_intake.requirements as the agent.spec requirements source",
+    "Invent a field mapping, generator interface, evidence path, schema, producer, or fixture step",
+    "Read raw private repositories or call an external provider from the candidate bundle",
+    "Deploy, modify production, or claim build authorization"
+  ],
+  "sources": [
+    "One exact owner-approved model-safe component card",
+    "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V2",
+    "CONTRACT-DETERMINISTIC-GENERATION-V2",
+    "CONTRACT-ACCEPTANCE-FIXTURE-V2"
+  ],
+  "raw_owner_text": "Close Vera's four legitimate Phase 1.1 interface defects using the supplied exact Phase 1.2 contracts. Treat blueprint.requirements as present and authoritative. Produce the smallest complete specification-ready blueprint without building or deploying anything.",
+  "default_external_actions": "PROHIBITED_UNLESS_EXPLICITLY_APPROVED"
+}

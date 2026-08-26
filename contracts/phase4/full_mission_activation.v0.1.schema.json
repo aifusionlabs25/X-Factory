@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/full_mission_activation.v0.1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "mission_id", "activation_schema_sha256", "controller_sha256", "live_manifest_sha256", "packet_manifest_sha256", "owner_intake_sha256", "component_catalog_sha256", "governance_binding_sha256", "evidence_index_sha256", "generation_contract_sha256", "output_contract_sha256", "acceptance_fixture_sha256", "atlas_payload_sha256", "atlas_prompt_sha256", "runtime", "write_boundary", "authority", "failure_policy"],
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}},
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "status": {"const": "PENDING_SINGLE_FULL_MISSION_APPROVAL_NOT_ACTIVE"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{5,79}$"},
+    "activation_schema_sha256": {"$ref": "#/$defs/digest"},
+    "controller_sha256": {"$ref": "#/$defs/digest"},
+    "live_manifest_sha256": {"$ref": "#/$defs/digest"},
+    "packet_manifest_sha256": {"$ref": "#/$defs/digest"},
+    "owner_intake_sha256": {"$ref": "#/$defs/digest"},
+    "component_catalog_sha256": {"$ref": "#/$defs/digest"},
+    "governance_binding_sha256": {"$ref": "#/$defs/digest"},
+    "evidence_index_sha256": {"$ref": "#/$defs/digest"},
+    "generation_contract_sha256": {"$ref": "#/$defs/digest"},
+    "output_contract_sha256": {"$ref": "#/$defs/digest"},
+    "acceptance_fixture_sha256": {"$ref": "#/$defs/digest"},
+    "atlas_payload_sha256": {"$ref": "#/$defs/digest"},
+    "atlas_prompt_sha256": {"$ref": "#/$defs/digest"},
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider", "model", "reasoning", "maximum_provider_transactions", "maximum_per_stage", "retry", "tools"],
+      "properties": {"provider": {"const": "openai-codex"}, "model": {"const": "gpt-5.6-luna"}, "reasoning": {"const": "low"}, "maximum_provider_transactions": {"const": 5}, "maximum_per_stage": {"const": 1}, "retry": {"const": false}, "tools": {"const": false}}
+    },
+    "write_boundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["new_contained_mission_root", "profile_roots", "ordinary_profile_runtime_state", "authentication_content_mutation", "preview_output"],
+      "properties": {
+        "new_contained_mission_root": {"type": "string", "minLength": 20},
+        "profile_roots": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "string"}, "uniqueItems": true},
+        "ordinary_profile_runtime_state": {"const": true}, "authentication_content_mutation": {"const": false},
+        "preview_output": {"type": "string", "pattern": "^runs/contained/[a-z0-9][a-z0-9-]{5,79}/preview$"}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["one_full_contained_mission", "provider_transport", "maximum_transactions", "conditional_contained_build", "deterministic_two_run_build", "local_visual_preview", "tools", "mcp", "memory", "delegation", "oauth_refresh", "authentication_mutation", "retry", "installation", "deployment", "release", "production", "live_factory_write"],
+      "properties": {
+        "one_full_contained_mission": {"const": true}, "provider_transport": {"const": true}, "maximum_transactions": {"const": 5},
+        "conditional_contained_build": {"const": true}, "deterministic_two_run_build": {"const": true}, "local_visual_preview": {"const": true},
+        "tools": {"const": false}, "mcp": {"const": false}, "memory": {"const": false}, "delegation": {"const": false},
+        "oauth_refresh": {"const": false}, "authentication_mutation": {"const": false}, "retry": {"const": false},
+        "installation": {"const": false}, "deployment": {"const": false}, "release": {"const": false}, "production": {"const": false}, "live_factory_write": {"const": false}
+      }
+    },
+    "failure_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pre_transmission_drift", "stage_failure", "invalid_output", "wrong_verdict", "build_failure"],
+      "properties": {
+        "pre_transmission_drift": {"const": "BLOCK_BEFORE_TRANSMISSION"},
+        "stage_failure": {"const": "FAIL_TERMINAL_NO_RETRY"}, "invalid_output": {"const": "FAIL_TERMINAL_NO_RETRY"},
+        "wrong_verdict": {"const": "FAIL_TERMINAL_NO_RETRY"}, "build_failure": {"const": "FAIL_TERMINAL_NO_RETRY"}
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": "0.1",
+  "run_id": "contained-real-card-proof-002",
+  "agent_or_client": "Fictional Bundle Workshop",
+  "purpose": "Revise the provider-free X-Agent scaffold generator specification using three exact deterministic closure contracts so the handoff is complete and executable without invented implementation choices.",
+  "role_and_behavior": "Preserve the approved intent and component evidence while incorporating the exact output-manifest, deterministic-generation, and acceptance-fixture contracts.",
+  "must_have_capabilities": [
+    "Generate exactly the five versioned bundle paths defined by the output-manifest contract",
+    "Use the specified Python 3.11 standard-library template and test technologies",
+    "Apply the exact UTF-8, LF, NFC, final-newline, JSON, path, and ordering normalization rules",
+    "Record per-file SHA-256 values and the defined root digest",
+    "Pass the six executable acceptance assertions across two reset workspaces",
+    "Remain provider-free and perform no external actions"
+  ],
+  "never_do": [
+    "Read raw private repositories",
+    "Call an external provider from the candidate bundle",
+    "Substitute a different file set, template engine, test runner, normalization rule, or hashing procedure",
+    "Deploy or modify production",
+    "Claim build authorization"
+  ],
+  "sources": [
+    "One exact owner-approved model-safe component card",
+    "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V1",
+    "CONTRACT-DETERMINISTIC-GENERATION-V1",
+    "CONTRACT-ACCEPTANCE-FIXTURE-V1"
+  ],
+  "raw_owner_text": "Close Vera's three hard specification gaps with the supplied exact contracts. Produce the smallest complete blueprint, preserve all safety boundaries, and stop at specification-ready-for-build without building or deploying anything.",
+  "default_external_actions": "PROHIBITED_UNLESS_EXPLICITLY_APPROVED"
+}

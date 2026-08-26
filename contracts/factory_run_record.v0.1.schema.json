@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/factory_run_record.v0.1.schema.json",
+  "title": "Factory Run Record v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "factory_state", "artifact_hashes", "clarification_count", "owner_input_seconds", "events"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "run_id": {"type": "string"},
+    "factory_state": {"enum": ["INTAKE", "ATLAS_TRIAGE", "ARIA_BLUEPRINT", "VERA_REVIEW", "OWNER_DECISION", "SPEC_READY", "REVISION_REQUIRED", "BLOCKED", "CLOSED"]},
+    "artifact_hashes": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}},
+    "clarification_count": {"type": "integer", "minimum": 0},
+    "owner_input_seconds": {"type": ["number", "null"], "minimum": 0},
+    "events": {"type": "array", "items": {"type": "object", "required": ["timestamp", "actor", "event"], "properties": {"timestamp": {"type": "string", "format": "date-time"}, "actor": {"type": "string"}, "event": {"type": "string"}}}}
+  }
+}
+

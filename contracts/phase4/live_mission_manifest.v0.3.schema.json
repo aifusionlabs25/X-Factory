@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/live_mission_manifest.v0.3.schema.json",
+  "title": "Phase 4 Codex-Import-Prohibited Live Mission Manifest v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "manifest_id", "mission_id", "purpose", "provider", "model", "reasoning", "maximum_model_transactions", "starting_input_hashes", "implementation_hashes", "schema_hashes", "profile_hashes", "authentication_baseline", "codex_cli_auth_policy", "profile_authentication_baseline", "hermes_runtime_hashes", "runtime_write_policy", "derivation_policy_sha256", "authority", "disclosure"],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "digestMap": {"type": "object", "minProperties": 1, "additionalProperties": {"$ref": "#/$defs/digest"}},
+    "fileState": {
+      "type": "object", "additionalProperties": false, "required": ["exists", "sha256"],
+      "properties": {"exists": {"type": "boolean"}, "sha256": {"oneOf": [{"$ref": "#/$defs/digest"}, {"type": "null"}]}},
+      "allOf": [
+        {"if": {"properties": {"exists": {"const": true}}}, "then": {"properties": {"sha256": {"$ref": "#/$defs/digest"}}}},
+        {"if": {"properties": {"exists": {"const": false}}}, "then": {"properties": {"sha256": {"type": "null"}}}}
+      ]
+    }
+  },
+  "properties": {
+    "schema_version": {"const": "0.3"},
+    "manifest_id": {"const": "PHASE4-CODEX-IMPORT-PROHIBITED-LIVE-MISSION-V3"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{5,79}$"},
+    "purpose": {"type": "string", "minLength": 20},
+    "provider": {"const": "openai-codex"},
+    "model": {"const": "gpt-5.6-luna"},
+    "reasoning": {"const": "low"},
+    "maximum_model_transactions": {"const": 5},
+    "starting_input_hashes": {"$ref": "#/$defs/digestMap"},
+    "implementation_hashes": {"$ref": "#/$defs/digestMap"},
+    "schema_hashes": {"$ref": "#/$defs/digestMap"},
+    "profile_hashes": {"$ref": "#/$defs/digestMap"},
+    "authentication_baseline": {
+      "type": "object", "additionalProperties": false,
+      "required": ["shared_hermes_auth_json", "shared_hermes_auth_lock"],
+      "properties": {
+        "shared_hermes_auth_json": {"$ref": "#/$defs/digest"},
+        "shared_hermes_auth_lock": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "codex_cli_auth_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["participates", "read_authorized", "import_authorized", "mutation_authorized"],
+      "properties": {
+        "participates": {"const": false}, "read_authorized": {"const": false},
+        "import_authorized": {"const": false}, "mutation_authorized": {"const": false}
+      }
+    },
+    "profile_authentication_baseline": {
+      "type": "object", "additionalProperties": false,
+      "required": ["atlas_auth_json", "atlas_auth_lock", "aria_auth_json", "aria_auth_lock", "mason_auth_json", "mason_auth_lock", "vera_auth_json", "vera_auth_lock"],
+      "properties": {
+        "atlas_auth_json": {"$ref": "#/$defs/fileState"}, "atlas_auth_lock": {"$ref": "#/$defs/fileState"},
+        "aria_auth_json": {"$ref": "#/$defs/fileState"}, "aria_auth_lock": {"$ref": "#/$defs/fileState"},
+        "mason_auth_json": {"$ref": "#/$defs/fileState"}, "mason_auth_lock": {"$ref": "#/$defs/fileState"},
+        "vera_auth_json": {"$ref": "#/$defs/fileState"}, "vera_auth_lock": {"$ref": "#/$defs/fileState"}
+      }
+    },
+    "hermes_runtime_hashes": {"$ref": "#/$defs/digestMap"},
+    "runtime_write_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["shared_auth_mutation_authorized", "codex_cli_auth_mutation_authorized", "other_profile_mutation_authorized", "contained_factory_write_only"],
+      "properties": {
+        "shared_auth_mutation_authorized": {"const": false}, "codex_cli_auth_mutation_authorized": {"const": false},
+        "other_profile_mutation_authorized": {"const": false}, "contained_factory_write_only": {"const": true}
+      }
+    },
+    "derivation_policy_sha256": {"$ref": "#/$defs/digest"},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["one_contained_synthetic_mission", "conditional_contained_build", "tools", "oauth_refresh", "live_factory_write", "installation", "deployment", "release", "production"],
+      "properties": {
+        "one_contained_synthetic_mission": {"const": true}, "conditional_contained_build": {"const": true},
+        "tools": {"const": false}, "oauth_refresh": {"const": false}, "live_factory_write": {"const": false},
+        "installation": {"const": false}, "deployment": {"const": false}, "release": {"const": false}, "production": {"const": false}
+      }
+    },
+    "disclosure": {
+      "type": "object", "additionalProperties": false,
+      "required": ["downstream_bytes_dynamic", "derivation_rules_bound", "post_derivation_hash_chain_required"],
+      "properties": {
+        "downstream_bytes_dynamic": {"const": true}, "derivation_rules_bound": {"const": true},
+        "post_derivation_hash_chain_required": {"const": true}
+      }
+    }
+  }
+}

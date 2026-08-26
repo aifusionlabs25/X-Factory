@@ -1,0 +1,30 @@
+{
+  "algorithm": "SHA-256",
+  "files": [
+    {
+      "path": "agent/AGENT.md",
+      "sha256": "d1f9f4cd4e1180c4b2521778514d3587db06055e11d333ccbb559dfe9532c800"
+    },
+    {
+      "path": "agent/agent.spec.json",
+      "sha256": "89ac9448eb849b2b97d085c6dc12d20bdb5a8cfa72201e3c013a97330c7ede95"
+    },
+    {
+      "path": "bundle.manifest.json",
+      "sha256": "995e419681afa33b78c8c359f0b68586e36bcaf81730c43491e913f5d4aeebb5"
+    },
+    {
+      "path": "tests/fixtures/smoke.input.json",
+      "sha256": "0afc477e25ee85fe1c83552f395886706d0dfbcb04e03a04526f681588017eb7"
+    },
+    {
+      "path": "tests/test_bundle.py",
+      "sha256": "fce8b07ee13cfd94df1d565d5d21b8025dbdf69ce296a6c302e9279e8a58df1d"
+    }
+  ],
+  "files_count": 5,
+  "manifest_self_hash": "995e419681afa33b78c8c359f0b68586e36bcaf81730c43491e913f5d4aeebb5",
+  "root_digest": "f3c152d513b96bf12ba93fb249ea5b0d45934ee49b2d8d1aae09e343f751e12d",
+  "run_label": "RUN_1",
+  "schema_version": "0.3"
+}

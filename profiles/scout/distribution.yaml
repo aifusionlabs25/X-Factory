@@ -1,0 +1,16 @@
+name: scout
+version: 0.1.0
+description: "Read-only Hermes upstream intelligence officer for the X-Agent Factory"
+hermes_requires: ">=0.20.4"
+author: "AI Fusion Labs"
+license: "Proprietary"
+distribution_owned:
+  - distribution.yaml
+  - SOUL.md
+  - config.yaml
+  - scout/baseline.json
+  - scripts/scout_daily_precheck.py
+  - scripts/scout_runtime/__init__.py
+  - scripts/scout_runtime/scout_collector.py
+  - scripts/scout_runtime/scout_github_adapter.py
+

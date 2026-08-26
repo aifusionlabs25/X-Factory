@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/independent_local_review.v0.1.schema.json",
+  "title": "Independent Local Review v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "review_id", "mission_id", "created_at", "reviewer", "source", "verdict", "checks", "hermes_review", "authority", "review_sha256"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "review_id": {"type": "string", "pattern": "^local-review-[a-f0-9]{16}$"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{3,95}$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "reviewer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "mode", "independent_from", "provider_calls"],
+      "properties": {
+        "name": {"const": "Rook"},
+        "mode": {"const": "INDEPENDENT_PROVIDER_FREE_REVIEW"},
+        "independent_from": {"type": "array", "minItems": 4, "items": {"type": "string"}, "uniqueItems": true},
+        "provider_calls": {"const": 0}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mission_record_sha256", "build_root_digest"],
+      "properties": {
+        "mission_record_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "build_root_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "verdict": {"enum": ["READY_FOR_PORTER_PACKAGING", "REVISION_REQUIRED"]},
+    "checks": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "status", "detail"],
+        "properties": {
+          "check_id": {"type": "string", "pattern": "^[A-Z0-9_]{3,64}$"},
+          "status": {"enum": ["PASS", "FAIL"]},
+          "detail": {"type": "string", "minLength": 3}
+        }
+      }
+    },
+    "hermes_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "command", "packet", "provider_calls"],
+      "properties": {
+        "status": {"const": "PREPARED_NOT_INVOKED"},
+        "command": {"const": "/review verify every requirement was completed and look for anything that could break"},
+        "packet": {"const": "governance/hermes-semantic-review-packet.v0.1.json"},
+        "provider_calls": {"const": 0}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_transport", "tools", "deployment", "production"],
+      "properties": {
+        "provider_transport": {"const": false},
+        "tools": {"const": false},
+        "deployment": {"const": false},
+        "production": {"const": false}
+      }
+    },
+    "review_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

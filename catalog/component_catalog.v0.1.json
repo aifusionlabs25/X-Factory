@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1",
+  "components": [
+    {
+      "component_id": "CMP-STRUCTURED-SESSION-SNAPSHOT",
+      "name": "Structured session snapshot pattern",
+      "category": "session-state",
+      "status": "COMPATIBILITY_CHECK_REQUIRED",
+      "evidence_refs": ["EVD-JORDAN-STRUCTURED-SNAPSHOT", "EVD-JORDAN-SNAPSHOT-TESTS"],
+      "requirements_served": ["live structured notes", "deterministic session handoff"],
+      "dependencies": ["target-specific session schema", "runtime compatibility review"],
+      "constraints": ["Do not copy Jordan or Harbor Lane identifiers", "Do not inherit the full Jordan lifecycle stack by default"]
+    },
+    {
+      "component_id": "CMP-BOUNDARY-FIRST-CONCIERGE",
+      "name": "Boundary-first local-service concierge design pattern",
+      "category": "conversation-architecture",
+      "status": "REFERENCE_PATTERN",
+      "evidence_refs": ["EVD-EVAN-PAL-BLUEPRINT", "EVD-EVAN-BLUEPRINT-GUARD"],
+      "requirements_served": ["answer-first behavior", "qualification", "conservative handoff", "unsupported-action refusal"],
+      "dependencies": ["owner-approved business facts", "target-specific evaluation scenarios"],
+      "constraints": ["No booking, email, CRM, memory, or provider action without separate evidence and approval", "Do not import eval-only utterances as runtime truth"]
+    },
+    {
+      "component_id": "CMP-DETERMINISTIC-CANDIDATE-BUNDLE",
+      "name": "Deterministic candidate bundle and provenance pattern",
+      "category": "factory-governance",
+      "status": "COMPATIBILITY_CHECK_REQUIRED",
+      "evidence_refs": ["EVD-MORGAN-GREENFIELD-PILOT"],
+      "requirements_served": ["repeatable compilation", "artifact hashing", "authority separation", "static evaluation handoff"],
+      "dependencies": ["explicit v0.1 adapter", "frozen schemas", "target-specific compiler implementation"],
+      "constraints": ["Static success does not imply runtime or production readiness", "Do not silently reactivate historical Factory or X-LINK runtime authority"]
+    }
+  ]
+}

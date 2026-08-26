@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "components": [
+    {
+      "component_id": "CMP-SYNTHETIC-CONCIERGE-CORE",
+      "name": "Synthetic bounded concierge core",
+      "category": "conversation-architecture",
+      "status": "REFERENCE_PATTERN",
+      "evidence_refs": ["EVD-SYNTHETIC-CONCIERGE"],
+      "requirements_served": ["approved FAQ responses", "request qualification", "live notes", "structured handoff"],
+      "dependencies": ["owner-approved FAQ source", "target-specific qualification fields", "target-specific handoff schema"],
+      "constraints": ["No booking", "No email", "No CRM write", "No pricing or availability promises", "No external provider action"]
+    }
+  ]
+}

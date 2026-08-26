@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/component_card_approval.v0.2.schema.json",
+  "title": "Exact Component Card and Closure Contracts Provider Approval v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "approval_id", "disclosure_manifest_sha256", "card_id", "card_sha256", "disclosure_report_sha256", "closure_contract_hashes", "approval_status", "approved_by", "approved_at", "destination", "allowed_payload_scope"],
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "approval_id": {"type": "string", "pattern": "^APPROVAL-[A-Z0-9-]+$"},
+    "disclosure_manifest_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "card_id": {"type": "string", "pattern": "^CARD-[A-Z0-9-]+$"},
+    "card_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "disclosure_report_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "closure_contract_hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output_bundle_manifest", "deterministic_generation", "acceptance_fixture"],
+      "properties": {
+        "output_bundle_manifest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "deterministic_generation": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "acceptance_fixture": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    },
+    "approval_status": {"const": "APPROVED"},
+    "approved_by": {"type": "string", "minLength": 2},
+    "approved_at": {"type": "string", "format": "date-time"},
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model", "profiles"],
+      "properties": {
+        "provider": {"const": "openai-codex"},
+        "model": {"const": "gpt-5.6-luna"},
+        "profiles": {"const": ["atlas", "aria", "vera"]}
+      }
+    },
+    "allowed_payload_scope": {"const": "EXACT_CARD_CLOSURE_CONTRACTS_AND_MODEL_GENERATED_DERIVATIVES_FOR_ONE_CONTAINED_ATLAS_ARIA_VERA_PROOF"}
+  }
+}

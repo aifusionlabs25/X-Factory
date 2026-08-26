@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-fusion-labs.local/contracts/runtime_foundry_plan.v0.1.schema.json",
+  "title": "X-Factory Runtime Foundry Plan v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "plan_id", "mission_id", "status", "identity", "source_binding", "route", "profile_blueprint", "session_policy", "canary", "authority", "plan_sha256"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "plan_id": {"type": "string", "pattern": "^rfp-[a-z0-9][a-z0-9-]{3,95}$"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{3,95}$"},
+    "status": {"const": "LOCAL_RUNTIME_PACKAGE_READY_CANARY_INACTIVE"},
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["agent_name", "role_title", "client_name"],
+      "properties": {
+        "agent_name": {"type": "string"},
+        "role_title": {"type": "string"},
+        "client_name": {"type": "string"}
+      }
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system_prompt_sha256", "knowledge_bank_sha256", "knowledge_bundle_sha256", "knowledge_report_sha256"],
+      "properties": {
+        "system_prompt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "knowledge_bank_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "knowledge_bundle_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "knowledge_report_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["harness", "provider", "model", "reasoning"],
+      "properties": {
+        "harness": {"const": "Hermes Desktop"},
+        "provider": {"const": "openai-codex"},
+        "model": {"const": "gpt-5.6-luna"},
+        "reasoning": {"const": "low"}
+      }
+    },
+    "profile_blueprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "status", "memory_enabled", "toolsets", "fallbacks", "credentials"],
+      "properties": {
+        "profile_id": {"type": "string", "pattern": "^xagent-[a-z0-9-]{3,54}$"},
+        "status": {"const": "NOT_INSTALLED"},
+        "memory_enabled": {"const": false},
+        "toolsets": {"type": "array", "maxItems": 0},
+        "fallbacks": {"type": "array", "maxItems": 0},
+        "credentials": {"const": "HERMES_OWNED_READ_ONLY"}
+      }
+    },
+    "session_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["session_title", "maximum_model_calls_per_message", "maximum_tool_calls", "maximum_retries", "history_turn_limit", "external_actions"],
+      "properties": {
+        "session_title": {"type": "string"},
+        "maximum_model_calls_per_message": {"const": 1},
+        "maximum_tool_calls": {"const": 0},
+        "maximum_retries": {"const": 0},
+        "history_turn_limit": {"type": "integer", "minimum": 1, "maximum": 20},
+        "external_actions": {"const": false}
+      }
+    },
+    "canary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canary_id", "status", "question", "expected_entry_id", "prompt_sha256", "payload_sha256", "maximum_calls"],
+      "properties": {
+        "canary_id": {"type": "string"},
+        "status": {"const": "INACTIVE"},
+        "question": {"type": "string"},
+        "expected_entry_id": {"type": ["string", "null"]},
+        "prompt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "payload_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "maximum_calls": {"const": 1}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_transport", "profile_installation", "authentication_mutation", "tools", "memory", "anam", "deployment", "production"],
+      "properties": {
+        "provider_transport": {"const": false},
+        "profile_installation": {"const": false},
+        "authentication_mutation": {"const": false},
+        "tools": {"const": false},
+        "memory": {"const": false},
+        "anam": {"const": false},
+        "deployment": {"const": false},
+        "production": {"const": false}
+      }
+    },
+    "plan_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

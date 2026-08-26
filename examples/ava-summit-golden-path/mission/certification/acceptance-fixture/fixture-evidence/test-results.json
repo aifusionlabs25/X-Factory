@@ -1,0 +1,53 @@
+{
+  "assertions": [
+    {
+      "evidence": [
+        "run-1/evidence/file-hashes.json",
+        "run-2/evidence/file-hashes.json"
+      ],
+      "id": "ASSERT-001",
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "fixture-evidence/repeatability-report.json"
+      ],
+      "id": "ASSERT-002",
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "run-1/evidence/file-hashes.json",
+        "run-2/evidence/file-hashes.json"
+      ],
+      "id": "ASSERT-003",
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "fixture-evidence/repeatability-report.json"
+      ],
+      "id": "ASSERT-004",
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "run-1/evidence/execution-audit.json",
+        "run-2/evidence/execution-audit.json"
+      ],
+      "id": "ASSERT-005",
+      "status": "PASS"
+    },
+    {
+      "evidence": [
+        "fixture-evidence/test-results.json"
+      ],
+      "id": "ASSERT-006",
+      "status": "PASS"
+    }
+  ],
+  "exit_code": 0,
+  "runner": "python -m unittest tests.test_bundle -v",
+  "schema_version": "0.3",
+  "status": "PASS"
+}

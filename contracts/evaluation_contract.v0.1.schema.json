@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/evaluation_contract.v0.1.schema.json",
+  "title": "Vera Evaluation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "candidate_id", "evaluated_blueprint_hash", "verdict", "gates", "defects", "authority_statement"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "run_id": {"type": "string"},
+    "candidate_id": {"type": "string"},
+    "evaluated_blueprint_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "verdict": {"enum": ["SPECIFICATION_READY_FOR_BUILD", "OWNER_DECISION_REQUIRED", "REVISION_REQUIRED", "BLOCKED_MISSING_EVIDENCE", "INVALID_CONTRACT"]},
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent_fidelity", "no_invented_facts", "blueprint_completeness", "evidence_traceability", "minimum_architecture", "contamination_control", "testability", "builder_completeness", "authority_compliance", "rob_friction"],
+      "properties": {
+        "intent_fidelity": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "no_invented_facts": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "blueprint_completeness": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "evidence_traceability": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "minimum_architecture": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "contamination_control": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "testability": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "builder_completeness": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "authority_compliance": {"enum": ["PASS", "FAIL", "BLOCKED"]},
+        "rob_friction": {"enum": ["PASS", "FAIL", "BLOCKED"]}
+      }
+    },
+    "defects": {"type": "array", "items": {"type": "object", "required": ["gate", "severity", "finding", "evidence"], "properties": {"gate": {"type": "string"}, "severity": {"enum": ["HARD", "OWNER", "WARNING"]}, "finding": {"type": "string"}, "evidence": {"type": "string"}}}},
+    "authority_statement": {"const": "SPECIFICATION_REVIEW_ONLY_NO_BUILD_DEPLOYMENT_OR_PRODUCTION_AUTHORITY"}
+  }
+}
+

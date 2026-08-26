@@ -1,0 +1,9 @@
+[project]
+name = "ava-home-services-concierge-16ca9753"
+version = "0.1.0"
+description = "X-Factory generated local staging repository"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+x-agent-preview = "src.x_agent_runtime.server:main"

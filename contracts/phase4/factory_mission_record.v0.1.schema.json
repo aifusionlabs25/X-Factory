@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/factory_mission_record.v0.1.schema.json",
+  "title": "Contained Factory Mission Record v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mission_id",
+    "governed_run_marker",
+    "mode",
+    "state",
+    "stage_records",
+    "artifact_hashes",
+    "model_transactions",
+    "tool_calls",
+    "owner_gates",
+    "authority"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{5,79}$"},
+    "governed_run_marker": {"const": "X_FACTORY_CONTAINED_MISSION_V0_1"},
+    "mode": {"const": "CONTAINED_DRAFT_ONLY"},
+    "state": {
+      "enum": [
+        "INTAKE",
+        "ATLAS_TRIAGE",
+        "ARIA_BLUEPRINT",
+        "VERA_SPEC_REVIEW",
+        "OWNER_BUILD_DECISION",
+        "MASON_PLAN",
+        "DETERMINISTIC_BUILD",
+        "VERA_BUILD_REVIEW",
+        "DRAFT_READY",
+        "REVISION_REQUIRED",
+        "OWNER_DECISION_REQUIRED",
+        "BLOCKED",
+        "INVALID"
+      ]
+    },
+    "stage_records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["stage", "actor", "input_hashes", "output_hash", "status"],
+        "properties": {
+          "stage": {"type": "string"},
+          "actor": {"enum": ["ROB", "BROKER", "ATLAS", "ARIA", "VERA", "MASON", "DETERMINISTIC_BUILDER"]},
+          "input_hashes": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}},
+          "output_hash": {"type": ["string", "null"], "pattern": "^sha256:[a-f0-9]{64}$"},
+          "status": {"enum": ["NOT_STARTED", "COMPLETE", "BLOCKED", "INVALID", "SUPERSEDED"]}
+        }
+      }
+    },
+    "artifact_hashes": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}},
+    "model_transactions": {"type": "integer", "minimum": 0, "maximum": 5},
+    "tool_calls": {"const": 0},
+    "owner_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mission_launch_approved", "build_approved", "release_approved"],
+      "properties": {
+        "mission_launch_approved": {"type": "boolean"},
+        "build_approved": {"type": "boolean"},
+        "release_approved": {"const": false}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contained_draft", "live_factory_write", "installation", "deployment", "production"],
+      "properties": {
+        "contained_draft": {"const": true},
+        "live_factory_write": {"const": false},
+        "installation": {"const": false},
+        "deployment": {"const": false},
+        "production": {"const": false}
+      }
+    }
+  }
+}
+

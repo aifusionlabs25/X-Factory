@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1",
+  "contract_id": "CONTRACT-DETERMINISTIC-GENERATION-V1",
+  "runtime": "CPYTHON-3.11-STANDARD-LIBRARY-ONLY",
+  "template_engine": "PYTHON-STRING-TEMPLATE-V1",
+  "inputs": ["VALIDATED_BLUEPRINT_JSON", "OUTPUT_BUNDLE_MANIFEST_CONTRACT", "VERSIONED_TEMPLATE_SET"],
+  "template_set": {
+    "template_set_id": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V1",
+    "render_order": ["agent/AGENT.md", "agent/agent.spec.json", "tests/fixtures/smoke.input.json", "tests/test_bundle.py", "bundle.manifest.json"],
+    "definitions": [
+      {"template_id": "TPL-AGENT-MD-V1", "output_path": "agent/AGENT.md", "render_rule": "Emit four headings in order: name, purpose, role, hard rules; values are NFC-normalized blueprint strings and hard rules are lexicographically sorted bullet lines."},
+      {"template_id": "TPL-AGENT-SPEC-V1", "output_path": "agent/agent.spec.json", "render_rule": "Emit the canonical JSON projection of schema_version, candidate_id, identity, objectives, capabilities, boundaries, requirements, and authority in that key set only."},
+      {"template_id": "TPL-SMOKE-INPUT-V1", "output_path": "tests/fixtures/smoke.input.json", "render_rule": "Emit canonical JSON containing fixture_id, candidate_id, one synthetic user input, and the expected provider_free boolean; no clock, random, environment, or host value is permitted."},
+      {"template_id": "TPL-TEST-BUNDLE-PY-V1", "output_path": "tests/test_bundle.py", "render_rule": "Emit a Python 3.11 unittest module implementing ASSERT-001 through ASSERT-006 in numeric order using only hashlib, json, pathlib, tempfile, unicodedata, and unittest."},
+      {"template_id": "TPL-BUNDLE-MANIFEST-V1", "output_path": "bundle.manifest.json", "render_rule": "Emit canonical JSON containing contract_id, canonical ordered file records with media type and SHA-256, root_digest, normalization_contract_id, template_set_id, and false authority flags; exclude its own bytes from root_digest and record its post-serialization hash separately."}
+    ]
+  },
+  "test_runner": {
+    "technology": "PYTHON-3.11-UNITTEST-STANDARD-LIBRARY",
+    "command": "python -m unittest tests.test_bundle -v",
+    "normative_assertions": ["ASSERT-001", "ASSERT-002", "ASSERT-003", "ASSERT-004", "ASSERT-005", "ASSERT-006"]
+  },
+  "normalization": {
+    "text_encoding": "UTF-8-NO-BOM",
+    "line_endings": "LF",
+    "unicode": "NFC",
+    "final_newline": "EXACTLY_ONE",
+    "json_serialization": "SORT_KEYS_TRUE_INDENT_2_ENSURE_ASCII_FALSE_SEPARATORS_COMMA_COLON_DEFAULT",
+    "path_separator": "/",
+    "file_order": "LEXICOGRAPHIC_PATH_ASCENDING"
+  },
+  "forbidden_nondeterminism": ["CLOCK", "RANDOMNESS", "ENVIRONMENT_VARIABLES", "NETWORK", "LOCALE", "HOST_PATHS", "UNORDERED_ITERATION", "PROVIDER_CALLS"],
+  "repeatability": {"runs": 2, "workspace_reset_between_runs": true, "comparison": "EVERY_RELATIVE_PATH_AND_EVERY_OUTPUT_BYTE", "success": "IDENTICAL_FILE_SET_AND_IDENTICAL_BYTES"}
+}

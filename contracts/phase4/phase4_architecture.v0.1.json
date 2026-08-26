@@ -1,0 +1,64 @@
+{
+  "schema_version": "0.1",
+  "status": "ARCHITECTURE_CHECKPOINT_NO_EXECUTION_AUTHORITY",
+  "phase": "PHASE_4_FIRST_CONTAINED_FACTORY_MISSION",
+  "objective": "Turn one short synthetic owner intake into one independently verified contained X-Agent draft",
+  "visible_crew": [
+    {"name": "Atlas", "title": "Factory Foreman", "visible_job": "Receive the idea, normalize it, and report progress"},
+    {"name": "Aria", "title": "X-Agent Architect", "visible_job": "Design the smallest complete X-Agent specification"},
+    {"name": "Mason", "title": "Implementation Steward", "visible_job": "Convert the approved specification into a deterministic build plan"},
+    {"name": "Vera", "title": "Independent Inspector", "visible_job": "Inspect both the specification gate and the completed draft"}
+  ],
+  "brokered_sequence": [
+    "ROB_MISSION_LAUNCH",
+    "ATLAS_TRIAGE",
+    "ARIA_BLUEPRINT",
+    "VERA_SPEC_REVIEW",
+    "ROB_BUILD_DECISION",
+    "MASON_IMPLEMENTATION_PLAN",
+    "DETERMINISTIC_LOCAL_BUILD",
+    "VERA_BUILD_REVIEW",
+    "CONTAINED_DRAFT_READY"
+  ],
+  "first_fixture": {
+    "name": "Desert Home Services Concierge",
+    "source": "fixtures/good/intake.complete.json",
+    "synthetic_only": true,
+    "external_actions": false,
+    "credentials": false,
+    "production_data": false
+  },
+  "owner_experience_target": {
+    "intake_fields": ["purpose", "role_and_behavior", "must_have_capabilities", "never_do"],
+    "initial_questions_maximum": 3,
+    "visible_progress": true,
+    "development_owner_gates": 2,
+    "target_turnkey_owner_gates": 1,
+    "release_remains_separate": true
+  },
+  "phase4_success": [
+    "Every model stage receives only an exact inline broker payload",
+    "Every model stage records zero tools",
+    "Every handoff is schema-valid and SHA-256 chained",
+    "The deterministic builder writes only inside the contained mission candidate directory",
+    "The candidate passes its generated acceptance suite",
+    "Vera independently returns CONTAINED_DRAFT_READY",
+    "No installation, deployment, live Factory mutation, or production approval occurs"
+  ],
+  "explicit_non_goals": [
+    "No real client data",
+    "No X-Agent deployment",
+    "No production repository mutation",
+    "No autonomous retries",
+    "No invisible cross-bot memory",
+    "No claim that Hermes Desktop visualization is complete"
+  ],
+  "next_build_artifacts": [
+    "Phase 4 governed runner",
+    "Exact mission disclosure manifest",
+    "Atlas, Aria, Mason, and Vera stage payload builders",
+    "Visible Factory Floor event stream",
+    "Negative tests for stage skipping, hash drift, tool use, and out-of-bound writes"
+  ]
+}
+

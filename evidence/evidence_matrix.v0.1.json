@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1",
+  "records": [
+    {
+      "evidence_id": "EVD-JORDAN-STRUCTURED-SNAPSHOT",
+      "source_repo": "C:\\AI Fusion Labs\\X AGENTS\\REPOS\\Jordan-Harborlane-Cara4",
+      "source_path": "lib/anam/structured-session-snapshot.ts",
+      "source_commit": "c657f9818ca636ceb7e17deee3e26548cf80fb72",
+      "working_tree_state": "DIRTY",
+      "artifact_hash": "sha256:078c761bb5b763856bbdea18fd7c700d45353ed0207fae4449ec0bc777ac3d8d",
+      "observed_date": "2026-08-18",
+      "verification_class": "VERIFIED_HISTORICAL",
+      "capability_proven": ["Typed structured session snapshot pattern", "Separation of session facts and rendered artifacts"],
+      "limitations": ["Current repository has user-owned changes", "Jordan is a complex reference architecture, not a universal template", "Compatibility must be rechecked before reuse"]
+    },
+    {
+      "evidence_id": "EVD-JORDAN-SNAPSHOT-TESTS",
+      "source_repo": "C:\\AI Fusion Labs\\X AGENTS\\REPOS\\Jordan-Harborlane-Cara4",
+      "source_path": "tests/jordan-structured-session-snapshot.test.mjs",
+      "source_commit": "c657f9818ca636ceb7e17deee3e26548cf80fb72",
+      "working_tree_state": "DIRTY",
+      "artifact_hash": "sha256:ecfd4a63ab7187d4c4c9046de628a2b680dc6d5a985cd9e7c04c6b11dfd7b30a",
+      "observed_date": "2026-08-18",
+      "verification_class": "VERIFIED_HISTORICAL",
+      "capability_proven": ["Deterministic tests for structured session snapshot behavior"],
+      "limitations": ["Tests are Jordan-specific", "Current repository is dirty", "Runtime production behavior was not re-executed for this inventory"]
+    },
+    {
+      "evidence_id": "EVD-EVAN-PAL-BLUEPRINT",
+      "source_repo": "C:\\AI Fusion Labs\\X AGENTS\\REPOS\\Evan Mullins Moving",
+      "source_path": "docs/evan-pal-blueprint.v1.json",
+      "source_commit": "d965ac88457273e0f6f3b791340311d230ca9528",
+      "working_tree_state": "DIRTY",
+      "artifact_hash": "sha256:78a9c1e452b1fdc03adf3037b47ed110b0fd81a1708b2a0fd2f9532d22dea296",
+      "observed_date": "2026-08-18",
+      "verification_class": "EXPERIMENTAL",
+      "capability_proven": ["Boundary-first moving-concierge blueprint", "Explicit separation of knowledge, session state, action receipts, and eval-only examples"],
+      "limitations": ["Audit/dry-run artifact only", "Live Tavus conversion was not approved", "Founder decisions remain unresolved", "No external action capability is proven"]
+    },
+    {
+      "evidence_id": "EVD-EVAN-BLUEPRINT-GUARD",
+      "source_repo": "C:\\AI Fusion Labs\\X AGENTS\\REPOS\\Evan Mullins Moving",
+      "source_path": "tests/evan-pal-blueprint.guard.test.mjs",
+      "source_commit": "d965ac88457273e0f6f3b791340311d230ca9528",
+      "working_tree_state": "DIRTY",
+      "artifact_hash": "sha256:0af42d15487376281b9d848ec078fb158854166ab57222e3bdfc65a4d55d3c5a",
+      "observed_date": "2026-08-18",
+      "verification_class": "EXPERIMENTAL",
+      "capability_proven": ["Static guard patterns for provider, secret, action, and production-boundary exclusions"],
+      "limitations": ["Guard scope is Evan-specific", "Repository has user-owned changes", "No conversational runtime evaluation"]
+    },
+    {
+      "evidence_id": "EVD-MORGAN-GREENFIELD-PILOT",
+      "source_repo": "C:\\AI Fusion Labs\\X AGENTS\\REPOS\\x-agent-control-center",
+      "source_path": "docs/evidence/FACTORY_REAL_GREENFIELD_AGENT_PILOT_2026-07-31.md",
+      "source_commit": "252c658b3e6b730e159504decf3fa79a39dcf1b0",
+      "working_tree_state": "DIRTY",
+      "artifact_hash": "sha256:3b8d8014b6525740656186b223448a6fd8d304a4620fbe033876d3ce8586a123",
+      "observed_date": "2026-08-18",
+      "verification_class": "VERIFIED_HISTORICAL",
+      "capability_proven": ["Deterministic 17-file candidate bundle generation", "Byte-equivalent repeated builds", "Static X-LINK adapter evaluation", "Provider-free scaffold generation and tests"],
+      "limitations": ["Natural-language runtime not evaluated", "Production approval not granted", "Significant first-time engineering was required", "Current repository is dirty"]
+    }
+  ]
+}

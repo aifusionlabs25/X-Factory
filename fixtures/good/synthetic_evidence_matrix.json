@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.1",
+  "records": [
+    {
+      "evidence_id": "EVD-SYNTHETIC-CONCIERGE",
+      "source_repo": "SYNTHETIC_FIXTURE",
+      "source_path": "fixtures/good/synthetic_concierge_pattern.md",
+      "source_commit": "fixture-v0.1",
+      "working_tree_state": "CLEAN",
+      "artifact_hash": "sha256:e788f6f3add3132d400f79cad33ababa089fd88e70f1b390c6dc2cb07b248131",
+      "observed_date": "2026-08-18",
+      "verification_class": "VERIFIED_CURRENT",
+      "capability_proven": ["Synthetic FAQ, qualification, structured-notes, and staff-handoff design pattern"],
+      "limitations": ["Fixture-only evidence", "Proves no runtime, provider, booking, email, CRM, deployment, or production behavior"]
+    }
+  ]
+}

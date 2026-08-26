@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/acceptance_fixture.v0.2.schema.json",
+  "title": "Executable Acceptance and Evidence Contract v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_id", "fixture_id", "runner", "fixture_process", "environment", "input", "assertions", "evidence_outputs"],
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "contract_id": {"const": "CONTRACT-ACCEPTANCE-FIXTURE-V2"},
+    "fixture_id": {"const": "FIXTURE-SYNTHETIC-BUNDLE-V2"},
+    "runner": {"const": "python -m unittest tests.test_bundle -v"},
+    "fixture_process": {"type": "object"},
+    "environment": {"type": "object"},
+    "input": {"type": "object"},
+    "assertions": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"type": "object", "additionalProperties": false, "required": ["id", "procedure", "pass_condition", "evidence"], "properties": {"id": {"type": "string", "pattern": "^ASSERT-[0-9]{3}$"}, "procedure": {"type": "string"}, "pass_condition": {"type": "string"}, "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}}}}},
+    "evidence_outputs": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"type": "object", "additionalProperties": false, "required": ["path", "producer", "write_timing", "schema"], "properties": {"path": {"type": "string"}, "producer": {"enum": ["GENERATOR", "TEST_RUNNER"]}, "write_timing": {"type": "string"}, "schema": {"type": "object"}}}}
+  }
+}

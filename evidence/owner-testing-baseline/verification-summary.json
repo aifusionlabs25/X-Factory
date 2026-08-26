@@ -1,0 +1,38 @@
+{
+  "schema_version": "0.1",
+  "recorded_at": "2026-08-25T20:18:01-07:00",
+  "lifecycle": "OWNER_TESTING_BASELINE",
+  "factory_version": "1.9",
+  "status": "PRESEAL_VERIFICATION_PASS",
+  "provider_calls": 0,
+  "deployment_changes": 0,
+  "production_changes": 0,
+  "checks": [
+    {
+      "check": "MISSION_CONTROL_STATUS",
+      "status": "PASS",
+      "evidence": "Local /api/status returned READY, factory_version 1.9, provider_calls 0."
+    },
+    {
+      "check": "PREVIEW_STATE_MODEL",
+      "status": "PASS",
+      "evidence": "Informational query, unknown review, service request, correction, handoff, and fresh-session assertions passed."
+    },
+    {
+      "check": "AVA_SUMMIT_GENERATED_REPO",
+      "status": "PASS",
+      "evidence": "All 7 generated-repository tests passed against the copied golden-path fixture."
+    },
+    {
+      "check": "SERVICE_REQUEST_BROWSER_REGRESSION",
+      "status": "PASS",
+      "evidence": "AC/Mesa/Urgent was captured as a service request with coverage unconfirmed and URGENT_HUMAN_REVIEW."
+    },
+    {
+      "check": "INFORMATIONAL_UNKNOWN_BROWSER_REGRESSION",
+      "status": "PASS",
+      "evidence": "Pool-pump question was presented as a safety success and routed for human review without guessing."
+    }
+  ],
+  "post_tag_requirement": "The exact tagged ZIP must pass scripts/verify_checkpoint_restore.ps1 from a clean sibling directory before the checkpoint is called sealed."
+}

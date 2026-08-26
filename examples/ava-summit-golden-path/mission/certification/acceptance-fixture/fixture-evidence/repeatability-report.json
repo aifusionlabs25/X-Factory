@@ -1,0 +1,15 @@
+{
+  "bytes_equal": true,
+  "compared_paths": [
+    "agent/AGENT.md",
+    "agent/agent.spec.json",
+    "bundle.manifest.json",
+    "tests/fixtures/smoke.input.json",
+    "tests/test_bundle.py"
+  ],
+  "file_sets_equal": true,
+  "root_digests_equal": true,
+  "run_1_root_digest": "f3c152d513b96bf12ba93fb249ea5b0d45934ee49b2d8d1aae09e343f751e12d",
+  "run_2_root_digest": "f3c152d513b96bf12ba93fb249ea5b0d45934ee49b2d8d1aae09e343f751e12d",
+  "schema_version": "0.3"
+}

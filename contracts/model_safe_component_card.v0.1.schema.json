@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/model_safe_component_card.v0.1.schema.json",
+  "title": "Model-Safe Component Card v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "card_id", "component_id", "evidence_id", "display_name", "provenance", "verification_class", "capabilities", "dependencies", "limitations", "tests", "excluded_authority", "disclosure", "lifecycle"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "card_id": {"type": "string", "pattern": "^CARD-[A-Z0-9-]+$"},
+    "component_id": {"type": "string", "pattern": "^CMP-[A-Z0-9-]+$"},
+    "evidence_id": {"type": "string", "pattern": "^EVD-SAFE-[A-Z0-9-]+$"},
+    "display_name": {"type": "string", "minLength": 5, "maxLength": 120},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sealed_source_ref", "source_artifact_hash", "derivation_hash", "observed_date", "source_kind"],
+      "properties": {
+        "sealed_source_ref": {"type": "string", "pattern": "^SEALED-[A-F0-9]{16}$"},
+        "source_artifact_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "derivation_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "observed_date": {"type": "string", "format": "date"},
+        "source_kind": {"const": "PRIVATE_REPOSITORY_EVIDENCE"}
+      }
+    },
+    "verification_class": {"enum": ["VERIFIED_CURRENT", "VERIFIED_HISTORICAL", "EXPERIMENTAL"]},
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["capability_id", "statement"],
+        "properties": {
+          "capability_id": {"type": "string", "pattern": "^CAP-[0-9]{3}$"},
+          "statement": {"type": "string", "minLength": 10, "maxLength": 300}
+        }
+      }
+    },
+    "dependencies": {"type": "array", "items": {"type": "string", "maxLength": 200}, "uniqueItems": true},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "maxLength": 300}, "uniqueItems": true},
+    "tests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["test_id", "statement", "evidence_class"],
+        "properties": {
+          "test_id": {"type": "string", "pattern": "^TEST-[0-9]{3}$"},
+          "statement": {"type": "string", "minLength": 10, "maxLength": 300},
+          "evidence_class": {"enum": ["STATIC", "DETERMINISTIC_REPEAT", "RUNTIME", "MANUAL_REVIEW"]}
+        }
+      }
+    },
+    "excluded_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["external_actions", "build", "deployment", "production"],
+      "properties": {
+        "external_actions": {"const": false},
+        "build": {"const": false},
+        "deployment": {"const": false},
+        "production": {"const": false}
+      }
+    },
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contains_private_names", "contains_repo_or_local_paths", "contains_source_code", "contains_credentials", "sanitizer"],
+      "properties": {
+        "contains_private_names": {"const": false},
+        "contains_repo_or_local_paths": {"const": false},
+        "contains_source_code": {"const": false},
+        "contains_credentials": {"const": false},
+        "sanitizer": {"const": "x-factory-local-sanitizer/0.1"}
+      }
+    },
+    "lifecycle": {"const": "PENDING_EXACT_PAYLOAD_APPROVAL"}
+  }
+}

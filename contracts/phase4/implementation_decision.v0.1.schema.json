@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/implementation_decision.v0.1.schema.json",
+  "title": "Mason Implementation Decision v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "mission_id",
+    "decision",
+    "input_hashes",
+    "runtime_target",
+    "implementation_steps",
+    "expected_outputs",
+    "acceptance_commands",
+    "blockers",
+    "authority"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{5,79}$"},
+    "decision": {
+      "enum": [
+        "IMPLEMENTATION_PLAN_READY",
+        "OWNER_DECISION_REQUIRED",
+        "REVISION_REQUIRED",
+        "BLOCKED_MISSING_EVIDENCE",
+        "INVALID_CONTRACT",
+        "BLOCKED_UNSAFE_PAYLOAD"
+      ]
+    },
+    "input_hashes": {
+      "type": "object",
+      "additionalProperties": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+      "required": ["approved_blueprint", "generation_contract", "output_contract", "acceptance_fixture"]
+    },
+    "runtime_target": {"type": "string", "minLength": 3},
+    "implementation_steps": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 3},
+      "uniqueItems": true
+    },
+    "expected_outputs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 3},
+      "uniqueItems": true
+    },
+    "acceptance_commands": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 3},
+      "uniqueItems": true
+    },
+    "blockers": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan_only", "file_access", "build_authorized", "install_authorized", "deployment_authorized", "production_approved"],
+      "properties": {
+        "plan_only": {"const": true},
+        "file_access": {"const": false},
+        "build_authorized": {"const": false},
+        "install_authorized": {"const": false},
+        "deployment_authorized": {"const": false},
+        "production_approved": {"const": false}
+      }
+    }
+  }
+}
+

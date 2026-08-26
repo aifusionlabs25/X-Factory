@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.1",
+  "policy_id": "FACTORY-OBSERVABILITY-AND-STALL-CONTROLS-V1",
+  "status": "DRAFT_NOT_ACTIVE",
+  "tour": {
+    "supported_surfaces": ["HERMES_DESKTOP", "HERMES_PREVIEW"],
+    "modes": ["AGENT_PACED", "OWNER_NEXT_PREVIOUS"],
+    "source": "owner_safe_factory_floor_event_stream",
+    "may_highlight_current_stage": true,
+    "may_explain_bot_role_evidence_and_gate": true,
+    "may_advance_or_mutate_mission": false,
+    "may_reveal_raw_prompts_credentials_or_private_evidence": false
+  },
+  "activity_view": {
+    "source": "owner_safe_factory_floor_event_stream",
+    "runtime_only": true,
+    "durable_authority": "factory_mission_record_plus_hash_chained_event_stream",
+    "states": ["QUEUED", "WORKING", "HANDOFF", "PASS", "BLOCKED", "FAILED", "SETTLED"],
+    "may_control_mission": false
+  },
+  "mission_budget": {
+    "wall_clock_seconds": 1200,
+    "wrap_up_warning_fraction": 0.8,
+    "on_warning": "STOP_STARTING_NEW_WORK_AND_COMPLETE_CURRENT_BOUNDED_ACTION",
+    "on_expiry": "FAIL_CLOSED_AND_PRESERVE_EVIDENCE",
+    "automatic_retry": false,
+    "maximum_model_transactions": 5,
+    "maximum_transactions_per_stage": 1
+  },
+  "repetition_guard": {
+    "identical_model_stage_repeat_allowed": false,
+    "identical_tool_call_repeat_allowed": false,
+    "tools_in_factory_model_stages": 0
+  },
+  "external_research": {
+    "anonymous_parallel_fallback": false,
+    "anonymous_exa_fallback": false,
+    "requires_separately_bound_source_and_disclosure": true
+  }
+}
+

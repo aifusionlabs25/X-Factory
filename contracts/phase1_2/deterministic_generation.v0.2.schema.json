@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/deterministic_generation.v0.2.schema.json",
+  "title": "Deterministic Generation and Interface Contract v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_id", "runtime", "template_engine", "inputs", "blueprint_field_mappings", "generator_interface", "template_set", "test_runner", "normalization", "forbidden_nondeterminism", "repeatability"],
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "contract_id": {"const": "CONTRACT-DETERMINISTIC-GENERATION-V2"},
+    "runtime": {"const": "CPYTHON-3.11-STANDARD-LIBRARY-ONLY"},
+    "template_engine": {"const": "PYTHON-STRING-TEMPLATE-V1"},
+    "inputs": {"const": ["VALIDATED_BLUEPRINT_JSON", "OUTPUT_BUNDLE_MANIFEST_CONTRACT_V2", "VERSIONED_TEMPLATE_SET_V2"]},
+    "blueprint_field_mappings": {"type": "object", "minProperties": 15},
+    "generator_interface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "command", "callable", "arguments", "preconditions", "exit_codes", "output_boundary", "evidence_boundary"],
+      "properties": {
+        "module": {"const": "x_factory.bundle_generator"},
+        "command": {"const": "python -m x_factory.bundle_generator generate --blueprint <blueprint.json> --contracts <phase1_2-contract-dir> --output <empty-output-dir> --evidence <empty-evidence-dir>"},
+        "callable": {"const": "generate(blueprint_bytes, contract_bytes_by_name, output_dir, evidence_dir) -> GenerationResult"},
+        "arguments": {"type": "object"},
+        "preconditions": {"type": "array", "minItems": 4, "uniqueItems": true, "items": {"type": "string"}},
+        "exit_codes": {"type": "object"},
+        "output_boundary": {"const": "WRITE_ONLY_THE_FIVE_MANIFEST_PATHS_BENEATH_EMPTY_OUTPUT_DIR"},
+        "evidence_boundary": {"const": "WRITE_ONLY_DECLARED_EVIDENCE_PATHS_BENEATH_EMPTY_EVIDENCE_DIR"}
+      }
+    },
+    "template_set": {"type": "object"},
+    "test_runner": {"type": "object"},
+    "normalization": {"type": "object"},
+    "forbidden_nondeterminism": {"const": ["CLOCK", "RANDOMNESS", "UNDECLARED_ENVIRONMENT_VARIABLES", "NETWORK", "LOCALE", "HOST_PATHS", "UNORDERED_ITERATION", "PROVIDER_CALLS"]},
+    "repeatability": {"type": "object"}
+  }
+}

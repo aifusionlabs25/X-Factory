@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.1",
+  "status": "REFERENCE_CAPTURED_NOT_ADDED_TO_ACCOUNT",
+  "source": {
+    "platform": "ANAM",
+    "catalog": "ANAM_STOCK_PERSONA_LIBRARY",
+    "catalog_url": "https://lab.anam.ai/",
+    "portrait_url": "https://lab.anam.ai/api/avatars/edf6fdcb-acab-44b8-b974-ded72665ee26/image/portrait?v=213b9d8eb81348fb"
+  },
+  "persona": {
+    "template_name": "Mia - Support Guide",
+    "category": "Expert",
+    "description": "Work through customer problems with a patient, upbeat troubleshooting partner.",
+    "avatar_name": "Mia",
+    "avatar_id": "edf6fdcb-acab-44b8-b974-ded72665ee26",
+    "voice_name": "Dana - Balanced Spirit (Sonic 3.5)",
+    "voice_id": "8cc80a30-4fc0-11f1-84b0-52bacf74fa75",
+    "expressivity": 0.58,
+    "template_llm_name": "GPT OSS 120B",
+    "template_llm_id": "a7cf662c-2ace-4de1-a21e-ef0fbf144bb7"
+  },
+  "local_reference": {
+    "portrait_path": "assets/anam/mia-support-guide/portrait.webp",
+    "portrait_media_type": "image/webp",
+    "portrait_sha256": "3816bbfd4d48d8615e570de15762c928f2ab1afa66ec4cb60b01ce46bff0aae6",
+    "portrait_bytes": 25122
+  },
+  "factory_binding": {
+    "selection_status": "FACTORY_RECOMMENDED",
+    "factory_llm": "openai-codex / gpt-5.6-luna",
+    "use_template_llm": false,
+    "provider_creation_authorized": false,
+    "provider_mutation_authorized": false,
+    "runtime_compatibility_status": "NOT_CHECKED"
+  },
+  "usage_boundary": [
+    "Internal design and build reference only until ANAM usage terms and client acceptance are confirmed.",
+    "Use the official ANAM avatar ID for a future governed runtime integration; do not claim ownership of the portrait.",
+    "This capture did not add, duplicate, edit, or activate a persona in the ANAM account."
+  ]
+}

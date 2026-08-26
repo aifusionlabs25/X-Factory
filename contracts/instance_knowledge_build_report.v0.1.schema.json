@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-fusion-labs.local/contracts/instance_knowledge_build_report.v0.1.schema.json",
+  "title": "X-Factory Instance Knowledge Build Report v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "mission_id", "status", "bundle_sha256", "entry_count", "artifacts", "verification", "authority", "report_sha256"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "mission_id": {"type": "string"},
+    "status": {"const": "INSTANCE_KNOWLEDGE_BUILD_PASS"},
+    "bundle_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "entry_count": {"type": "integer", "minimum": 1, "maximum": 200},
+    "artifacts": {
+      "type": "object",
+      "minProperties": 5,
+      "additionalProperties": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "checks", "failed"],
+      "properties": {
+        "status": {"const": "PASS"},
+        "checks": {"type": "integer", "minimum": 1},
+        "failed": {"const": 0}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_calls", "network_calls", "runtime_installed", "deployment_authorized", "production_approved"],
+      "properties": {
+        "provider_calls": {"const": 0},
+        "network_calls": {"const": 0},
+        "runtime_installed": {"const": false},
+        "deployment_authorized": {"const": false},
+        "production_approved": {"const": false}
+      }
+    },
+    "report_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

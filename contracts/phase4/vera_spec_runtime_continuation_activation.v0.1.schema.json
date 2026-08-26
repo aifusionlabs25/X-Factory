@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/vera_spec_runtime_continuation_activation.v0.1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "activation_id", "mission_id", "stage", "profile", "provider", "model", "reasoning", "maximum_physical_requests", "retry_authorized", "approved_revision_disclosure_sha256", "activation_schema_sha256", "base_live_manifest_sha256", "controller_sha256", "accepted_ledger_sha256", "atlas_execution_evidence_sha256", "aria_execution_evidence_sha256", "owner_intake_file_sha256", "component_catalog_file_sha256", "evidence_index_file_sha256", "payload_sha256", "prompt_sha256", "output_schema_sha256", "codex_cli_auth_policy", "machine_response_policy", "write_boundary", "authority", "failure_policy"],
+  "$defs": {"digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}},
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "status": {"const": "PENDING_OWNER_APPROVAL_NOT_ACTIVE"},
+    "activation_id": {"const": "phase4-vera-spec-canary-001"},
+    "mission_id": {"const": "phase4-atlas-canary-003"},
+    "stage": {"const": "VERA_SPEC_REVIEW"},
+    "profile": {"const": "vera"},
+    "provider": {"const": "openai-codex"},
+    "model": {"const": "gpt-5.6-luna"},
+    "reasoning": {"const": "low"},
+    "maximum_physical_requests": {"const": 1},
+    "retry_authorized": {"const": false},
+    "approved_revision_disclosure_sha256": {"$ref": "#/$defs/digest"},
+    "activation_schema_sha256": {"$ref": "#/$defs/digest"},
+    "base_live_manifest_sha256": {"$ref": "#/$defs/digest"},
+    "controller_sha256": {"$ref": "#/$defs/digest"},
+    "accepted_ledger_sha256": {"$ref": "#/$defs/digest"},
+    "atlas_execution_evidence_sha256": {"$ref": "#/$defs/digest"},
+    "aria_execution_evidence_sha256": {"$ref": "#/$defs/digest"},
+    "owner_intake_file_sha256": {"$ref": "#/$defs/digest"},
+    "component_catalog_file_sha256": {"$ref": "#/$defs/digest"},
+    "evidence_index_file_sha256": {"$ref": "#/$defs/digest"},
+    "payload_sha256": {"$ref": "#/$defs/digest"},
+    "prompt_sha256": {"$ref": "#/$defs/digest"},
+    "output_schema_sha256": {"$ref": "#/$defs/digest"},
+    "codex_cli_auth_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["participates", "read_authorized", "import_authorized", "mutation_authorized"],
+      "properties": {"participates": {"const": false}, "read_authorized": {"const": false}, "import_authorized": {"const": false}, "mutation_authorized": {"const": false}}
+    },
+    "machine_response_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["raw_terminal_evidence_preserved", "unique_terminal_json_required", "separate_response_hash_required", "exact_schema_in_prompt", "required_verdict"],
+      "properties": {
+        "raw_terminal_evidence_preserved": {"const": true}, "unique_terminal_json_required": {"const": true},
+        "separate_response_hash_required": {"const": true}, "exact_schema_in_prompt": {"const": true},
+        "required_verdict": {"const": "SPECIFICATION_READY_FOR_BUILD"}
+      }
+    },
+    "write_boundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["existing_contained_mission_root", "vera_profile_root", "ordinary_vera_runtime_state", "ledger_append_transaction_03_only", "authentication_content_mutation"],
+      "properties": {
+        "existing_contained_mission_root": {"type": "string", "minLength": 20},
+        "vera_profile_root": {"type": "string", "minLength": 20},
+        "ordinary_vera_runtime_state": {"const": true}, "ledger_append_transaction_03_only": {"const": true},
+        "authentication_content_mutation": {"const": false}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["one_vera_spec_transaction", "provider_transport", "append_transaction_03", "tools", "mcp", "memory", "delegation", "oauth_refresh", "authentication_mutation", "retry", "later_factory_stages", "build", "installation", "deployment", "release", "production", "live_factory_write"],
+      "properties": {
+        "one_vera_spec_transaction": {"const": true}, "provider_transport": {"const": true}, "append_transaction_03": {"const": true},
+        "tools": {"const": false}, "mcp": {"const": false}, "memory": {"const": false}, "delegation": {"const": false},
+        "oauth_refresh": {"const": false}, "authentication_mutation": {"const": false}, "retry": {"const": false},
+        "later_factory_stages": {"const": false}, "build": {"const": false}, "installation": {"const": false},
+        "deployment": {"const": false}, "release": {"const": false}, "production": {"const": false}, "live_factory_write": {"const": false}
+      }
+    },
+    "failure_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["baseline_drift", "ledger_drift", "guard_event", "transport_failure", "extraction_failure", "invalid_output", "wrong_verdict"],
+      "properties": {
+        "baseline_drift": {"const": "BLOCK_BEFORE_TRANSMISSION"}, "ledger_drift": {"const": "BLOCK_BEFORE_TRANSMISSION"},
+        "guard_event": {"const": "FAIL_TERMINAL_SLOT_CONSUMED"}, "transport_failure": {"const": "FAIL_TERMINAL_SLOT_CONSUMED"},
+        "extraction_failure": {"const": "FAIL_TERMINAL_SLOT_CONSUMED"}, "invalid_output": {"const": "FAIL_TERMINAL_SLOT_CONSUMED"},
+        "wrong_verdict": {"const": "FAIL_TERMINAL_SLOT_CONSUMED"}
+      }
+    }
+  }
+}

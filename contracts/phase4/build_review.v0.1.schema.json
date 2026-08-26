@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/build_review.v0.1.schema.json",
+  "title": "Phase 4 Vera Contained Draft Review v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "mission_id", "candidate_root_digest", "verdict", "gates", "defects", "authority_statement"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{5,79}$"},
+    "candidate_root_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "verdict": {"enum": ["CONTAINED_DRAFT_READY", "REVISION_REQUIRED", "INVALID_CONTRACT"]},
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blueprint_fidelity", "required_files", "acceptance", "repeatability", "zero_external_activity", "authority_boundary", "evidence_chain"],
+      "properties": {
+        "blueprint_fidelity": {"enum": ["PASS", "FAIL"]},
+        "required_files": {"enum": ["PASS", "FAIL"]},
+        "acceptance": {"enum": ["PASS", "FAIL"]},
+        "repeatability": {"enum": ["PASS", "FAIL"]},
+        "zero_external_activity": {"enum": ["PASS", "FAIL"]},
+        "authority_boundary": {"enum": ["PASS", "FAIL"]},
+        "evidence_chain": {"enum": ["PASS", "FAIL"]}
+      }
+    },
+    "defects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "finding"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^DRAFT-DEFECT-[0-9]{3}$"},
+          "finding": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "authority_statement": {"const": "CONTAINED_DRAFT_REVIEW_ONLY_NO_INSTALL_DEPLOYMENT_RELEASE_OR_PRODUCTION_AUTHORITY"}
+  }
+}
+

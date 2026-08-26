@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/contained_run_record.v0.2.schema.json",
+  "title": "Phase 1.1 Contained Factory Run Record v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "governed_run_marker", "execution_mode", "disclosure_manifest_sha256", "card_sha256", "approval_sha256", "intake_sha256", "closure_contract_hashes", "provider", "model", "profiles", "tool_policy", "runtime_preflight", "sessions", "artifacts", "authority"],
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "run_id": {"type": "string"},
+    "governed_run_marker": {"const": "X_FACTORY_GOVERNED_RUN_V0_1"},
+    "execution_mode": {"const": "BROKERED_NO_TOOLS"},
+    "disclosure_manifest_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "card_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "approval_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "intake_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "closure_contract_hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output_bundle_manifest", "deterministic_generation", "acceptance_fixture"],
+      "properties": {
+        "output_bundle_manifest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "deterministic_generation": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "acceptance_fixture": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    },
+    "provider": {"const": "openai-codex"},
+    "model": {"const": "gpt-5.6-luna"},
+    "profiles": {"const": ["atlas", "aria", "vera"]},
+    "tool_policy": {"const": "ZERO_TOOLS_NO_MCP_NO_DESKTOP_UI"},
+    "runtime_preflight": {"type": "object"},
+    "sessions": {"type": "object"},
+    "artifacts": {"type": "object"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["build_authorized", "deployment_authorized", "production_approved"],
+      "properties": {
+        "build_authorized": {"const": false},
+        "deployment_authorized": {"const": false},
+        "production_approved": {"const": false}
+      }
+    }
+  }
+}

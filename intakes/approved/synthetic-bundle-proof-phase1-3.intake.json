@@ -1,0 +1,30 @@
+{
+  "schema_version": "0.1",
+  "run_id": "contained-real-card-proof-004",
+  "agent_or_client": "Fictional Bundle Workshop",
+  "purpose": "Produce a final provider-free scaffold-generator specification using byte-bound Phase 1.3 templates, one evidence-root model, complete evidence schemas, and explicit value-origin precedence without leaving implementation choices unresolved.",
+  "role_and_behavior": "Preserve the approved intent and component evidence, incorporate every Phase 1.3 contract literally, and treat direct blueprint values, declared fallbacks, declared constants, and deterministic integrity derivations as the only permitted value origins.",
+  "must_have_capabilities": [
+    "Give every generated value exactly one declared origin kind: direct blueprint field, declared fallback, declared constant, or deterministic derivation",
+    "Expose the exact generator module, command, callable, arguments, preconditions, boundaries, and exit codes",
+    "Generate exactly the five manifest-governed bundle paths",
+    "Produce the six exact evidence files at their fixture-root-relative paths through their declared producer and validate each against its exact embedded schema",
+    "Bind every template's exact UTF-8 source bytes and the complete template set by SHA-256",
+    "Run two isolated subprocess builds with sanitized credentials and network disabled",
+    "Pass ASSERT-001 through ASSERT-006 without provider or external actions"
+  ],
+  "never_do": [
+    "Use explicit_requirements or raw_intake.requirements as the agent.spec requirements source",
+    "Invent a field mapping, fallback, derivation, template byte, generator interface, evidence path, schema, producer, or fixture step",
+    "Read raw private repositories or call an external provider from the candidate bundle",
+    "Deploy, modify production, or claim build authorization"
+  ],
+  "sources": [
+    "One exact owner-approved model-safe component card",
+    "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V3",
+    "CONTRACT-DETERMINISTIC-GENERATION-V3",
+    "CONTRACT-ACCEPTANCE-FIXTURE-V3"
+  ],
+  "raw_owner_text": "Close Vera's four legitimate Phase 1.2 defects using the supplied exact Phase 1.3 contracts: unify the evidence-root model, fully define manifest and evidence schemas, bind exact template bytes and hashes, and resolve mapping precedence for fallbacks and deterministic integrity values. Produce the smallest complete specification-ready blueprint without building or deploying anything.",
+  "default_external_actions": "PROHIBITED_UNLESS_EXPLICITLY_APPROVED"
+}

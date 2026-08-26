@@ -1,0 +1,74 @@
+{
+  "schema_version": "0.3",
+  "contract_id": "CONTRACT-ACCEPTANCE-FIXTURE-V3",
+  "fixture_id": "FIXTURE-SYNTHETIC-BUNDLE-V3",
+  "runner": "python -m unittest tests.test_bundle -v",
+  "path_model": {
+    "base": "EPHEMERAL_FIXTURE_ROOT",
+    "generator_roots": {"RUN_1_OUTPUT": "run-1/output", "RUN_1_EVIDENCE": "run-1/evidence", "RUN_2_OUTPUT": "run-2/output", "RUN_2_EVIDENCE": "run-2/evidence"},
+    "test_runner_evidence_root": "fixture-evidence",
+    "path_interpretation": "ALL_EVIDENCE_OUTPUT_PATHS_ARE_RELATIVE_TO_EPHEMERAL_FIXTURE_ROOT",
+    "ownership": "GENERATOR_WRITES_ONLY_ITS_PAIRED_RUN_N_OUTPUT_AND_RUN_N_EVIDENCE;TEST_RUNNER_WRITES_ONLY_FIXTURE_EVIDENCE"
+  },
+  "fixture_process": {
+    "steps": [
+      "Create empty run-1/output, run-1/evidence, run-2/output, run-2/evidence, and fixture-evidence directories beneath one temporary fixture root",
+      "Remove OPENAI_API_KEY, OPENROUTER_API_KEY, ANTHROPIC_API_KEY, NVIDIA_API_KEY, NOUS_API_KEY, and HERMES_API_KEY from each child environment and fail if any remains",
+      "Invoke the exact generator command for RUN_1 with run-1/output and run-1/evidence, then for RUN_2 with run-2/output and run-2/evidence, using subprocess.run with shell false, captured output, and a 120-second timeout",
+      "Require exit code zero for both runs, validate all four generator evidence documents against their named schemas, then evaluate ASSERT-001 through ASSERT-006 in numeric order",
+      "Write fixture-evidence/repeatability-report.json after ASSERT-004 and fixture-evidence/test-results.json after ASSERT-006"
+    ],
+    "generator_command_source": "CONTRACT-DETERMINISTIC-GENERATION-V3.generator_interface.command",
+    "process_boundary": "TWO_CHILD_PROCESSES_ONLY_NO_SHELL_NO_NETWORK_SANITIZED_ENVIRONMENT",
+    "failure_rule": "ANY_NONZERO_EXIT_TIMEOUT_SCHEMA_ERROR_HASH_MISMATCH_EXTRA_PATH_OR_FAILED_ASSERTION_FAILS_THE_FIXTURE"
+  },
+  "environment": {"network": "DISABLED_BY_TEST_HARNESS", "provider_credentials": "REMOVED_AND_ASSERTED_ABSENT", "external_actions": "PROHIBITED", "filesystem_scope": "ONE_EPHEMERAL_FIXTURE_ROOT_ONLY"},
+  "input": {"blueprint_fixture": "tests/fixtures/smoke.input.json", "manifest_contract": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V3", "generation_contract": "CONTRACT-DETERMINISTIC-GENERATION-V3", "template_set": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V3"},
+  "assertions": [
+    {"id": "ASSERT-001", "procedure": "Compare sorted relative output paths for both output roots against the five manifest paths.", "pass_condition": "Both sets exactly equal the five-path manifest set.", "evidence": ["run-1/evidence/file-hashes.json", "run-2/evidence/file-hashes.json"]},
+    {"id": "ASSERT-002", "procedure": "Compare every corresponding output as raw bytes.", "pass_condition": "Every byte sequence is identical.", "evidence": ["fixture-evidence/repeatability-report.json"]},
+    {"id": "ASSERT-003", "procedure": "Recompute SHA-256 for all five outputs and validate the generated manifest against its embedded schema.", "pass_condition": "All five evidence hashes match; the manifest lists the four non-self payload hashes; manifest_self_hash matches the final manifest bytes.", "evidence": ["run-1/evidence/file-hashes.json", "run-2/evidence/file-hashes.json"]},
+    {"id": "ASSERT-004", "procedure": "Recompute each root from the four declared payload path-NUL-hash-LF records sorted by path.", "pass_condition": "Computed roots match both manifests, both file-hashes documents, and the repeatability report.", "evidence": ["fixture-evidence/repeatability-report.json"]},
+    {"id": "ASSERT-005", "procedure": "Validate sanitized environments and both execution-audit documents.", "pass_condition": "Credential keys present is empty; network and external-action counts are zero; output paths are exactly the five declared paths.", "evidence": ["run-1/evidence/execution-audit.json", "run-2/evidence/execution-audit.json"]},
+    {"id": "ASSERT-006", "procedure": "Parse JSON outputs and inspect all output bytes for UTF-8 without BOM, NFC, LF-only endings, and exactly one final newline.", "pass_condition": "Every output passes its media parser and every normalization rule.", "evidence": ["fixture-evidence/test-results.json"]}
+  ],
+  "evidence_schemas": {
+    "EXECUTION_AUDIT_V3": {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false, "required": ["schema_version", "run_label", "network_policy", "credential_keys_scanned", "credential_keys_present", "network_attempt_count", "external_action_count", "output_paths"], "properties": {"schema_version": {"const": "0.3"}, "run_label": {"enum": ["RUN_1", "RUN_2"]}, "network_policy": {"const": "DISABLED_BY_TEST_HARNESS"}, "credential_keys_scanned": {"const": ["ANTHROPIC_API_KEY", "HERMES_API_KEY", "NVIDIA_API_KEY", "NOUS_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY"]}, "credential_keys_present": {"type": "array", "maxItems": 0}, "network_attempt_count": {"const": 0}, "external_action_count": {"const": 0}, "output_paths": {"const": ["agent/AGENT.md", "agent/agent.spec.json", "bundle.manifest.json", "tests/fixtures/smoke.input.json", "tests/test_bundle.py"]}}},
+    "FILE_HASHES_V3": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "run_label", "algorithm", "files_count", "files", "root_digest", "manifest_self_hash"],
+      "properties": {
+        "schema_version": {"const": "0.3"}, "run_label": {"enum": ["RUN_1", "RUN_2"]}, "algorithm": {"const": "SHA-256"}, "files_count": {"const": 5},
+        "files": {"type": "array", "minItems": 5, "maxItems": 5, "prefixItems": [
+          {"$ref": "#/$defs/agentMdHash"}, {"$ref": "#/$defs/agentSpecHash"}, {"$ref": "#/$defs/manifestHash"}, {"$ref": "#/$defs/smokeHash"}, {"$ref": "#/$defs/testHash"}
+        ], "items": false},
+        "root_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "manifest_self_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "$defs": {
+        "hashRecord": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+        "agentMdHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "agent/AGENT.md"}}}]},
+        "agentSpecHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "agent/agent.spec.json"}}}]},
+        "manifestHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "bundle.manifest.json"}}}]},
+        "smokeHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "tests/fixtures/smoke.input.json"}}}]},
+        "testHash": {"allOf": [{"$ref": "#/$defs/hashRecord"}, {"properties": {"path": {"const": "tests/test_bundle.py"}}}]}
+      }
+    },
+    "REPEATABILITY_REPORT_V3": {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false, "required": ["schema_version", "run_1_root_digest", "run_2_root_digest", "compared_paths", "file_sets_equal", "bytes_equal", "root_digests_equal"], "properties": {"schema_version": {"const": "0.3"}, "run_1_root_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "run_2_root_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "compared_paths": {"const": ["agent/AGENT.md", "agent/agent.spec.json", "bundle.manifest.json", "tests/fixtures/smoke.input.json", "tests/test_bundle.py"]}, "file_sets_equal": {"const": true}, "bytes_equal": {"const": true}, "root_digests_equal": {"const": true}}},
+    "TEST_RESULTS_V3": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false,
+      "required": ["schema_version", "runner", "exit_code", "status", "assertions"],
+      "properties": {
+        "schema_version": {"const": "0.3"}, "runner": {"const": "python -m unittest tests.test_bundle -v"}, "exit_code": {"const": 0}, "status": {"const": "PASS"},
+        "assertions": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"type": "object", "additionalProperties": false, "required": ["id", "status", "evidence"], "properties": {"id": {"enum": ["ASSERT-001", "ASSERT-002", "ASSERT-003", "ASSERT-004", "ASSERT-005", "ASSERT-006"]}, "status": {"const": "PASS"}, "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}}}}}
+      }
+    }
+  },
+  "evidence_outputs": [
+    {"path": "run-1/evidence/execution-audit.json", "producer": "GENERATOR", "run_label": "RUN_1", "schema_ref": "EXECUTION_AUDIT_V3", "write_timing": "ONCE_AFTER_RUN_1_OUTPUTS_BEFORE_EXIT"},
+    {"path": "run-1/evidence/file-hashes.json", "producer": "GENERATOR", "run_label": "RUN_1", "schema_ref": "FILE_HASHES_V3", "write_timing": "AFTER_FINAL_MANIFEST_SERIALIZATION_BEFORE_EXIT"},
+    {"path": "run-2/evidence/execution-audit.json", "producer": "GENERATOR", "run_label": "RUN_2", "schema_ref": "EXECUTION_AUDIT_V3", "write_timing": "ONCE_AFTER_RUN_2_OUTPUTS_BEFORE_EXIT"},
+    {"path": "run-2/evidence/file-hashes.json", "producer": "GENERATOR", "run_label": "RUN_2", "schema_ref": "FILE_HASHES_V3", "write_timing": "AFTER_FINAL_MANIFEST_SERIALIZATION_BEFORE_EXIT"},
+    {"path": "fixture-evidence/repeatability-report.json", "producer": "TEST_RUNNER", "run_label": "BOTH", "schema_ref": "REPEATABILITY_REPORT_V3", "write_timing": "AFTER_ASSERT_004"},
+    {"path": "fixture-evidence/test-results.json", "producer": "TEST_RUNNER", "run_label": "BOTH", "schema_ref": "TEST_RESULTS_V3", "write_timing": "AFTER_ASSERT_006"}
+  ]
+}

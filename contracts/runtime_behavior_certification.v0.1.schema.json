@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-fusion-labs.local/contracts/runtime_behavior_certification.v0.1.schema.json",
+  "title": "X-Factory Provider-Free Runtime Behavior Certification v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "mission_id", "instance_id", "runtime_contract_sha256", "engine", "sessions", "assertions", "vera", "summary", "authority", "certification_sha256"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "status": {"enum": ["LOCAL_BEHAVIOR_HARNESS_PASS", "LOCAL_BEHAVIOR_HARNESS_FAIL"]},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{3,95}$"},
+    "instance_id": {"type": "string", "pattern": "^xi-[a-z0-9][a-z0-9-]{3,78}$"},
+    "runtime_contract_sha256": {"$ref": "#/$defs/sha256"},
+    "engine": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "provider_calls", "network_attempts", "tool_calls", "memory_writes", "delegations", "external_actions"],
+      "properties": {
+        "mode": {"const": "LOCAL_DETERMINISTIC_MULTI_TURN"},
+        "provider_calls": {"const": 0},
+        "network_attempts": {"const": 0},
+        "tool_calls": {"const": 0},
+        "memory_writes": {"const": 0},
+        "delegations": {"const": 0},
+        "external_actions": {"const": 0}
+      }
+    },
+    "sessions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["session_a", "session_b_fresh"],
+      "properties": {
+        "session_a": {"$ref": "#/$defs/session"},
+        "session_b_fresh": {"$ref": "#/$defs/session"}
+      }
+    },
+    "assertions": {
+      "type": "array", "minItems": 7, "maxItems": 7,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["assertion", "status", "evidence"],
+        "properties": {
+          "assertion": {"type": "string", "minLength": 3},
+          "status": {"enum": ["PASS", "FAIL"]},
+          "evidence": {"type": "string", "minLength": 3}
+        }
+      }
+    },
+    "vera": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "verdict", "fresh_session_state_leakage", "live_runtime_certification"],
+      "properties": {
+        "mode": {"const": "LOCAL_DETERMINISTIC_ASSERTION_REVIEW"},
+        "verdict": {"enum": ["LOCAL_BEHAVIOR_CERTIFIED", "LOCAL_BEHAVIOR_REJECTED"]},
+        "fresh_session_state_leakage": {"type": "boolean"},
+        "live_runtime_certification": {"const": false}
+      }
+    },
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["passed", "failed", "live_runtime_verified", "next_gate"],
+      "properties": {
+        "passed": {"type": "integer", "minimum": 0, "maximum": 7},
+        "failed": {"type": "integer", "minimum": 0, "maximum": 7},
+        "live_runtime_verified": {"const": false},
+        "next_gate": {"const": "CONTAINED_HERMES_MULTI_TURN_PROOF"}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["provider_transport", "profile_installation", "runtime_promotion", "deployment", "production"],
+      "properties": {
+        "provider_transport": {"const": false},
+        "profile_installation": {"const": false},
+        "runtime_promotion": {"const": false},
+        "deployment": {"const": false},
+        "production": {"const": false}
+      }
+    },
+    "certification_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "session": {
+      "type": "object", "additionalProperties": false,
+      "required": ["session_id", "fresh", "runtime_identity", "context_origin", "previous_session_transcript_loaded", "memory_artifacts_loaded", "transcript_sha256", "turns", "handoff"],
+      "properties": {
+        "session_id": {"type": "string", "minLength": 1},
+        "fresh": {"type": "boolean"},
+        "runtime_identity": {
+          "type": "object", "additionalProperties": false,
+          "required": ["instance_id", "profile_name", "runtime_contract_sha256"],
+          "properties": {
+            "instance_id": {"type": "string", "minLength": 1},
+            "profile_name": {"type": "string", "minLength": 1},
+            "runtime_contract_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
+        "context_origin": {"const": "EMPTY_SESSION_CONTEXT"},
+        "previous_session_transcript_loaded": {"const": false},
+        "memory_artifacts_loaded": {"type": "array", "maxItems": 0},
+        "transcript_sha256": {"$ref": "#/$defs/sha256"},
+        "turns": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["turn", "message", "speaker", "outcome", "response", "supporting_entry_ids"],
+            "properties": {
+              "turn": {"type": "integer", "minimum": 1},
+              "message": {"type": "string"},
+              "speaker": {"type": "string", "minLength": 1},
+              "outcome": {"type": "string", "minLength": 1},
+              "response": {"type": "string", "minLength": 1},
+              "supporting_entry_ids": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "handoff": {
+          "type": "object", "additionalProperties": false,
+          "required": ["agent_name", "client_name", "request_summary", "known_unknowns", "session_corrections", "module_outputs", "recommended_queue"],
+          "properties": {
+            "agent_name": {"type": "string", "minLength": 1},
+            "client_name": {"type": "string", "minLength": 1},
+            "request_summary": {"type": "string", "minLength": 1},
+            "known_unknowns": {"type": "array", "items": {"type": "string"}},
+            "session_corrections": {"type": "array", "items": {"type": "string"}},
+            "module_outputs": {
+              "type": "array",
+              "items": {
+                "type": "object", "additionalProperties": false,
+                "required": ["module_id", "status", "data"],
+                "properties": {
+                  "module_id": {"type": "string", "minLength": 1},
+                  "status": {"const": "LOCAL_SCHEMA_VALID"},
+                  "data": {"type": "object"}
+                }
+              }
+            },
+            "recommended_queue": {"const": "HUMAN_REVIEW"}
+          }
+        }
+      }
+    }
+  }
+}

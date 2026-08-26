@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/phase4/normalized_intake.v0.2.schema.json",
+  "title": "Atlas Normalized Intake v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "agent_or_client", "purpose", "role_and_behavior", "must_have_capabilities", "never_do", "sources", "raw_owner_text", "default_external_actions", "implementation_inputs"],
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "run_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{5,79}$"},
+    "agent_or_client": {"type": ["string", "null"]},
+    "purpose": {"type": "string", "minLength": 10},
+    "role_and_behavior": {"type": ["string", "null"]},
+    "must_have_capabilities": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "never_do": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "sources": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "raw_owner_text": {"type": "string", "minLength": 1},
+    "default_external_actions": {"const": "PROHIBITED_UNLESS_EXPLICITLY_APPROVED"},
+    "implementation_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime_target", "approved_faqs", "qualification_fields", "handoff_contract", "interface_requirements", "experience_shell"],
+      "properties": {
+        "runtime_target": {"type": "string", "minLength": 20},
+        "approved_faqs": {
+          "type": "array", "minItems": 1,
+          "items": {"type": "object", "additionalProperties": false, "required": ["question", "answer"], "properties": {"question": {"type": "string"}, "answer": {"type": "string"}}}
+        },
+        "qualification_fields": {
+          "type": "array", "minItems": 1,
+          "items": {"type": "object", "additionalProperties": false, "required": ["field_id", "label", "required", "type"], "properties": {"field_id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}, "label": {"type": "string"}, "required": {"type": "boolean"}, "type": {"enum": ["TEXT", "SELECT", "LONG_TEXT"]}, "options": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}}}
+        },
+        "handoff_contract": {"type": "object", "minProperties": 1},
+        "interface_requirements": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+        "experience_shell": {"type": "object", "minProperties": 1}
+      }
+    }
+  }
+}

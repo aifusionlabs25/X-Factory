@@ -1,0 +1,59 @@
+schema_version: "0.2-draft"
+status: PHASE4_ARCHITECTURE_ONLY_NOT_ACTIVE
+default_policy: DENY
+shared:
+  model_read:
+    - exact_inline_payload_from_contained_broker
+  broker_read:
+    - approved_intake_for_same_mission
+    - approved_component_cards
+    - prior_stage_output_for_same_mission
+    - immutable_contracts_named_in_mission_manifest
+  broker_write:
+    - runs/contained/<mission_id>
+  prohibited_for_every_model:
+    - file_tools
+    - shell_or_code_execution
+    - browser_or_computer_use
+    - memory
+    - delegation
+    - mcp_or_plugins
+    - credential_access
+    - installation
+    - deployment
+    - production_write
+atlas:
+  receives: [owner_intake]
+  returns: [normalized_intake]
+  may_approve: []
+aria:
+  receives: [normalized_intake, approved_component_cards]
+  returns: [frozen_blueprint]
+  may_approve: []
+vera_spec_gate:
+  receives: [normalized_intake, frozen_blueprint, evidence_hashes]
+  returns: [specification_verdict]
+  may_approve: [specification_ready_for_owner_build_decision]
+mason:
+  receives: [owner_build_approval, approved_blueprint, generation_contract, output_contract, acceptance_fixture]
+  returns: [implementation_decision]
+  may_approve: []
+deterministic_builder:
+  model: false
+  executes_only_after: [owner_build_approval, implementation_plan_ready]
+  writes_only: [runs/contained/<mission_id>/candidate]
+vera_build_gate:
+  receives: [approved_blueprint, immutable_build_inputs, frozen_candidate, test_evidence]
+  returns: [draft_verdict]
+  may_approve: [contained_draft_ready]
+porter:
+  receives: [contained_draft_ready, certified_candidate, repository_packaging_contract, allowed_destination_class]
+  returns: [packaging_decision]
+  may_approve: []
+deterministic_repo_foundry:
+  model: false
+  executes_only_after: [contained_draft_ready, packaging_plan_ready]
+  writes_only: [repos/local/<repo_id>]
+release:
+  owner_only: true
+  phase4_authorized: false

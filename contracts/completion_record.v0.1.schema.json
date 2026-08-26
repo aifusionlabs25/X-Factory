@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/completion_record.v0.1.schema.json",
+  "title": "X-Factory Completion Record v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "completion_id", "mission_id", "created_at", "status", "route", "review", "repo", "authority", "completion_sha256"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "completion_id": {"type": "string", "pattern": "^completion-[a-f0-9]{16}$"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{3,95}$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "status": {"const": "LOCAL_DRAFT_COMPLETE"},
+    "route": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["order", "specialist", "job", "status"],
+        "properties": {
+          "order": {"type": "integer", "minimum": 1},
+          "specialist": {"type": "string", "minLength": 2},
+          "job": {"type": "string", "minLength": 3},
+          "status": {"const": "PASS"}
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_id", "verdict", "review_sha256", "relative_path"],
+      "properties": {
+        "review_id": {"type": "string"},
+        "verdict": {"const": "READY_FOR_PORTER_PACKAGING"},
+        "review_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "relative_path": {"type": "string"}
+      }
+    },
+    "repo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repo_id", "status", "local_path", "preview_url", "root_digest", "tests"],
+      "properties": {
+        "repo_id": {"type": "string"},
+        "status": {"const": "LOCAL_REPO_READY"},
+        "local_path": {"type": "string"},
+        "preview_url": {"type": "string"},
+        "root_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "tests": {"const": "PASS"}
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_calls", "network_attempts", "credentials_copied", "existing_repo_mutation", "deployment", "production"],
+      "properties": {
+        "provider_calls": {"const": 0},
+        "network_attempts": {"const": 0},
+        "credentials_copied": {"const": false},
+        "existing_repo_mutation": {"const": false},
+        "deployment": {"const": false},
+        "production": {"const": false}
+      }
+    },
+    "completion_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

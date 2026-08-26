@@ -1,0 +1,39 @@
+{
+  "collected_at": "2026-08-19T20:30:00Z",
+  "sources": [
+    {
+      "url": "https://github.com/NousResearch/hermes-agent/commits/main",
+      "items": [
+        {
+          "sha": "synthetic-tour-001",
+          "published_at": "2026-08-19T16:00:00Z",
+          "title": "Desktop Tour tool and Preview walkthrough support",
+          "url": "https://github.com/NousResearch/hermes-agent/commit/synthetic-tour-001",
+          "summary": "Adds a Tour feature for Desktop and Preview with highlighted walkthrough steps."
+        },
+        {
+          "sha": "synthetic-budget-001",
+          "published_at": "2026-08-19T17:00:00Z",
+          "title": "Agent run budget and stall controls",
+          "url": "https://github.com/NousResearch/hermes-agent/commit/synthetic-budget-001",
+          "summary": "Adds run budget wrap-up pressure and repeated-call stall protection."
+        },
+        {
+          "sha": "synthetic-windows-001",
+          "published_at": "2026-08-19T18:00:00Z",
+          "title": "Windows update compatibility repair",
+          "url": "https://github.com/NousResearch/hermes-agent/commit/synthetic-windows-001",
+          "summary": "Repairs a Windows update path that could lock the launcher during replacement."
+        },
+        {
+          "sha": "synthetic-fallback-001",
+          "published_at": "2026-08-19T19:00:00Z",
+          "title": "Anonymous web research fallback support",
+          "url": "https://github.com/NousResearch/hermes-agent/commit/synthetic-fallback-001",
+          "summary": "Adds fallback support for web tools when no keyed provider is configured."
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,112 @@
+{
+  "schema_version": "0.2",
+  "policy_id": "PHASE4-GOVERNANCE-BOUND-DERIVED-PAYLOAD-POLICY-V2",
+  "status": "DRAFT_NOT_ACTIVE",
+  "governed_run_marker": "X_FACTORY_GOVERNED_RUN_V0_1",
+  "principle": "One owner approval binds the exact starting inputs, schemas, adapters, runner, profiles, provider, model, authority ceiling, and deterministic derivation rules. Downstream bytes are authorized only when produced by the immediately preceding approved stage and validated before routing.",
+  "starting_inputs": [
+    "exact_owner_intake_sha256",
+    "exact_model_safe_component_catalog_sha256",
+    "exact_generation_contract_sha256",
+    "exact_output_contract_sha256",
+    "exact_acceptance_fixture_sha256",
+    "exact_governance_binding_sha256",
+    "exact_fixture_evidence_approval_sha256"
+  ],
+  "bound_implementation": [
+    "live_mission_runner_sha256",
+    "phase4_broker_sha256",
+    "phase4_payload_adapter_sha256",
+    "broker_governance_binding_sha256",
+    "all_stage_output_schema_sha256_values",
+    "all_profile_config_and_soul_sha256_values"
+  ],
+  "runtime": {
+    "provider": "openai-codex",
+    "model": "gpt-5.6-luna",
+    "reasoning": "low",
+    "maximum_model_transactions": 5,
+    "maximum_transactions_per_stage": 1,
+    "retry_authorized": false,
+    "tool_calls_per_stage": 0,
+    "oauth_refresh_authorized": false
+  },
+  "routing": [
+    {
+      "sequence": 1,
+      "stage": "ATLAS_TRIAGE",
+      "profile": "atlas",
+      "input_origin": ["APPROVED_STARTING_INPUT.owner_intake"],
+      "output_schema": "intake.v0.1",
+      "allowed_next": "ARIA_BLUEPRINT"
+    },
+    {
+      "sequence": 2,
+      "stage": "ARIA_BLUEPRINT",
+      "profile": "aria",
+      "input_origin": ["VALIDATED_OUTPUT.ATLAS_TRIAGE", "APPROVED_STARTING_INPUT.component_catalog"],
+      "output_schema": "x_agent_blueprint.v0.1",
+      "allowed_next": "VERA_SPEC_REVIEW"
+    },
+    {
+      "sequence": 3,
+      "stage": "VERA_SPEC_REVIEW",
+      "profile": "vera",
+      "input_origin": ["VALIDATED_OUTPUT.ATLAS_TRIAGE", "VALIDATED_OUTPUT.ARIA_BLUEPRINT", "APPROVED_STARTING_INPUT.evidence_index"],
+      "output_schema": "evaluation_contract.v0.1",
+      "required_verdict": "SPECIFICATION_READY_FOR_BUILD",
+      "allowed_next": "MASON_PLAN"
+    },
+    {
+      "sequence": 4,
+      "stage": "MASON_PLAN",
+      "profile": "mason",
+      "input_origin": ["VALIDATED_OUTPUT.ARIA_BLUEPRINT", "VALIDATED_OUTPUT.VERA_SPEC_REVIEW", "APPROVED_STARTING_INPUT.generation_contract", "APPROVED_STARTING_INPUT.output_contract", "APPROVED_STARTING_INPUT.acceptance_fixture", "CONDITIONAL_OWNER_BUILD_AUTHORITY"],
+      "output_schema": "implementation_decision.v0.1",
+      "required_verdict": "IMPLEMENTATION_PLAN_READY",
+      "allowed_next": "DETERMINISTIC_BUILD"
+    },
+    {
+      "sequence": 5,
+      "stage": "VERA_BUILD_REVIEW",
+      "profile": "vera",
+      "input_origin": ["VALIDATED_OUTPUT.ARIA_BLUEPRINT", "VALIDATED_OUTPUT.MASON_PLAN", "DETERMINISTIC_OUTPUT.candidate_manifest", "DETERMINISTIC_OUTPUT.test_evidence", "DETERMINISTIC_OUTPUT.build_record"],
+      "output_schema": "build_review.v0.1",
+      "required_verdict": "CONTAINED_DRAFT_READY",
+      "allowed_next": "DRAFT_READY"
+    }
+  ],
+  "conditional_owner_build_authority": {
+    "granted_by_same_mission_approval": true,
+    "activates_only_if": [
+      "Vera output is schema-valid",
+      "Vera verdict equals SPECIFICATION_READY_FOR_BUILD",
+      "all pre-build input hashes remain bound",
+      "candidate destination is the new contained mission directory"
+    ],
+    "writes_only": "runs/contained/<mission_id>/build/run-1",
+    "live_factory_write": false,
+    "installation": false,
+    "deployment": false,
+    "release": false,
+    "production": false
+  },
+  "fail_closed": [
+    "Any schema failure",
+    "Any hash drift",
+    "Any stage skip or repeated stage",
+    "Any tool selection, load, or call",
+    "Any authentication mutation",
+    "Any output path escape",
+    "Any missing required verdict",
+    "Any provider/model/profile mismatch",
+    "Any sixth model transaction",
+    "Any retry attempt"
+  ],
+  "disclosure": {
+    "exact_downstream_payload_bytes_known_before_launch": false,
+    "downstream_derivation_algorithm_and_authority_known_before_launch": true,
+    "every_transmitted_prompt_and_payload_hashed_after_derivation": true,
+    "every_stage_recorded_in_owner_safe_factory_floor_stream": true
+  }
+}

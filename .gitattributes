@@ -1,0 +1,2 @@
+# Preserve the exact tested bytes in the local baseline and Git archive.
+* -text

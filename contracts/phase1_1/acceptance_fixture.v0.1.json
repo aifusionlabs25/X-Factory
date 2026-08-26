@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.1",
+  "contract_id": "CONTRACT-ACCEPTANCE-FIXTURE-V1",
+  "fixture_id": "FIXTURE-SYNTHETIC-BUNDLE-V1",
+  "runner": "python -m unittest tests.test_bundle -v",
+  "environment": {"network": "DISABLED", "provider_credentials": "ABSENT", "external_actions": "PROHIBITED", "filesystem_scope": "EPHEMERAL_FIXTURE_WORKSPACE_ONLY"},
+  "input": {"blueprint_fixture": "tests/fixtures/smoke.input.json", "manifest_contract": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V1", "template_set": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V1"},
+  "assertions": [
+    {"id": "ASSERT-001", "procedure": "Generate the bundle twice from identical canonical input in independently reset workspaces.", "pass_condition": "Both runs contain the exact five manifest paths and no additional path."},
+    {"id": "ASSERT-002", "procedure": "Compare each corresponding output file as raw bytes.", "pass_condition": "Every corresponding byte sequence is identical."},
+    {"id": "ASSERT-003", "procedure": "Recompute SHA-256 for every normalized output file.", "pass_condition": "All hashes equal the values in file-hashes.json."},
+    {"id": "ASSERT-004", "procedure": "Recompute the root digest from UTF-8 path, NUL, and SHA-256 lines sorted by relative path.", "pass_condition": "The root digest equals repeatability-report.json for both runs."},
+    {"id": "ASSERT-005", "procedure": "Scan the process environment and execution log for provider credentials, network attempts, and external actions.", "pass_condition": "Credentials are absent and counts for network and external actions are zero."},
+    {"id": "ASSERT-006", "procedure": "Validate JSON outputs and confirm UTF-8 without BOM, NFC text, LF endings, and exactly one final newline for every text file.", "pass_condition": "Every file satisfies its media-type parser and all normalization rules."}
+  ],
+  "evidence_outputs": ["file-hashes.json", "repeatability-report.json", "test-results.json"]
+}

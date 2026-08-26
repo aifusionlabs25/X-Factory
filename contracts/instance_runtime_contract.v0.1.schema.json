@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-fusion-labs.local/contracts/instance_runtime_contract.v0.1.schema.json",
+  "title": "X-Factory Locked Instance Runtime Contract v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "mission_id", "instance_id", "revision", "identity", "content", "runtime", "behavior", "installation", "provenance", "authority", "contract_sha256"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "status": {"const": "INSTANCE_RUNTIME_CONTRACT_LOCKED"},
+    "mission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{3,95}$"},
+    "instance_id": {"type": "string", "pattern": "^xi-[a-z0-9][a-z0-9-]{3,78}$"},
+    "revision": {"const": 1},
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["agent_name", "agent_slug", "client_id", "client_name", "chassis_id", "chassis_version", "chassis_sha256"],
+      "properties": {
+        "agent_name": {"type": "string", "minLength": 1},
+        "agent_slug": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "client_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+        "client_name": {"type": "string", "minLength": 1},
+        "chassis_id": {"type": "string", "minLength": 1},
+        "chassis_version": {"type": "string", "minLength": 1},
+        "chassis_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "content": {
+      "type": "object", "additionalProperties": false,
+      "required": ["knowledge_package_sha256", "knowledge_review_sha256", "system_prompt_sha256", "module_set_sha256", "presence_binding_sha256"],
+      "properties": {
+        "knowledge_package_sha256": {"$ref": "#/$defs/sha256"},
+        "knowledge_review_sha256": {"$ref": "#/$defs/sha256"},
+        "system_prompt_sha256": {"$ref": "#/$defs/sha256"},
+        "module_set_sha256": {"$ref": "#/$defs/sha256"},
+        "presence_binding_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_name", "provider", "model", "reasoning", "memory", "tools", "delegation", "retries", "external_actions"],
+      "properties": {
+        "profile_name": {"type": "string", "pattern": "^xagent-[a-z0-9-]{3,54}$"},
+        "provider": {"const": "openai-codex"},
+        "model": {"const": "gpt-5.6-luna"},
+        "reasoning": {"const": "low"},
+        "memory": {"const": "disabled"},
+        "tools": {"const": "disabled"},
+        "delegation": {"const": "disabled"},
+        "retries": {"const": "disabled"},
+        "external_actions": {"const": "disabled"}
+      }
+    },
+    "behavior": {
+      "type": "object", "additionalProperties": false,
+      "required": ["knowledge_gated", "unknown_behavior", "activation_contract_sha256", "expected_first_run_sha256"],
+      "properties": {
+        "knowledge_gated": {"const": true},
+        "unknown_behavior": {"const": "ESCALATE"},
+        "activation_contract_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_first_run_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "installation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["target_profile_path", "rollback_contract_sha256", "baseline_sha256"],
+      "properties": {
+        "target_profile_path": {"type": "string", "pattern": "^profiles/xagent-[a-z0-9-]{3,54}$"},
+        "rollback_contract_sha256": {"$ref": "#/$defs/sha256"},
+        "baseline_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["commissioning_sha256", "blueprint_sha256", "final_vera_sha256", "runtime_foundry_input_sha256"],
+      "properties": {
+        "commissioning_sha256": {"$ref": "#/$defs/sha256"},
+        "blueprint_sha256": {"$ref": "#/$defs/sha256"},
+        "final_vera_sha256": {"$ref": "#/$defs/sha256"},
+        "runtime_foundry_input_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["install_authorized", "runtime_authorized", "deployment_authorized", "production_authorized"],
+      "properties": {
+        "install_authorized": {"const": false},
+        "runtime_authorized": {"const": false},
+        "deployment_authorized": {"const": false},
+        "production_authorized": {"const": false}
+      }
+    },
+    "contract_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {"sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}
+}

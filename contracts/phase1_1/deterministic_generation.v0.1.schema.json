@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/deterministic_generation.v0.1.schema.json",
+  "title": "Deterministic Generation Contract v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_id", "runtime", "template_engine", "inputs", "template_set", "test_runner", "normalization", "forbidden_nondeterminism", "repeatability"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "contract_id": {"const": "CONTRACT-DETERMINISTIC-GENERATION-V1"},
+    "runtime": {"const": "CPYTHON-3.11-STANDARD-LIBRARY-ONLY"},
+    "template_engine": {"const": "PYTHON-STRING-TEMPLATE-V1"},
+    "inputs": {"const": ["VALIDATED_BLUEPRINT_JSON", "OUTPUT_BUNDLE_MANIFEST_CONTRACT", "VERSIONED_TEMPLATE_SET"]},
+    "template_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["template_set_id", "render_order", "definitions"],
+      "properties": {
+        "template_set_id": {"const": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V1"},
+        "render_order": {"const": ["agent/AGENT.md", "agent/agent.spec.json", "tests/fixtures/smoke.input.json", "tests/test_bundle.py", "bundle.manifest.json"]},
+        "definitions": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["template_id", "output_path", "render_rule"],
+            "properties": {
+              "template_id": {"type": "string", "pattern": "^TPL-[A-Z0-9-]+$"},
+              "output_path": {"type": "string"},
+              "render_rule": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "test_runner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["technology", "command", "normative_assertions"],
+      "properties": {
+        "technology": {"const": "PYTHON-3.11-UNITTEST-STANDARD-LIBRARY"},
+        "command": {"const": "python -m unittest tests.test_bundle -v"},
+        "normative_assertions": {"const": ["ASSERT-001", "ASSERT-002", "ASSERT-003", "ASSERT-004", "ASSERT-005", "ASSERT-006"]}
+      }
+    },
+    "normalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text_encoding", "line_endings", "unicode", "final_newline", "json_serialization", "path_separator", "file_order"],
+      "properties": {
+        "text_encoding": {"const": "UTF-8-NO-BOM"},
+        "line_endings": {"const": "LF"},
+        "unicode": {"const": "NFC"},
+        "final_newline": {"const": "EXACTLY_ONE"},
+        "json_serialization": {"const": "SORT_KEYS_TRUE_INDENT_2_ENSURE_ASCII_FALSE_SEPARATORS_COMMA_COLON_DEFAULT"},
+        "path_separator": {"const": "/"},
+        "file_order": {"const": "LEXICOGRAPHIC_PATH_ASCENDING"}
+      }
+    },
+    "forbidden_nondeterminism": {
+      "const": ["CLOCK", "RANDOMNESS", "ENVIRONMENT_VARIABLES", "NETWORK", "LOCALE", "HOST_PATHS", "UNORDERED_ITERATION", "PROVIDER_CALLS"]
+    },
+    "repeatability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runs", "workspace_reset_between_runs", "comparison", "success"],
+      "properties": {
+        "runs": {"const": 2},
+        "workspace_reset_between_runs": {"const": true},
+        "comparison": {"const": "EVERY_RELATIVE_PATH_AND_EVERY_OUTPUT_BYTE"},
+        "success": {"const": "IDENTICAL_FILE_SET_AND_IDENTICAL_BYTES"}
+      }
+    }
+  }
+}

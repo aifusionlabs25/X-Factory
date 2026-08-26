@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/hermes_semantic_stage_review.v0.1.schema.json",
+  "title": "Hermes Semantic Stage Review v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "stage", "verdict", "summary", "findings", "recommended_changes", "authority_statement"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "stage": {"enum": ["ATLAS_INTENT_REVIEW", "ARIA_ARCHITECTURE_REVIEW", "VERA_SEMANTIC_CERTIFICATION"]},
+    "verdict": {"enum": ["PASS", "REVISION_REQUIRED", "OWNER_DECISION_REQUIRED"]},
+    "summary": {"type": "string", "minLength": 1, "maxLength": 1200},
+    "findings": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 1000}, "maxItems": 12},
+    "recommended_changes": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 1000}, "maxItems": 12},
+    "authority_statement": {"const": "REVIEW_ONLY_NO_BUILD_INSTALL_DEPLOYMENT_OR_PRODUCTION_AUTHORITY"}
+  }
+}

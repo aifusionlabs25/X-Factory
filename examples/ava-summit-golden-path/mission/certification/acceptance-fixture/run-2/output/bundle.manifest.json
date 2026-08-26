@@ -1,0 +1,31 @@
+{
+  "authority": {
+    "build_authorized": false,
+    "deployment_authorized": false,
+    "production_approved": false
+  },
+  "files": [
+    {
+      "path": "agent/AGENT.md",
+      "sha256": "d1f9f4cd4e1180c4b2521778514d3587db06055e11d333ccbb559dfe9532c800"
+    },
+    {
+      "path": "agent/agent.spec.json",
+      "sha256": "89ac9448eb849b2b97d085c6dc12d20bdb5a8cfa72201e3c013a97330c7ede95"
+    },
+    {
+      "path": "tests/fixtures/smoke.input.json",
+      "sha256": "0afc477e25ee85fe1c83552f395886706d0dfbcb04e03a04526f681588017eb7"
+    },
+    {
+      "path": "tests/test_bundle.py",
+      "sha256": "fce8b07ee13cfd94df1d565d5d21b8025dbdf69ce296a6c302e9279e8a58df1d"
+    }
+  ],
+  "generation_contract_id": "CONTRACT-DETERMINISTIC-GENERATION-V3",
+  "manifest_contract_id": "CONTRACT-OUTPUT-BUNDLE-MANIFEST-V3",
+  "root_digest": "f3c152d513b96bf12ba93fb249ea5b0d45934ee49b2d8d1aae09e343f751e12d",
+  "schema_version": "0.3",
+  "template_set_id": "TEMPLATE-SET-SYNTHETIC-BUNDLE-V3",
+  "template_set_sha256": "974e0f939f86be0f8ea0b49829e6d8fa476cac154e6c873d92e25055af7b907b"
+}

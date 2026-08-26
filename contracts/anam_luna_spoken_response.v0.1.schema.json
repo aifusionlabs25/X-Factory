@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/anam_luna_spoken_response.v0.1.schema.json",
+  "title": "Contained Luna to ANAM Spoken Response v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "stage",
+    "input_question",
+    "spoken_text",
+    "text_fallback",
+    "authority_statement"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "stage": {"const": "CONTAINED_LUNA_RESPONSE_CANARY"},
+    "input_question": {"const": "What can this agent help with?"},
+    "spoken_text": {"const": "Create a contained operational concierge that answers approved questions and prepares a structured local review handoff."},
+    "text_fallback": {"const": "Create a contained operational concierge that answers approved questions and prepares a structured local review handoff."},
+    "authority_statement": {"const": "SPEECH_CANARY_ONLY_NO_EXTERNAL_ACTION_OR_PRODUCTION_AUTHORITY"}
+  }
+}

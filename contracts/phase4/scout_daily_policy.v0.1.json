@@ -1,0 +1,75 @@
+{
+  "schema_version": "0.1",
+  "policy_id": "SCOUT-DAILY-HERMES-INTELLIGENCE-V1",
+  "status": "DRAFT_NOT_SCHEDULED",
+  "schedule_candidate": {
+    "frequency": "daily",
+    "local_time": "08:30",
+    "timezone": "America/Phoenix",
+    "activation_requires_separate_owner_action": true
+  },
+  "authoritative_sources": [
+    "https://github.com/NousResearch/hermes-agent/releases",
+    "https://github.com/NousResearch/hermes-agent/commits/main",
+    "https://github.com/NousResearch/hermes-agent/security/advisories",
+    "https://github.com/NousResearch/hermes-agent/tree/main/website/docs"
+  ],
+  "supplementary_sources": [
+    "https://x.com/HermesWatcher"
+  ],
+  "collection": {
+    "mode": "deterministic_read_only",
+    "window": "since_last_successful_watermark_with_24_hour_minimum",
+    "pagination_required": true,
+    "credentials_required": false,
+    "anonymous_third_party_search_fallback": false,
+    "may_read_local_installed_version_and_repository_revision": true,
+    "may_read_credentials_or_authentication": false
+  },
+  "analysis": {
+    "run_model_only_when_delta_exists": true,
+    "provider": "openai-codex",
+    "model": "gpt-5.6-luna",
+    "reasoning": "low",
+    "maximum_model_transactions": 1,
+    "model_tools": 0,
+    "maximum_payload_bytes": 65536,
+    "maximum_candidate_items": 50,
+    "full_delta_remains_local": true,
+    "payload": "inline_public_upstream_metadata_plus_nonsecret_local_version_baseline",
+    "classifications": [
+      "SECURITY",
+      "FACTORY_COMPATIBILITY",
+      "DESKTOP_EXPERIENCE",
+      "ORCHESTRATION",
+      "PROVIDER_MODEL",
+      "USEFUL_CAPABILITY",
+      "NO_FACTORY_IMPACT"
+    ]
+  },
+  "outputs": {
+    "contained_write_root": "runs/intelligence/scout/<yyyy-mm-dd>",
+    "daily_brief": true,
+    "source_and_baseline_hashes": true,
+    "recommended_action": ["IGNORE", "WATCH", "TEST", "REVIEW_REQUIRED"],
+    "may_create_inactive_adoption_candidate": true
+  },
+  "authority_ceiling": {
+    "update_hermes": false,
+    "install_software": false,
+    "activate_feature": false,
+    "change_factory_contract": false,
+    "change_profile": false,
+    "change_authentication": false,
+    "write_live_factory": false,
+    "deploy_or_release": false,
+    "approve_own_recommendation": false
+  },
+  "adoption_gate": {
+    "security_or_compatibility_change": "REVIEW_REQUIRED",
+    "all_adoptions_require_contained_tests": true,
+    "all_adoptions_require_independent_verification": true,
+    "all_mutating_adoptions_require_owner_approval": true,
+    "daily_run_may_never_cross_gate": true
+  }
+}

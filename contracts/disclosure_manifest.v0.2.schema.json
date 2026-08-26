@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/disclosure_manifest.v0.2.schema.json",
+  "title": "Phase 1.1 Contained Proof Disclosure Manifest v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "manifest_id", "approval_id", "purpose", "card_id", "card_sha256", "card_schema_version", "disclosure_report_sha256", "sanitizer_version", "sealed_source_record_hash", "intake_sha256", "closure_contract_hashes", "provider", "model", "profiles", "profile_config_hashes", "scope", "execution_mode", "tool_policy", "governed_run_rule"],
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "manifest_id": {"type": "string", "pattern": "^DISCLOSURE-[A-Z0-9-]+$"},
+    "approval_id": {"type": "string", "pattern": "^APPROVAL-[A-Z0-9-]+$"},
+    "purpose": {"const": "Prove the sanitized component card and exact Phase 1.1 closure contracts can produce a complete evidence-bounded blueprint"},
+    "card_id": {"type": "string", "pattern": "^CARD-[A-Z0-9-]+$"},
+    "card_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "card_schema_version": {"const": "0.1"},
+    "disclosure_report_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "sanitizer_version": {"const": "x-factory-local-sanitizer/0.1"},
+    "sealed_source_record_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "intake_sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "closure_contract_hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output_bundle_manifest", "deterministic_generation", "acceptance_fixture"],
+      "properties": {
+        "output_bundle_manifest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "deterministic_generation": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "acceptance_fixture": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    },
+    "provider": {"const": "openai-codex"},
+    "model": {"const": "gpt-5.6-luna"},
+    "profiles": {"const": ["atlas", "aria", "vera"]},
+    "profile_config_hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["atlas", "aria", "vera"],
+      "properties": {
+        "atlas": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "aria": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "vera": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    },
+    "scope": {"const": "EXACT_CARD_CLOSURE_CONTRACTS_AND_MODEL_GENERATED_DERIVATIVES_FOR_ONE_CONTAINED_ATLAS_ARIA_VERA_PROOF"},
+    "execution_mode": {"const": "BROKERED_NO_TOOLS"},
+    "tool_policy": {"const": "ZERO_TOOLS_NO_MCP_NO_DESKTOP_UI"},
+    "governed_run_rule": {"const": "ONLY_A_BROKER_RUN_RECORD_BOUND_TO_THIS_MANIFEST_CAN_ASSERT_FACTORY_LIFECYCLE_AUTHORITY"}
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/handoff.v0.1.schema.json",
+  "title": "Factory Handoff v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "run_id", "stage", "from", "to", "input_artifacts", "input_hashes", "evidence_index", "evidence_hash", "required_output_schema", "owner_constraints", "open_questions"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "run_id": {"type": "string"},
+    "stage": {"enum": ["ATLAS_TRIAGE", "ARIA_BLUEPRINT", "VERA_REVIEW", "OWNER_DECISION", "SPEC_READY", "REVISION_REQUIRED", "BLOCKED", "CLOSED"]},
+    "from": {"enum": ["ROB", "ATLAS", "ARIA", "VERA", "CODEX"]},
+    "to": {"enum": ["ROB", "ATLAS", "ARIA", "VERA", "CODEX"]},
+    "input_artifacts": {"type": "array", "items": {"type": "string"}},
+    "input_hashes": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}},
+    "evidence_index": {"type": "string"},
+    "evidence_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "required_output_schema": {"type": "string"},
+    "owner_constraints": {"type": "array", "items": {"type": "string"}},
+    "open_questions": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
+    "previous_verdict": {"type": ["string", "null"]}
+  }
+}
+
