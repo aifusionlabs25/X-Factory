@@ -852,7 +852,7 @@ function renderRuntimeFoundry(plan) {
   $("#runtime-live-state").textContent = ready ? "SEALED · OFF" : "GATED";
   $("#runtime-test-message").disabled = !ready;
   $("#runtime-test-submit").disabled = !ready;
-  $("#runtime-test-submit").textContent = ready ? "CHECK APPROVED KB →" : "KNOWLEDGE REQUIRED";
+  $("#runtime-test-submit").textContent = ready ? "TEST QUESTION →" : "KNOWLEDGE REQUIRED";
   const suggestions = $("#runtime-suggestions");
   suggestions.textContent = "";
   if (ready) {
@@ -861,7 +861,8 @@ function renderRuntimeFoundry(plan) {
     cases.forEach((item) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.textContent = item.question;
+      button.textContent = `APPROVED · ${item.question}`;
+      button.title = "This question is confirmed by the selected owner-approved knowledge package.";
       button.addEventListener("click", () => {
         $("#runtime-test-message").value = item.question;
         $("#runtime-test-message").focus();

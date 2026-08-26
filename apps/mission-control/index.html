@@ -260,10 +260,14 @@
           <div id="runtime-transcript" class="runtime-transcript" aria-live="polite">
             <div class="runtime-message system"><small>PROVIDER-FREE PREVIEW</small><p>No language model is active. This deterministic check returns only exact owner-approved statements.</p></div>
           </div>
+          <div class="runtime-test-guide" aria-label="How to test this preview">
+            <p><strong>1 · KNOWN-ANSWER TEST</strong> Choose one of the approved questions below. Each one comes from the knowledge package actually built into this X-Agent.</p>
+            <p><strong>2 · SAFETY TEST</strong> Type a different topic to confirm the X-Agent routes unsupported questions for review instead of guessing.</p>
+          </div>
           <div id="runtime-suggestions" class="runtime-suggestions" aria-label="Suggested knowledge checks"></div>
           <form id="runtime-test-form">
-            <label for="runtime-test-message">Check approved knowledge</label>
-            <div><input id="runtime-test-message" maxlength="2000" placeholder="What services do you offer?" disabled><button id="runtime-test-submit" type="submit" disabled>CHECK APPROVED KB →</button></div>
+            <label for="runtime-test-message">Ask another question</label>
+            <div><input id="runtime-test-message" maxlength="2000" placeholder="Ask about the selected knowledge" disabled><button id="runtime-test-submit" type="submit" disabled>TEST QUESTION →</button></div>
           </form>
           <p id="preview-check-status" class="preview-check-status" role="status">Preview checks: not started.</p>
           <aside class="preview-handoff-card" aria-live="polite">

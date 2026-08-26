@@ -400,9 +400,12 @@ legend { font-size: 12px; font-weight: 900; letter-spacing: .12em; }
 .runtime-message.system { color: #d9dcd3; background: var(--ink); }
 .runtime-message small { display: block; margin-bottom: 6px; font: 900 9px monospace; letter-spacing: .12em; }
 .runtime-message p { margin: 0; font: 17px/1.45 Georgia, serif; }
+.runtime-test-guide { display: grid; gap: 8px; margin: 14px 0; padding: 13px 15px; background: #eef2d1; border: 1px solid var(--line); }
+.runtime-test-guide p { margin: 0; color: #45483f; font: 14px/1.4 Georgia, serif; }
+.runtime-test-guide strong { display: block; margin-bottom: 2px; color: var(--ink); font: 900 10px/1.3 monospace; letter-spacing: .08em; }
 .runtime-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
 .runtime-suggestions:empty { display: none; }
-.runtime-suggestions button { max-width: 100%; padding: 9px 12px; border: 1px solid var(--line); background: #f1ecdf; color: var(--ink); font: 800 11px/1.3 monospace; text-align: left; cursor: pointer; }
+.runtime-suggestions button { max-width: 100%; padding: 9px 12px; border: 1px solid var(--line); background: var(--acid); color: var(--ink); font: 800 11px/1.3 monospace; text-align: left; cursor: pointer; }
 .runtime-suggestions button:hover, .runtime-suggestions button:focus-visible { background: var(--acid); outline: 2px solid var(--ink); outline-offset: 1px; }
 #runtime-test-form label { display: block; margin-bottom: 8px; font: 900 10px monospace; letter-spacing: .1em; }
 #runtime-test-form > div { display: grid; grid-template-columns: 1fr auto; }

@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from x_factory.repo_foundry_v0_1 import WEB_JS, WEB_MATCHER_JS
+from x_factory.repo_foundry_v0_1 import WEB_CSS, WEB_INDEX, WEB_JS, WEB_MATCHER_JS
 
 
 def main() -> None:
@@ -46,8 +46,19 @@ def main() -> None:
     syntax = subprocess.run(["node", "-e", "new Function(process.argv[1]); console.log('APP_SYNTAX_PASS')", WEB_JS], capture_output=True, text=True, check=False, timeout=30)
     if syntax.returncode:
         raise AssertionError(syntax.stderr or syntax.stdout)
+    required_guidance = {
+        "KNOWN-ANSWER TEST": WEB_INDEX,
+        "SAFETY TEST": WEB_INDEX,
+        "Ask another question": WEB_INDEX,
+        "APPROVED ·": WEB_JS,
+        ".test-guide": WEB_CSS,
+    }
+    for expected, source in required_guidance.items():
+        if expected not in source:
+            raise AssertionError(f"Generated preview is missing owner testing guidance: {expected}")
     print(result.stdout.strip())
     print(syntax.stdout.strip())
+    print("OWNER_TEST_GUIDANCE_PASS")
 
 
 if __name__ == "__main__":
