@@ -58,7 +58,8 @@
     }else if(project.status==='BUILT'){
       const decision=project.dojo?.decision;
       guideText.textContent=decision==='RUNNING'?'Your local app is ready. Quality checks are running.':decision==='REVIEW_REQUIRED'?'Your local app is ready to try. Quality checks have findings to review before release.':'Your local app is ready. Open it below, or test here.';
-      const open=node('a',`Open ${project.fields.x_agent_name||'your agent'}’s app ↗`,guide);open.className='prepared-open-candidate';open.href=`/agent-app.html?project=${encodeURIComponent(project.project_id)}${new URLSearchParams(location.search).get('mode') === 'ephemeral-test' ? '&mode=ephemeral-test' : ''}`;open.target='_blank';open.rel='noopener';
+      const testData = new URLSearchParams(location.search).get('mode') === 'ephemeral-test' ? `&mode=ephemeral-test&data=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(project)))) )}` : '';
+      const open=node('a',`Open ${project.fields.x_agent_name||'your agent'}’s app ↗`,guide);open.className='prepared-open-candidate';open.href=`/agent-app.html?project=${encodeURIComponent(project.project_id)}${testData}`;open.target='_blank';open.rel='noopener';
       guideAction('1 · Try your agent ↓','#prepared-conversation');
       guideAction(decision?'2 · See quality results ↓':'2 · Check agent quality ↓','#prepared-quality');
       node('small','Opens a clean chat app using this saved build and portrait. Keep the Factory server running. Public release is still pending review.',guide);
