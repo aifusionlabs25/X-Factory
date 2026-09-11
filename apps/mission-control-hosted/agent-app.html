@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your agent</title><link rel="stylesheet" href="agent-app.css"><script src="agent-app.js" defer></script></head>
+<body><main><header><a href="/">← Back to Factory</a><span>Local working draft</span></header>
+<section class="identity"><img id="portrait" hidden alt="Agent portrait"><div><h1 id="name">Opening your agent…</h1><p id="company"></p></div></section>
+<p id="status" role="status">Loading the saved build.</p>
+<section id="conversation" aria-label="Conversation" aria-live="polite"></section>
+<form id="chat"><label for="message">Your message</label><textarea id="message" rows="3" maxlength="3000" placeholder="Ask me a question…" required></textarea><div class="actions"><button id="send" disabled>Send message →</button><button id="fresh" type="button" disabled>Start fresh conversation</button></div></form>
+<details><summary>Handoff notes</summary><p>Prepared notes for your review; nothing is sent automatically.</p><pre id="handoff">No request yet.</pre></details>
+<footer>This app uses the Factory’s running local server and the reviewed agent build. Each message uses one Hermes/Luna call. Seven messages per conversation. Quality review and publishing remain separate.</footer></main></body></html>
