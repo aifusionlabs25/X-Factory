@@ -148,7 +148,7 @@
   banner.className = "hosted-mode-banner";
   banner.setAttribute("role", "status");
   banner.innerHTML = TEST_MODE
-    ? "<strong>EPHEMERAL TEST MODE · IN-MEMORY ONLY</strong><span>Run the full owner journey here. Refreshing this tab resets everything; no provider, repo, ANAM, or Vercel writes occur.</span><a href=\"?mode=readonly\">Return to read-only ↗</a><a href=\"http://127.0.0.1:8877/\">Open local Factory ↗</a>"
+    ? "<strong>EPHEMERAL TEST MODE · IN-MEMORY ONLY</strong><span>Run the full owner journey here. The Factory tab resets its session on refresh; generated-app links carry a test-only snapshot. Do not use client secrets. No provider, repo, ANAM, or Vercel writes occur.</span><a href=\"?mode=readonly\">Return to read-only ↗</a><a href=\"http://127.0.0.1:8877/\">Open local Factory ↗</a>"
     : "<strong>HOSTED MISSION CONTROL · READ-ONLY PREVIEW</strong><span>Browse the workflow and validated chassis here. Use the local Factory for research, approval, builds, and releases.</span><a href=\"?mode=ephemeral-test\">Open ephemeral test mode ↗</a><a href=\"http://127.0.0.1:8877/\">Open local Factory ↗</a>";
   document.body.prepend(banner);
 })();
