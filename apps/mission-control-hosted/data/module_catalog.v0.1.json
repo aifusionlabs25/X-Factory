@@ -1,0 +1,90 @@
+{
+  "schema_version": "0.1",
+  "selection_method": "CONTROLLED_DETERMINISTIC_RULES",
+  "modules": [
+    {
+      "module_id": "CMP-BOUNDARY-FIRST-CONCIERGE",
+      "name": "Boundary-first conversation core",
+      "category": "conversation",
+      "always_include": true,
+      "keywords": [],
+      "evidence_refs": ["EVD-EVAN-PAL-BLUEPRINT"]
+    },
+    {
+      "module_id": "CMP-DETERMINISTIC-CANDIDATE-BUNDLE",
+      "name": "Deterministic candidate bundle",
+      "category": "factory-governance",
+      "always_include": true,
+      "keywords": [],
+      "evidence_refs": ["EVD-MORGAN-GREENFIELD-PILOT"]
+    },
+    {
+      "module_id": "CMP-STRUCTURED-SESSION-SNAPSHOT",
+      "name": "Structured session and handoff",
+      "category": "session-state",
+      "always_include": false,
+      "keywords": ["collect", "intake", "qualify", "qualification", "lead", "handoff", "summary", "notes", "form"],
+      "evidence_refs": ["EVD-JORDAN-STRUCTURED-SNAPSHOT"]
+    },
+    {
+      "module_id": "CMP-APPROVED-KNOWLEDGE-ANSWERS",
+      "name": "Approved knowledge answers",
+      "category": "knowledge",
+      "always_include": false,
+      "keywords": ["answer", "faq", "knowledge", "question", "support", "help"],
+      "evidence_refs": ["EVD-SYNTHETIC-CONCIERGE-V2"]
+    },
+    {
+      "module_id": "CMP-HUMAN-REVIEW-HANDOFF",
+      "name": "Human review handoff",
+      "category": "handoff",
+      "always_include": false,
+      "keywords": ["handoff", "escalate", "review", "staff", "human", "lead"],
+      "evidence_refs": ["EVD-SYNTHETIC-CONCIERGE-V2"]
+    },
+    {
+      "module_id": "CMP-ANAM-PRESENCE-SHELL",
+      "name": "ANAM avatar presence shell",
+      "category": "experience",
+      "always_include": false,
+      "keywords": ["avatar", "voice", "anam", "persona", "visual"],
+      "evidence_refs": ["EVD-ANAM-MIA-STOCK-REFERENCE"]
+    },
+    {
+      "module_id": "CMP-CLIENT-KNOWLEDGE-PACK",
+      "name": "Approved client knowledge pack",
+      "category": "knowledge-option",
+      "always_include": false,
+      "keywords": [],
+      "evidence_refs": [],
+      "commissioning_option": true,
+      "requires_knowledge_package": true,
+      "description": "Build one immutable, owner-reviewed local package into this named candidate's tested knowledge core.",
+      "requirement": "Create the instance KB, system prompt, traceability map, and tests from only the exact approved entries; do not install or deploy them."
+    },
+    {
+      "module_id": "CMP-APPOINTMENT-REQUEST-PACKET",
+      "name": "Appointment request packet",
+      "category": "handoff-option",
+      "always_include": false,
+      "keywords": [],
+      "evidence_refs": [],
+      "commissioning_option": true,
+      "requires_knowledge_package": false,
+      "description": "Collect preferred timing for staff review without booking, promising, or sending.",
+      "requirement": "Collect a visitor's preferred appointment windows in the local handoff while making no booking or availability promise."
+    },
+    {
+      "module_id": "CMP-LEAD-QUALIFICATION-SCORECARD",
+      "name": "Lead qualification scorecard",
+      "category": "qualification-option",
+      "always_include": false,
+      "keywords": [],
+      "evidence_refs": [],
+      "commissioning_option": true,
+      "requires_knowledge_package": false,
+      "description": "Structure explicit fit signals for human review without hidden or autonomous decisions.",
+      "requirement": "Summarize only explicitly supplied qualification signals in a visible scorecard for human review, with unknown values labeled unknown."
+    }
+  ]
+}
