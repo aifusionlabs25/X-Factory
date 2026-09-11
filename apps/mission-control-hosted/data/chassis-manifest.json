@@ -1,0 +1,96 @@
+{
+  "schema_version": "0.1",
+  "chassis_id": "operational-qa-concierge",
+  "version": "1.0.0",
+  "status": "LOCAL_VALIDATED_CHASSIS",
+  "role_title": "Operational QA Concierge",
+  "summary": "A reusable concierge foundation that answers approved questions, qualifies a request, maintains visible notes, and prepares a structured human-review handoff.",
+  "source": {
+    "mission_id": "draft-operational-qa-concierge-20260821-064103-a3e197",
+    "build_root_digest": "a0641dbb54f423c4e26e658e5942e947077fca203fb6a1cfda42cb6558ac0304",
+    "semantic_review": "HERMES_LUNA_UNANIMOUS_PASS",
+    "review_id": "review-20260822-001005",
+    "identity_removed": true,
+    "anam_binding_removed": true
+  },
+  "invariants": {
+    "purpose_template": "Create a client-specific operational concierge that answers approved questions, qualifies requests, maintains visible notes, and prepares a structured local review handoff.",
+    "must_accomplish": [
+      "Answer approved questions",
+      "Qualify the visitor's request",
+      "Maintain visible notes",
+      "Prepare a structured staff handoff"
+    ],
+    "never_do": [
+      "Invent business facts",
+      "Quote final prices without client authority",
+      "Promise availability",
+      "Book or send anything without explicit approval"
+    ],
+    "output_artifact": "Structured staff handoff",
+    "prompt_layers": [
+      "Universal X-Agent kernel",
+      "Operational concierge role chassis",
+      "Client operating rules",
+      "Identity and persona overlay",
+      "Knowledge authority manifest",
+      "Integration permissions"
+    ]
+  },
+  "configurable_slots": [
+    "x_agent_name",
+    "client_name",
+    "personality",
+    "target_users",
+    "client_context",
+    "additional_requirements",
+    "additional_boundaries",
+    "presence_mode",
+    "visual_persona",
+    "voice",
+    "brand_assets",
+    "knowledge_package",
+    "integration_permissions"
+  ],
+  "modules": [
+    "CMP-BOUNDARY-FIRST-CONCIERGE",
+    "CMP-DETERMINISTIC-CANDIDATE-BUNDLE",
+    "CMP-STRUCTURED-SESSION-SNAPSHOT",
+    "CMP-APPROVED-KNOWLEDGE-ANSWERS",
+    "CMP-HUMAN-REVIEW-HANDOFF",
+    "CMP-ANAM-PRESENCE-SHELL"
+  ],
+  "knowledge_contract": {
+    "runtime_knowledge_included": false,
+    "required_client_materials": [
+      "Company overview",
+      "Approved services or capabilities",
+      "Approved FAQs",
+      "Pricing and promise authority policy",
+      "Escalation and handoff rules"
+    ],
+    "ingestion_status": "COMMISSIONING_INPUT_REQUIRED",
+    "unsupported_fact_policy": "ESCALATE_WITHOUT_GUESSING"
+  },
+  "evaluation": {
+    "reusable_scenarios": [
+      "Happy-path request qualification",
+      "Unsupported knowledge request",
+      "Explicit correction isolation",
+      "Prohibited-action request",
+      "Text fallback"
+    ],
+    "final_instance_recertification_required": true,
+    "client_knowledge_tests_required": true,
+    "identity_consistency_tests_required": true
+  },
+  "authority": {
+    "provider_calls": 0,
+    "client_data_attached": false,
+    "credentials_attached": false,
+    "deployment_authorized": false,
+    "production_approved": false,
+    "claim": "Reusable locally validated role chassis; not a production-approved X-Agent"
+  },
+  "chassis_sha256": "7b9ec705ccdbac09272964485ea3d71ae06d6c0afe7874fc06291e90c931bde2"
+}
