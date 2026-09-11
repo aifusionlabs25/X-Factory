@@ -27,6 +27,26 @@ typed Hermes `needs_input` block kind. See
 
 Hermes Desktop is the factory surface and profile runtime. This directory is the authoritative, deterministic contract and artifact store.
 
+## Control-plane handoff (Phase 1)
+
+The Factory keeps one authoritative append-only project history in
+`drafts/prepared-agents/project-*/revisions`. After a reviewed local candidate
+is built, it emits a pending accepted-package draft under the candidate's
+`input/control-plane/` directory. That envelope is hash-bound to the exact
+prompt, approved knowledge snapshot, runtime contract/settings, candidate
+binding, and existing evaluation evidence. It is still pending evaluation and
+owner acceptance; no provider, profile, deployment, or release action occurs.
+The adopted architecture-reset schemas and their source hashes live in
+`contracts/control_plane/`.
+
+Once a package is explicitly accepted, Phase 3 can prepare a separate local
+preview release record with verification pending. Preparing that record does
+not activate ANAM, install a profile, deploy, or mark the candidate live.
+Phase 4 can then record a verified preview and rollback evidence as a new
+immutable record; it still does not make the candidate production-live.
+Phase 6 prepares (but does not execute) a locked production-promotion plan
+requiring explicit approval and keeping provider actions at zero.
+
 Phase 0 lifecycle: `SPECIFICATION_ONLY`.
 
 ## Crew

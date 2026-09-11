@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "control_plane_schema_adoption",
+  "source": "30,000-ft architecture reset – X-Agent system consolidation/schemas",
+  "schemas": {
+    "accepted-package-draft.schema.json": "9ce54651f38c9794bae95fe8e306353a13dd9bf72e02f200c7fe9f2b5fc27c56",
+    "accepted-package.schema.json": "30de467d21483df6e32d1dd62af8f6c91398683ead0f84d054d9ef3e503a6a24",
+    "release-record.schema.json": "86282b1cc27f090737418c6ad32bca4a4ca05182966b06470f4ac97e40e193d4",
+    "registry-snapshot.v1.schema.json": "ad99c52794ee50278ea5ec1e7d3293a516529c267035f8d9a74075b87361952d",
+    "production-promotion-plan.v1.schema.json": "eba30fd478180476770b09bd02b215227b1a667d8ef7d94674669f71582e682f"
+  },
+  "adopted_without_execution_authority": true
+}

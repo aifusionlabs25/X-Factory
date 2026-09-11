@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "X-Agent Factory Registry Snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "kind": {"const": "factory_registry_snapshot"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "project_id": {"type": "string", "minLength": 1},
+          "status": {"type": "string", "minLength": 1},
+          "mission_id": {"type": ["string", "null"]},
+          "agent_id": {"type": ["string", "null"]},
+          "instance_id": {"type": ["string", "null"]},
+          "current_lane": {"enum": ["PREPARATION", "APPROVED_NOT_BUILT", "BUILT_CANDIDATE", "PACKAGE_DRAFT", "ACCEPTED_PACKAGE", "PREVIEW_PREPARED", "PREVIEW_VERIFIED", "INTEGRITY_REVIEW"]},
+          "revision": {"type": "integer", "minimum": 1},
+          "revision_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "package": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "draft": {"anyOf": [{"$ref": "#/$defs/artifact"}, {"type": "null"}]},
+              "accepted": {"anyOf": [{"$ref": "#/$defs/artifact"}, {"type": "null"}]}
+            },
+            "required": ["draft", "accepted"]
+          },
+          "release_records": {"type": "array", "items": {"$ref": "#/$defs/release"}},
+          "integrity": {"enum": ["PASS", "REVIEW_REQUIRED"]}
+        },
+        "required": ["project_id", "status", "mission_id", "agent_id", "instance_id", "current_lane", "revision", "revision_sha256", "package", "release_records", "integrity"]
+      }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
+      "required": ["path", "sha256"]
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "status": {"enum": ["prepared", "verified", "live", "failed", "rolled_back"]},
+        "environment": {"enum": ["preview", "production"]}
+      },
+      "required": ["path", "sha256", "status", "environment"]
+    }
+  },
+  "required": ["schema_version", "kind", "generated_at", "entries"]
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "X-Agent Production Promotion Plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "kind": {"const": "production_promotion_plan"},
+    "plan_id": {"type": "string", "minLength": 1},
+    "status": {"const": "READY_FOR_EXPLICIT_EXECUTION"},
+    "source_release": {"$ref": "#/$defs/artifact"},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "environment": {"const": "production"},
+        "url": {"type": "string", "format": "uri", "pattern": "^https?://"},
+        "repository": {"type": "string", "minLength": 1},
+        "commit_sha": {"type": "string", "pattern": "^([a-f0-9]{40}|[a-f0-9]{64})$"}
+      },
+      "required": ["environment", "url", "repository", "commit_sha"]
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "approved_by": {"const": "Rob"},
+        "approved_at": {"type": "string", "format": "date-time"},
+        "receipt": {"$ref": "#/$defs/artifact"}
+      },
+      "required": ["approved_by", "approved_at", "receipt"]
+    },
+    "rollback": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "target_record_id": {"type": "string", "minLength": 1},
+        "procedure": {"$ref": "#/$defs/artifact"}
+      },
+      "required": ["target_record_id", "procedure"]
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "authorized": {"const": false},
+        "provider_actions": {"const": 0}
+      },
+      "required": ["authorized", "provider_actions"]
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {"path": {"type": "string", "minLength": 1}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}},
+      "required": ["path", "sha256"]
+    }
+  },
+  "required": ["schema_version", "kind", "plan_id", "status", "source_release", "target", "approval", "rollback", "execution"]
+}

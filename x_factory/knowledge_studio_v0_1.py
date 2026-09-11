@@ -99,9 +99,13 @@ def _document(identity: dict[str, str], title: str, entries: list[dict[str, Any]
     return "\n".join(lines).rstrip() + "\n"
 
 
-def compile_knowledge_studio(bundle: dict[str, Any], mission_id: str) -> dict[str, Any]:
+def compile_knowledge_studio(bundle: dict[str, Any], mission_id: str, *, preserve_reviewed=False) -> dict[str, Any]:
     """Return immutable curated artifacts while retaining the exact source bundle separately."""
     entries = [_curate(item, bundle["identity"]["client_name"]) for item in bundle["entries"]]
+    if preserve_reviewed:
+        for entry, source in zip(entries, bundle['entries']):
+            entry.update(title=source['title'], statement=source['statement'], aliases=[source['title'].casefold()],
+                         category='APPROVED_FAQS' if source['kind']=='FAQ' else 'COMPANY_OVERVIEW', transformation='EXACT_NORMALIZED')
     if len({item["entry_id"] for item in entries}) != len(entries):
         raise KnowledgeStudioError("Duplicate curated knowledge entry IDs")
     identity = deepcopy(bundle["identity"])

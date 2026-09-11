@@ -78,6 +78,21 @@ def _system_prompt(brief: dict[str, Any], entries: list[dict[str, Any]]) -> str:
         if entries
         else "No owner-approved Knowledge Bank is currently bound. Operate in limited-intake mode and do not infer client facts."
     )
+    from x_factory.role_library_v0_1 import role_for_brief, role_prompt_section
+    role = role_for_brief(brief)
+    recipe = role if role and role['status'] == 'LOCAL_ROLE_RECIPE' else None
+    conversation_method = role_prompt_section(recipe['chassis_id']) if recipe else """For every turn:
+1. Determine whether it is an informational question, service request, qualification detail, correction, unknown requiring review, or handoff request.
+2. For a factual answer, locate explicit support in the approved Knowledge Bank before responding.
+3. Answer supported questions conversationally and retain the supporting entry ID only in internal trace data.
+4. If the user is making a request, collect only the details needed for the approved handoff.
+5. Apply corrections to current truth while preserving previous values in correction history.
+6. Summarize the active request accurately when the user requests a handoff.
+
+Informational questions may appear in transcript evidence but must not overwrite an active service request, category, location, urgency, or other intake fields. Unknown questions may populate secondary questions and review flags but must not replace the primary request or automatically control its operational routing."""
+    routing_rule = ('Keep the primary task and its outstanding questions distinct. Follow the approved escalation policy for this role; do not infer a service category or urgency.'
+                    if recipe else 'Route the primary need according to its service category and urgency.')
+    success_product = 'work product' if recipe else 'handoff'
     return f"""# SYSTEM PROMPT — {brief['display_name']}
 
 ## 1. Identity and role
@@ -98,7 +113,7 @@ Client context is background, not permission to invent facts. Only the approved 
 ## 4. Success outcomes
 {_bullet_lines(brief['must_accomplish'])}
 
-Success means helping the user efficiently, preserving current truth, clearly separating confirmed facts from unknowns, and producing the required handoff without making an unauthorized promise or action.
+Success means helping the user efficiently, preserving current truth, clearly separating confirmed facts from unknowns, and producing the required {success_product} without making an unauthorized promise or action.
 
 ## 5. Personality and communication
 {personality}
@@ -109,15 +124,7 @@ Success means helping the user efficiently, preserving current truth, clearly se
 - Do not mention knowledge entry IDs, schemas, queues, or safety machinery in customer-facing replies.
 
 ## 6. Conversation operating method
-For every turn:
-1. Determine whether it is an informational question, service request, qualification detail, correction, unknown requiring review, or handoff request.
-2. For a factual answer, locate explicit support in the approved Knowledge Bank before responding.
-3. Answer supported questions conversationally and retain the supporting entry ID only in internal trace data.
-4. If the user is making a request, collect only the details needed for the approved handoff.
-5. Apply corrections to current truth while preserving previous values in correction history.
-6. Summarize the active request accurately when the user requests a handoff.
-
-Informational questions may appear in transcript evidence but must not overwrite an active service request, category, location, urgency, or other intake fields. Unknown questions may populate secondary questions and review flags but must not replace the primary request or automatically control its operational routing.
+{conversation_method}
 
 ## 7. Knowledge Bank contract
 {knowledge_status}
@@ -142,7 +149,7 @@ When approved knowledge does not support an answer:
 - Keep current operational truth separate from conversation history.
 - A correction replaces the current field value and records both previous and corrected values.
 - Preserve the customer's original problem description in the request summary.
-- Route the primary need according to its service category and urgency.
+- {routing_rule}
 - Keep unrelated unknowns as secondary questions with explicit review flags and a staff-readable routing note.
 - Prepare: {brief['output_artifact']}.
 
@@ -168,7 +175,12 @@ This is a tested local candidate system prompt. It is not installed, deployed, r
 def compile_prompt_package(brief: dict[str, Any], entries: list[dict[str, Any]], mission_id: str) -> dict[str, Any]:
     """Return immutable Troy artifacts; the caller owns atomic filesystem writes."""
     entries = sorted(deepcopy(entries), key=lambda item: item["entry_id"])
-    prompt = _system_prompt(brief, entries)
+    prepared = brief.get('prepared_agent')
+    if prepared:
+        from x_factory.prepared_agent_v0_1 import approved_prompt
+        prompt = approved_prompt(prepared)
+    else:
+        prompt = _system_prompt(brief, entries)
     ids = [item["entry_id"] for item in entries]
     assumptions = {
         "schema_version": "0.1",
@@ -196,6 +208,17 @@ def compile_prompt_package(brief: dict[str, Any], entries: list[dict[str, Any]],
             {"test_id": "PT-008", "focus": "ANAM fallback", "expected": "Text remains identical when avatar or voice transport is unavailable."},
         ],
     }
+    from x_factory.role_library_v0_1 import role_for_brief, role_test_cases
+    role = role_for_brief(brief)
+    if role and role['status'] == 'LOCAL_ROLE_RECIPE' and not prepared:
+        for case in role_test_cases(role['chassis_id']):
+            passed = case['assertion']['value'].casefold() in prompt.casefold()
+            if not passed:
+                raise PromptForgeError(f"Role prompt contract failed: {case['test_id']}")
+            tests['tests'].append({**case, 'artifact_assertion_result': 'PASS'})
+        assumptions['assumptions'].append({
+            'id': 'A-ROLE', 'statement': 'The selected role is a draft recipe over the shared local engine; its prompt contract checks do not prove live conversational behavior.', 'material': True,
+        })
     owner_summary = f"""# Troy Prompt Forge receipt
 
 **X-Agent:** {brief['display_name']}  
@@ -208,6 +231,11 @@ Troy converted the owner's plain-English System Prompt Brief into a complete loc
 
 Troy did not invent client facts, approve his own work, call a provider, install a runtime, or authorize deployment or production.
 """
+    if prepared:
+        owner_summary = (f"# Reviewed System Prompt preserved\n\nThe exact owner-reviewed Troy draft was copied byte-for-byte. "
+                         f"Project: {prepared['project_id']}\nPackage: {prepared['package_sha256']}\n"
+                         "Compilation used zero provider calls. The separately recorded drafting stages used Hermes inference. "
+                         "Assembly checks do not certify live behavior or authorize production.\n")
     values = {
         "instance/system-prompt/SYSTEM_PROMPT.md": prompt.encode("utf-8"),
         "instance/system-prompt/PROMPT_ASSUMPTIONS.v0.1.json": canonical(assumptions),

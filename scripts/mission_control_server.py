@@ -6,7 +6,9 @@ from __future__ import annotations
 import argparse
 import json
 import mimetypes
+import os
 import re
+import socket
 import sys
 import threading
 import webbrowser
@@ -85,6 +87,15 @@ from x_factory.website_ingestion_v0_1 import (  # noqa: E402
     WebsiteCaptureError,
     capture_website_knowledge,
 )
+from x_factory.hunter_draft_v0_1 import HunterDraftError, list_prospects, review_prospect, accept_draft, reopen_draft
+from x_factory.hunter_knowledge_v0_1 import knowledge_plan, prepare_knowledge
+from x_factory.hunter_inbox_v0_1 import HunterInboxError, list_inbox, send_to_factory, use_handoff
+from x_factory.idea_research_v0_1 import start_research, cancel_research
+from x_factory.idea_research_review_v0_1 import job_view, review_direction
+from x_factory.role_library_v0_1 import list_roles
+from x_factory.hunter_refresh_v0_1 import HunterRefreshError, create_refresh_request
+from x_factory.idea_intake_v0_1 import IdeaIntakeError, prepare_idea, research_idea, get_idea
+from x_factory.control_plane_registry_v0_1 import registry_snapshot
 
 
 APP_ROOT = ROOT / "apps/mission-control"
@@ -137,25 +148,71 @@ class MissionControlHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802
         path = unquote(urlparse(self.path).path)
+        if path.startswith('/api/prepared-agents/'):
+            from x_factory.prepared_agent_v0_1 import get_project
+            try:
+                self.send_json(HTTPStatus.OK, get_project(path.removeprefix('/api/prepared-agents/')))
+            except (ValueError, OSError) as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {'error': str(error)})
+            return
+        if path == '/api/roles':
+            self.send_json(HTTPStatus.OK, {'roles': list_roles()})
+            return
+        if path.startswith('/api/idea-research/'):
+            try:
+                self.send_json(HTTPStatus.OK, job_view(path.removeprefix('/api/idea-research/')))
+            except (ValueError, OSError) as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {'error': str(error)})
+            return
+        if path.startswith('/api/ideas/'):
+            try:
+                self.send_json(HTTPStatus.OK, get_idea(path.removeprefix('/api/ideas/')))
+            except (ValueError, IdeaIntakeError) as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {'error': str(error)})
+            return
+        if path == "/api/hunter/prospects":
+            try:
+                self.send_json(HTTPStatus.OK, list_prospects())
+            except HunterDraftError as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
+            return
+        if path == "/api/hunter/inbox":
+            try:
+                self.send_json(HTTPStatus.OK, list_inbox())
+            except HunterInboxError as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
+            return
         if path == "/api/status":
             self.send_json(
                 HTTPStatus.OK,
                 {
                     "status": "READY",
-                    "mode": "LOCAL_DETERMINISTIC_DRAFT",
+                    "mode": "LOCAL_BUILD_OPTIONAL_OWNER_STARTED_HERMES_RESEARCH",
                     "provider_calls": 0,
-                    "network_policy": "LOCALHOST_UI_EXPLICIT_SCOPED_WEBSITE_CAPTURE_ONLY",
+                    "provider_calls_scope": "LOCAL_BUILD_ONLY_RESEARCH_USAGE_IS_PER_JOB",
+                    "network_policy": "LOCALHOST_UI_OWNER_STARTED_PUBLIC_RESEARCH_AND_WEBSITE_CAPTURE",
                     "model_plan": "openai-codex / gpt-5.6-luna",
                     "semantic_review": "HERMES_LUNA_UNANIMOUS_PASS",
                     "anam_status": "VISUAL_TRANSPORT_PROVEN",
                     "factory_version": "1.9",
+                    "studio_intake_version": "1.1",
+                    "research_runtime": "HERMES_WEB_ONLY_OWNER_STARTED",
+                    "entry_sources": ["OWNER_IDEA", "COMPANY_WEBSITE", "X_POST_INSPIRATION", "HUNTER_REVIEWED_DRAFT"],
+                    "idea_research_mode": "HERMES_WEB_RESEARCH_THEN_OWNER_DIRECTION_REVIEW",
+                    "role_library_count": len(list_roles()),
                     "website_review_build_interlock": True,
                     "owner_progressive_disclosure": True,
                     "internal_stations": 9,
                     "knowledge_engineering": "OMNARA_KNOWLEDGE_STUDIO",
-                    "capabilities": ["FIVE_STEP_OWNER_WORKFLOW", "EIGHT_INTERNAL_STATIONS", "TROY_PROMPT_FORGE", "ANAM_STANDARD_ARTIFACTS", "LOCAL_BUILD", "REVISION_FROM_HISTORY", "X_AGENT_CHASSIS_DEPOT", "CLIENT_COMMISSIONING", "IDENTITY_SEPARATION", "IMMUTABLE_KNOWLEDGE_PACKAGES", "OWNER_KNOWLEDGE_APPROVAL", "SCOPED_PUBLIC_WEBSITE_CAPTURE", "WEBSITE_SOURCE_PROVENANCE", "WEBSITE_RELEVANCE_FILTER", "WEBSITE_BOILERPLATE_DEDUP", "KNOWLEDGE_PROMPT_SEPARATION", "DETERMINISTIC_KNOWLEDGE_COMPILER", "SOURCE_LINKED_OWNER_REVIEW", "INSTANCE_KNOWLEDGE_BUILDER", "PERSONALIZED_SYSTEM_PROMPT", "KNOWLEDGE_TRACEABILITY", "INSTANCE_KNOWLEDGE_TESTS", "INSTANCE_RUNTIME_CONTRACT_LOCK", "CROSS_ARTIFACT_IDENTITY_VALIDATION", "LOCAL_MULTI_TURN_BEHAVIOR_CERTIFICATION", "FRESH_SESSION_NON_PERSISTENCE_PROOF", "RUNTIME_BEHAVIOR_PROOF_PLAN", "RUNTIME_FOUNDRY_PACKAGE", "HERMES_PROFILE_BLUEPRINT", "LOCAL_RUNTIME_BOUNDARY_CONSOLE", "GROUNDED_MATCHER_V0_2", "REALISTIC_PARAPHRASE_CERTIFICATION", "PRIMARY_UNKNOWN_REQUEST_CAPTURE", "PROVIDER_FREE_PREVIEW_DISCLOSURE", "INACTIVE_RUNTIME_CANARY", "MODULE_OPTIONS_BAY", "X_LINK_PACKAGE", "HERMES_REVIEW_CERTIFIED", "ANAM_TRANSPORT_PROVEN", "MISSION_PRESENCE_PREVIEW", "INDEPENDENT_LOCAL_REVIEW", "HERMES_SLASH_REVIEW_PACKET", "AUTOMATIC_LOCAL_COMPLETION", "PORTER_STAGING_REPO", "PORTER_OFFICIAL_RUNTIME_GATE", "PRODUCT_METRICS", "OWNER_CONTROL_PACKETS", "OWNER_EXECUTION_REQUESTS", "GUARDED_EXECUTOR_PREFLIGHT"],
+                    "capabilities": ["FIVE_STEP_OWNER_WORKFLOW", "EIGHT_INTERNAL_STATIONS", "TROY_PROMPT_FORGE", "ANAM_STANDARD_ARTIFACTS", "LOCAL_BUILD", "REVISION_FROM_HISTORY", "X_AGENT_CHASSIS_DEPOT", "CLIENT_COMMISSIONING", "IDENTITY_SEPARATION", "IMMUTABLE_KNOWLEDGE_PACKAGES", "OWNER_KNOWLEDGE_APPROVAL", "SCOPED_PUBLIC_WEBSITE_CAPTURE", "WEBSITE_SOURCE_PROVENANCE", "WEBSITE_RELEVANCE_FILTER", "WEBSITE_BOILERPLATE_DEDUP", "KNOWLEDGE_PROMPT_SEPARATION", "DETERMINISTIC_KNOWLEDGE_COMPILER", "SOURCE_LINKED_OWNER_REVIEW", "INSTANCE_KNOWLEDGE_BUILDER", "PERSONALIZED_SYSTEM_PROMPT", "KNOWLEDGE_TRACEABILITY", "INSTANCE_KNOWLEDGE_TESTS", "INSTANCE_RUNTIME_CONTRACT_LOCK", "CROSS_ARTIFACT_IDENTITY_VALIDATION", "LOCAL_MULTI_TURN_BEHAVIOR_CERTIFICATION", "FRESH_SESSION_NON_PERSISTENCE_PROOF", "RUNTIME_BEHAVIOR_PROOF_PLAN", "RUNTIME_FOUNDRY_PACKAGE", "HERMES_PROFILE_BLUEPRINT", "LOCAL_RUNTIME_BOUNDARY_CONSOLE", "GROUNDED_MATCHER_V0_2", "REALISTIC_PARAPHRASE_CERTIFICATION", "PRIMARY_UNKNOWN_REQUEST_CAPTURE", "PROVIDER_FREE_PREVIEW_DISCLOSURE", "INACTIVE_RUNTIME_CANARY", "MODULE_OPTIONS_BAY", "X_LINK_PACKAGE", "HERMES_REVIEW_CERTIFIED", "ANAM_TRANSPORT_PROVEN", "MISSION_PRESENCE_PREVIEW", "INDEPENDENT_LOCAL_REVIEW", "HERMES_SLASH_REVIEW_PACKET", "AUTOMATIC_LOCAL_COMPLETION", "PORTER_STAGING_REPO", "PORTER_OFFICIAL_RUNTIME_GATE", "PRODUCT_METRICS", "OWNER_CONTROL_PACKETS", "OWNER_EXECUTION_REQUESTS", "GUARDED_EXECUTOR_PREFLIGHT", "HUNTER_FACTORY_LEAD_INBOX", "HUNTER_REFRESH_REQUESTS"],
                 },
             )
+            return
+        if path == "/api/control-plane/registry":
+            try:
+                self.send_json(HTTPStatus.OK, registry_snapshot())
+            except (ValueError, OSError) as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
             return
         if path == "/api/missions":
             self.send_json(HTTPStatus.OK, {"missions": [public_record_view(record) for record in list_missions()]})
@@ -400,6 +457,130 @@ class MissionControlHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
+        prepared_route = re.fullmatch(r'/api/prepared-agents/(project-[a-f0-9]{24})/(edit|approve|build|refresh|text-session|text-turn|dojo|portrait)', path)
+        if path in {'/api/prepared-agents','/api/prepared-from-hunter'} or prepared_route:
+            from x_factory.prepared_agent_v0_1 import start_project, edit_project, approve_project, build_project, refresh_project, start_from_hunter
+            if (self.headers.get('Origin') not in {None, f'http://127.0.0.1:{self.server.server_port}'}
+                    or self.headers.get('Sec-Fetch-Site') == 'cross-site'
+                    or self.headers.get('Content-Type', '').split(';')[0] != 'application/json'):
+                self.send_json(HTTPStatus.FORBIDDEN, {'error': 'Use the local prepared-agent controls.'})
+                return
+            try:
+                length = int(self.headers.get('Content-Length', '0'))
+                if not 2 <= length <= MAX_BODY:
+                    raise ValueError('Prepared-agent input must be JSON under 64 KB')
+                payload = json.loads(self.rfile.read(length).decode('utf-8'))
+                if not isinstance(payload, dict):
+                    raise ValueError('Prepared-agent input must be an object')
+                if path == '/api/prepared-from-hunter':
+                    result=start_from_hunter(payload)
+                elif prepared_route and prepared_route.group(2)=='portrait':
+                    from x_factory.prepared_agent_v0_1 import save_portrait
+                    result=save_portrait(prepared_route.group(1),payload)
+                elif prepared_route and prepared_route.group(2)=='dojo':
+                    from x_factory.dojo_candidate_v0_1 import start_evaluation
+                    result=start_evaluation(prepared_route.group(1),payload)
+                elif prepared_route and prepared_route.group(2) in {'text-session','text-turn'}:
+                    from x_factory.candidate_text_runtime_v0_1 import start_session, turn, candidate
+                    project_id=prepared_route.group(1)
+                    if prepared_route.group(2)=='text-session':
+                        if set(payload)!={'owner_requested','candidate_sha256'} or payload['owner_requested'] is not True or candidate(project_id)[0]['candidate_sha256']!=payload['candidate_sha256']:
+                            raise ValueError('Open an explicit test session for this exact candidate')
+                        result=start_session(project_id)
+                    else:
+                        session_id=payload.pop('session_id',None)
+                        result=turn(project_id,session_id,payload)
+                elif prepared_route:
+                    action = {'edit': edit_project, 'approve': approve_project, 'build': build_project, 'refresh':refresh_project}[prepared_route.group(2)]
+                    result = action(prepared_route.group(1), payload)
+                else:
+                    if set(payload) != {'idea_id', 'owner_requested'} or payload['owner_requested'] is not True:
+                        raise ValueError('Start preparation explicitly; it uses bounded Hermes research and drafting calls')
+                    result = start_project(payload['idea_id'])
+                self.send_json(HTTPStatus.OK, result)
+            except (ValueError, OSError) as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {'error': str(error)[:700]})
+            except Exception:
+                self.send_json(HTTPStatus.BAD_REQUEST, {'error': 'Preparation stopped safely. Your saved project and completed evidence remain available.'})
+            return
+        research_route = re.fullmatch(r'/api/ideas/(idea-[a-f0-9]{24})/(research-jobs|research-review)', path)
+        cancel_route = re.fullmatch(r'/api/idea-research/(research-[a-f0-9]{24})/cancel', path)
+        if research_route or cancel_route or path == '/api/roles/recommend':
+            if (self.headers.get('Origin') not in {None, f'http://127.0.0.1:{self.server.server_port}'}
+                    or self.headers.get('Sec-Fetch-Site') == 'cross-site'
+                    or self.headers.get('Content-Type', '').split(';')[0] != 'application/json'):
+                self.send_json(HTTPStatus.FORBIDDEN, {'error': 'Use the local Factory research controls.'})
+                return
+            try:
+                length = int(self.headers.get('Content-Length', '0'))
+                if not 2 <= length <= MAX_BODY:
+                    raise ValueError('Research input must be JSON under 64 KB.')
+                payload = json.loads(self.rfile.read(length).decode('utf-8'))
+                if not isinstance(payload, dict):
+                    raise ValueError('Research input must be an object.')
+                if path == '/api/roles/recommend':
+                    if set(payload) != {'purpose'}:
+                        raise ValueError('Role recommendation requires only the purpose.')
+                    result = recommend_chassis(payload['purpose'])
+                elif cancel_route:
+                    if payload != {'owner_requested': True}:
+                        raise ValueError('Cancel research using the owner control.')
+                    result = cancel_research(cancel_route.group(1))
+                elif research_route.group(2) == 'research-review':
+                    result = review_direction(research_route.group(1), payload)
+                else:
+                    if set(payload) != {'owner_requested', 'draft_sha256'} or payload['owner_requested'] is not True:
+                        raise ValueError('Start research explicitly after reviewing your brief.')
+                    draft = get_idea(research_route.group(1))
+                    if draft['draft_sha256'] != payload['draft_sha256']:
+                        raise ValueError('The draft changed. Reopen it before starting research.')
+                    result = start_research(draft)
+                self.send_json(HTTPStatus.OK, result)
+            except (ValueError, UnicodeDecodeError, OSError) as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {'error': str(error)})
+            return
+        if path in {'/api/ideas/prepare', '/api/ideas/research'}:
+            origin = self.headers.get('Origin')
+            if (origin not in {None, f'http://127.0.0.1:{self.server.server_port}'} or
+                    self.headers.get('Sec-Fetch-Site') == 'cross-site' or
+                    self.headers.get('Content-Type', '').split(';')[0] != 'application/json'):
+                self.send_json(HTTPStatus.FORBIDDEN, {'error': 'Open this action in the local Factory workspace.'})
+                return
+            try:
+                length = int(self.headers.get('Content-Length', '0'))
+                if not 2 <= length <= MAX_BODY:
+                    raise IdeaIntakeError('Idea input must be JSON under 64 KB. Reduce attachment size.')
+                payload = json.loads(self.rfile.read(length).decode('utf-8'))
+                action = prepare_idea if path.endswith('/prepare') else research_idea
+                self.send_json(HTTPStatus.OK, action(payload))
+            except (ValueError, UnicodeDecodeError, IdeaIntakeError, KnowledgeLoadingError, KnowledgeCompilerError) as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {'error': str(error)})
+            except OSError:
+                self.send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {'error': 'The local idea draft could not be saved.'})
+            return
+        if path in {"/api/hunter/review", "/api/hunter/accept-draft", "/api/hunter/reopen-draft", "/api/hunter/knowledge-plan", "/api/hunter/prepare-knowledge", "/api/hunter/inbox/send", "/api/hunter/inbox/refresh", "/api/hunter/inbox/use"}:
+            # Only the separate prepare route may fetch/compile; none builds or approves facts.
+            origin = self.headers.get("Origin")
+            expected_origin = f"http://127.0.0.1:{self.server.server_port}"
+            if origin not in {None, expected_origin} or self.headers.get("Sec-Fetch-Site") == "cross-site" or self.headers.get("Content-Type", "").split(';')[0] != "application/json":
+                self.send_json(HTTPStatus.FORBIDDEN, {"error": "Draft review requires same-origin JSON."})
+                return
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                if not 2 <= length <= MAX_BODY:
+                    raise HunterDraftError("Draft request must be JSON under 64 KB.")
+                payload = json.loads(self.rfile.read(length).decode("utf-8"))
+                operation = {'/api/hunter/review': review_prospect, '/api/hunter/accept-draft': accept_draft, '/api/hunter/reopen-draft': reopen_draft,
+                             '/api/hunter/knowledge-plan': knowledge_plan, '/api/hunter/prepare-knowledge': prepare_knowledge,
+                             '/api/hunter/inbox/send': send_to_factory, '/api/hunter/inbox/refresh': create_refresh_request,
+                             '/api/hunter/inbox/use': use_handoff}[path]
+                result = operation(payload)
+                self.send_json(HTTPStatus.OK, result)
+            except (ValueError, UnicodeDecodeError, KnowledgeLoadingError, KnowledgeCompilerError) as error:
+                self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
+            except OSError:
+                self.send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": "Local review receipt could not be saved; nothing was built."})
+            return
         if path == "/api/chassis/recommend":
             try:
                 length = int(self.headers.get("Content-Length", "0"))
@@ -642,10 +823,16 @@ def main() -> int:
     args = parser.parse_args()
     if not APP_ROOT.is_dir():
         raise SystemExit("Mission Control application files are missing")
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), MissionControlHandler)
+    server = ThreadingHTTPServer(("127.0.0.1", args.port), MissionControlHandler, bind_and_activate=False)
+    # Windows SO_REUSEADDR can let an obsolete server keep serving the same port.
+    server.allow_reuse_address = False
+    if os.name == 'nt':
+        server.socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+    server.server_bind()
+    server.server_activate()
     url = f"http://127.0.0.1:{args.port}/"
     print(f"X-Factory Mission Control ready at {url}", flush=True)
-    print("Contained local draft: no provider calls, deployment, or production actions.", flush=True)
+    print("Local draft server: opening it starts no model call. Research, specialist preparation and optional live tests require explicit owner controls. No deployment or production actions.", flush=True)
     if args.open_browser:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
     try:

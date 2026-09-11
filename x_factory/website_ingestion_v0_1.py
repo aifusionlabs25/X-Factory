@@ -5,6 +5,7 @@ from __future__ import annotations
 import ipaddress
 import re
 import socket
+import zlib
 from collections import deque
 from datetime import datetime, timezone
 from html.parser import HTMLParser
@@ -18,7 +19,7 @@ from x_factory.mission_control_factory_v0_1 import sha256, slugify
 
 
 MAX_PAGES = 6
-MAX_RESPONSE_BYTES = 1024 * 1024
+MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 MAX_PAGE_TEXT = 48 * 1024
 MAX_REDIRECTS = 3
 USER_AGENT = "AI-Fusion-Labs-X-Factory-Website-Capture/0.1"
@@ -26,7 +27,10 @@ ALLOWED_CONTENT_TYPES = {"text/html", "text/plain"}
 
 
 class WebsiteCaptureError(KnowledgeLoadingError):
-    pass
+    def __init__(self, message: str, *, http_status: int | None = None, network_calls: int = 0) -> None:
+        super().__init__(message)
+        self.http_status = http_status
+        self.network_calls = network_calls
 
 
 class _NoRedirect(HTTPRedirectHandler):
@@ -158,12 +162,31 @@ def _default_fetch(url: str) -> tuple[int, dict[str, str], bytes]:
     try:
         with opener.open(request, timeout=12) as response:
             body = response.read(MAX_RESPONSE_BYTES + 1)
-            return response.status, {key.casefold(): value for key, value in response.headers.items()}, body
+            return _decode_http_response(response.status, {key.casefold(): value for key, value in response.headers.items()}, body)
     except HTTPError as error:
         body = error.read(MAX_RESPONSE_BYTES + 1)
-        return error.code, {key.casefold(): value for key, value in error.headers.items()}, body
+        return _decode_http_response(error.code, {key.casefold(): value for key, value in error.headers.items()}, body)
     except (URLError, TimeoutError, OSError) as error:
         raise WebsiteCaptureError(f"Website request failed safely: {error.reason if isinstance(error, URLError) else error}") from error
+
+
+def _decode_http_response(status, headers, body):
+    """Bound both compressed and decoded bytes before any text extraction."""
+    if len(body) > MAX_RESPONSE_BYTES:
+        raise WebsiteCaptureError('This page exceeds the 8 MB download limit. Use a smaller public About or Services page, or attach a text excerpt. App/login pages may not contain readable public knowledge.')
+    encoding = headers.get('content-encoding', 'identity').lower().strip()
+    if encoding in {'gzip', 'deflate'}:
+        try:
+            decoder = zlib.decompressobj(31 if encoding == 'gzip' else 15)
+            body = decoder.decompress(body, MAX_RESPONSE_BYTES + 1)
+            if len(body) > MAX_RESPONSE_BYTES or decoder.unconsumed_tail or not decoder.eof or decoder.unused_data:
+                raise ValueError('Invalid or oversized compressed page')
+        except (ValueError, zlib.error) as error:
+            raise WebsiteCaptureError('Compressed website content is malformed or exceeds the 8 MB decoded limit. Use a smaller public page or a text attachment.') from error
+        headers = {key: value for key, value in headers.items() if key not in {'content-encoding', 'content-length'}}
+    elif encoding not in {'', 'identity'}:
+        raise WebsiteCaptureError('Unsupported website content compression')
+    return status, headers, body
 
 
 def _fetch_page(
@@ -189,9 +212,13 @@ def _fetch_page(
             current = urljoin(current, location)
             continue
         if status < 200 or status >= 300:
-            raise WebsiteCaptureError(f"Website returned HTTP {status}")
+            raise WebsiteCaptureError(
+                f"Website returned HTTP {status}",
+                http_status=status,
+                network_calls=calls,
+            )
         if len(body) > MAX_RESPONSE_BYTES:
-            raise WebsiteCaptureError("A website page exceeded the 1 MB raw-download limit")
+            raise WebsiteCaptureError("A website page exceeded the 8 MB raw-download limit. Use a smaller public page or a text attachment.")
         media_type = headers.get("content-type", "text/html").split(";", 1)[0].strip().casefold()
         if media_type not in ALLOWED_CONTENT_TYPES:
             raise WebsiteCaptureError(f"Unsupported website content type: {media_type or 'unknown'}")
@@ -205,6 +232,7 @@ def capture_website_knowledge(
     resolver: Callable[..., Any] = socket.getaddrinfo,
     fetcher: Callable[[str], tuple[int, dict[str, str], bytes]] = _default_fetch,
     captured_at: str | None = None,
+    seed_urls: list[str] | None = None,
 ) -> dict[str, Any]:
     if not isinstance(value, dict) or set(value) != {"url", "label"}:
         raise WebsiteCaptureError("Website capture accepts only url and label")
@@ -213,19 +241,48 @@ def capture_website_knowledge(
     if len(label) < 2 or len(label) > 120:
         raise WebsiteCaptureError("Website knowledge label must be 2 to 120 characters")
     origin = _origin(start_url)
-    queue = deque([start_url])
-    queued = {start_url}
+    # Internal source-bound callers can prioritize already reviewed company URLs.
+    # Public requests still accept only url/label, and every seed shares one origin.
+    seeds = list(dict.fromkeys([start_url, *[_canonical_url(url) for url in (seed_urls or [])]]))
+    if len(seeds) > MAX_PAGES or any(_origin(url) != origin for url in seeds):
+        raise WebsiteCaptureError('Source seeds must be at most six same-origin public pages')
+    queue = deque(seeds)
+    required_seeds = set(seeds)
+    queued = set(seeds)
     visited: set[str] = set()
     files: list[dict[str, str]] = []
     pages: list[dict[str, Any]] = []
+    skipped_pages: list[dict[str, str]] = []
     network_calls = 0
+    attempted_pages = 0
     stamp = captured_at or datetime.now(timezone.utc).isoformat()
 
-    while queue and len(pages) < MAX_PAGES:
+    while queue and attempted_pages < MAX_PAGES:
         candidate = queue.popleft()
         if candidate in visited:
             continue
-        final_url, media_type, body, calls = _fetch_page(candidate, origin=origin, resolver=resolver, fetcher=fetcher)
+        attempted_pages += 1
+        try:
+            final_url, media_type, body, calls = _fetch_page(
+                candidate,
+                origin=origin,
+                resolver=resolver,
+                fetcher=fetcher,
+            )
+        except WebsiteCaptureError as error:
+            # Hunter-reviewed seeds are required evidence. Links merely discovered
+            # while reading those pages are optional; a stale 404/410 must not
+            # discard the readable reviewed sources, but remains visible in the
+            # governed capture record.
+            if candidate not in required_seeds and error.http_status in {404, 410}:
+                network_calls += error.network_calls
+                skipped_pages.append({
+                    "url": candidate,
+                    "reason": f"HTTP_{error.http_status}",
+                    "source": "DISCOVERED_LINK",
+                })
+                continue
+            raise
         network_calls += calls
         if final_url in visited:
             visited.add(candidate)
@@ -242,6 +299,8 @@ def capture_website_knowledge(
             title, text, links = parser.result()
         else:
             title, text, links = "", re.sub(r"\r\n?", "\n", decoded).strip()[:MAX_PAGE_TEXT], []
+        if re.search(r'robot challenge|verify (?:that )?you are (?:a )?human|checking your browser|access denied|just a moment|enable javascript and cookies to continue', f'{title}\n{text}', re.I):
+            raise WebsiteCaptureError('HOLD: the website returned an access challenge, not usable company evidence. Supply owner-reviewed documents instead; no bypass was attempted.')
         if len(text) < 20:
             continue
         page_number = len(pages) + 1
@@ -276,6 +335,7 @@ def capture_website_knowledge(
         "scope": "SAME_ORIGIN_PUBLIC_PAGES",
         "max_pages": MAX_PAGES,
         "pages": pages,
+        "skipped_pages": skipped_pages,
     }
     package = ingest_knowledge_package(
         {"label": label, "files": files},

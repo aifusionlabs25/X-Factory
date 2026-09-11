@@ -69,6 +69,10 @@ def validate_chassis(manifest: dict[str, Any]) -> dict[str, Any]:
 def get_chassis(chassis_id: str, version: str | None = None) -> dict[str, Any]:
     if not CHASSIS_ID.fullmatch(chassis_id):
         raise ChassisDepotError("Invalid chassis ID")
+    from x_factory.role_library_v0_1 import role_chassis
+    recipe = role_chassis(chassis_id, version)
+    if recipe is not None:
+        return validate_chassis(recipe)
     root = CHASSIS_ROOT / chassis_id
     if version:
         if not VERSION.fullmatch(version):
@@ -90,6 +94,13 @@ def list_chassis() -> list[dict[str, Any]]:
             result.append(get_chassis(root.name))
         except (OSError, ValueError, ChassisDepotError):
             continue
+    from x_factory.role_library_v0_1 import list_roles
+    for role in list_roles():
+        if role['status'] == 'LOCAL_ROLE_RECIPE':
+            try:
+                result.append(get_chassis(role['chassis_id']))
+            except (OSError, ValueError, ChassisDepotError):
+                continue
     return result
 
 
@@ -104,33 +115,22 @@ def recommend_chassis(purpose: Any) -> dict[str, Any]:
         raise ChassisDepotError("Remove credentials, tokens, passwords, or private keys from the job description")
     if PATH_LIKE.search(intent):
         raise ChassisDepotError("Filesystem paths are not accepted in the job description")
-    chassis = list_chassis()
-    if not chassis:
-        raise ChassisDepotError("No validated chassis are available")
-
-    intent_terms = set(re.findall(r"[a-z0-9]+", intent.casefold()))
-    ranked: list[tuple[int, dict[str, Any]]] = []
-    for item in chassis:
-        searchable = " ".join(
-            [
-                item["role_title"],
-                item["summary"],
-                item["invariants"]["purpose_template"],
-                *item["invariants"]["must_accomplish"],
-            ]
-        ).casefold()
-        chassis_terms = set(re.findall(r"[a-z0-9]+", searchable))
-        ranked.append((len(intent_terms & chassis_terms), item))
-    ranked.sort(key=lambda pair: (-pair[0], pair[1]["role_title"].casefold()))
-    best_score, best = ranked[0]
+    from x_factory.role_library_v0_1 import recommend_roles
+    role_result = recommend_roles(intent)
+    selected = role_result['recommended']
+    best = get_chassis(selected['chassis_id']) if selected else None
+    alternatives = [get_chassis(item['role']['chassis_id']) for item in role_result['ranked']
+                    if not selected or item['role']['chassis_id'] != selected['chassis_id']]
     return {
         "schema_version": "0.1",
         "owner_intent": intent,
         "recommended_by": "ATLAS_LOCAL_INTENT_MATCH",
         "provider_calls": 0,
         "recommended": best,
-        "match_terms": best_score,
-        "alternatives": [item for _, item in ranked[1:]],
+        "match_terms": role_result['ranked'][0]['score'] if role_result['ranked'] else 0,
+        "alternatives": alternatives,
+        "fit_status": role_result['fit_status'],
+        "role_recommendation": role_result,
     }
 
 
@@ -204,6 +204,10 @@ def commission_chassis(chassis_id: str, request: Any) -> dict[str, Any]:
     if package_id:
         try:
             knowledge_package = commissioning_reference(package_id)
+            from x_factory.hunter_knowledge_v0_1 import assert_knowledge_identity
+            assert_knowledge_identity(package_id, request['client_name'], request['purpose'])
+            from x_factory.idea_intake_v0_1 import assert_idea_knowledge_identity
+            assert_idea_knowledge_identity(package_id, request['client_name'], request['purpose'])
         except KnowledgeLoadingError as error:
             raise ChassisDepotError(str(error)) from error
         if "CMP-CLIENT-KNOWLEDGE-PACK" not in selected_options:
@@ -216,7 +220,8 @@ def commission_chassis(chassis_id: str, request: Any) -> dict[str, Any]:
     purpose = re.sub(r"\s+", " ", request["purpose"]).strip()
     agent_name = re.sub(r"\s+", " ", request["x_agent_name"]).strip()
     client_name = re.sub(r"\s+", " ", request["client_name"]).strip()
-    public_role_title = derive_public_role(purpose, chassis["role_title"])
+    public_role_title = (chassis['role_title'] if chassis['status'] == 'LOCAL_ROLE_RECIPE'
+                         else derive_public_role(purpose, chassis["role_title"]))
     runtime_role_title = public_role_title or "X-Agent"
     mission_payload = {
         "purpose": purpose,
@@ -241,6 +246,10 @@ def commission_chassis(chassis_id: str, request: Any) -> dict[str, Any]:
         "knowledge_package": knowledge_package,
         "owner_active_input_ms": request.get("owner_active_input_ms"),
     }
+    if request.get('prepared_agent'):
+        from x_factory.prepared_agent_v0_1 import validate_commissioning
+        validate_commissioning(request['prepared_agent'], chassis_id, request)
+        mission_payload['prepared_agent'] = request['prepared_agent']
     record = create_mission(mission_payload)
     record["commissioning_summary"] = {
         "status": "COMMISSIONED_LOCAL_CANDIDATE_BUILT",

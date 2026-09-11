@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Owner review of one Hunter draft; not execution authority",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source_id", "prospect_id", "snapshot_sha256", "chassis_sha256", "fields", "owner_confirmed"],
+  "properties": {
+    "source_id": {"const": "hunter-checkpoint-20260828"},
+    "prospect_id": {"type": "string", "pattern": "^[a-z0-9_-]{1,100}$"},
+    "snapshot_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "chassis_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "owner_confirmed": {"const": true},
+    "fields": {
+      "type": "object", "additionalProperties": false,
+      "required": ["purpose", "x_agent_name", "client_name", "target_users", "personality", "additional_requirements", "additional_boundaries", "presence_mode"],
+      "properties": {
+        "purpose": {"type": "string", "minLength": 10, "maxLength": 2000},
+        "x_agent_name": {"type": "string", "minLength": 2, "maxLength": 80},
+        "client_name": {"type": "string", "minLength": 2, "maxLength": 160},
+        "target_users": {"type": "string", "minLength": 2, "maxLength": 1000},
+        "personality": {"type": "string", "minLength": 2, "maxLength": 1000},
+        "additional_requirements": {"type": "string", "minLength": 1, "maxLength": 3000},
+        "additional_boundaries": {"type": "string", "minLength": 1, "maxLength": 3000},
+        "presence_mode": {"enum": ["EXISTING_ANAM", "CREATE_NEW_ANAM", "STOCK_IMAGE", "TEXT_ONLY"]}
+      }
+    }
+  }
+}

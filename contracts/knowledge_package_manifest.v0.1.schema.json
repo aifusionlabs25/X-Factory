@@ -34,7 +34,7 @@
       "additionalProperties": false,
       "required": ["source", "runtime_truth", "provider_calls", "network_calls", "production_approved"],
       "properties": {
-        "source": {"enum": ["OWNER_SUPPLIED_LOCAL_FILES", "OWNER_REQUESTED_PUBLIC_WEBSITE_CAPTURE"]},
+        "source": {"enum": ["OWNER_SUPPLIED_LOCAL_FILES", "OWNER_REQUESTED_PUBLIC_WEBSITE_CAPTURE", "OWNER_REVIEWED_SPECIALIST_DRAFT"]},
         "runtime_truth": {"const": false},
         "provider_calls": {"const": 0},
         "network_calls": {"type": "integer", "minimum": 0, "maximum": 24},
@@ -64,6 +64,20 @@
               "title": {"type": "string", "minLength": 1, "maxLength": 200},
               "stored_name": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,119}$"},
               "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+            }
+          }
+        },
+        "skipped_pages": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url", "reason", "source"],
+            "properties": {
+              "url": {"type": "string", "pattern": "^https?://", "maxLength": 2048},
+              "reason": {"enum": ["HTTP_404", "HTTP_410"]},
+              "source": {"const": "DISCOVERED_LINK"}
             }
           }
         }

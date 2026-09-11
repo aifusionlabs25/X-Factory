@@ -105,7 +105,7 @@ def build_instance_knowledge(mission_root: Path, mission_id: str, brief: dict[st
     Draft202012Validator(load_json(BUNDLE_SCHEMA)).validate(bundle)
 
     source_vault_markdown, source_anchors = _knowledge_markdown(identity, entries, source_vault=True)
-    knowledge_studio = compile_knowledge_studio(bundle, mission_id)
+    knowledge_studio = compile_knowledge_studio(bundle, mission_id, preserve_reviewed=bool(brief.get('prepared_agent')))
     curated_entries = knowledge_studio["entries"]
     kb_markdown, anchors = _knowledge_markdown(identity, curated_entries)
     prompt_package = compile_prompt_package(brief, curated_entries, mission_id)

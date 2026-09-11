@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/hunter_refresh_result.v0.1.schema.json",
+  "title": "Hunter refresh result v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "refresh_id", "record", "result_sha256"],
+  "properties": {
+    "schema_version": {"const": "hunter.factory-refresh-result.v0.1"},
+    "refresh_id": {"type": "string", "pattern": "^hr-[a-f0-9]{16}$"},
+    "record": {"type": "object"},
+    "result_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

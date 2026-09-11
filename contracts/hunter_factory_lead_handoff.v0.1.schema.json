@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/hunter_factory_lead_handoff.v0.1.schema.json",
+  "title": "Hunter to X-Factory Lead Handoff v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "handoff_id", "status", "created_at", "source", "prospect", "factory_intake", "guardrails"],
+  "properties": {
+    "schema_version": {"const": "hunter.factory-lead-handoff.v0.1"},
+    "handoff_id": {"type": "string", "pattern": "^lh-[a-f0-9]{16}$"},
+    "status": {"enum": ["READY_FOR_FACTORY_REVIEW"]},
+    "created_at": {"type": "string", "format": "date-time"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "source_run_sha256", "draft_receipt_sha256", "research_status", "evidence_urls"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1, "maxLength": 120},
+        "source_run_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "draft_receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "research_status": {"const": "UNAPPROVED_RESEARCH"},
+        "evidence_urls": {"type": "array", "minItems": 1, "maxItems": 12, "items": {"type": "string", "pattern": "^https?://", "maxLength": 2048}}
+      }
+    },
+    "prospect": {
+      "type": "object", "additionalProperties": false,
+      "required": ["prospect_id", "company_name", "website", "vertical", "location", "wedge", "score", "score_band"],
+      "properties": {
+        "prospect_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,95}$"},
+        "company_name": {"type": "string", "minLength": 2, "maxLength": 160},
+        "website": {"type": "string", "pattern": "^https?://", "maxLength": 2048},
+        "vertical": {"type": "string", "minLength": 1, "maxLength": 120},
+        "location": {"type": "string", "minLength": 1, "maxLength": 160},
+        "wedge": {"enum": ["emergency_after_hours", "moving_relocation", "complex_service_estimate"]},
+        "score": {"type": "integer", "minimum": 0, "maximum": 100},
+        "score_band": {"type": "string", "minLength": 1, "maxLength": 80}
+      }
+    },
+    "factory_intake": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fields", "chassis_id", "chassis_sha256", "proposed_job", "boundaries"],
+      "properties": {
+        "fields": {
+          "type": "object", "additionalProperties": false,
+          "required": ["purpose", "x_agent_name", "client_name", "target_users", "personality", "additional_requirements", "additional_boundaries", "presence_mode"],
+          "properties": {
+            "purpose": {"type": "string", "minLength": 10, "maxLength": 2000},
+            "x_agent_name": {"type": "string", "minLength": 1, "maxLength": 80},
+            "client_name": {"type": "string", "minLength": 2, "maxLength": 160},
+            "target_users": {"type": "string", "minLength": 2, "maxLength": 1000},
+            "personality": {"type": "string", "minLength": 2, "maxLength": 1000},
+            "additional_requirements": {"type": "string", "maxLength": 3000},
+            "additional_boundaries": {"type": "string", "minLength": 1, "maxLength": 3000},
+            "presence_mode": {"enum": ["EXISTING_ANAM", "CREATE_NEW_ANAM", "STOCK_IMAGE", "TEXT_ONLY"]}
+          }
+        },
+        "chassis_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,95}$"},
+        "chassis_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "proposed_job": {"type": "string", "minLength": 10, "maxLength": 2000},
+        "boundaries": {"type": "array", "minItems": 1, "maxItems": 20, "items": {"type": "string", "minLength": 1, "maxLength": 300}}
+      }
+    },
+    "guardrails": {
+      "type": "object", "additionalProperties": false,
+      "required": ["knowledge_approved", "mission_created", "provider_calls", "outreach_performed", "owner_action_required"],
+      "properties": {
+        "knowledge_approved": {"const": false},
+        "mission_created": {"const": false},
+        "provider_calls": {"const": 0},
+        "outreach_performed": {"const": false},
+        "owner_action_required": {"const": true}
+      }
+    },
+    "handoff_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

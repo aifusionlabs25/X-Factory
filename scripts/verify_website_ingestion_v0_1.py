@@ -33,12 +33,13 @@ PAGES = {
     "https://example.com/": (200, {"content-type": "text/html; charset=utf-8"}, b"""
         <html><head><title>Summit Services</title><script>ignore secret noise</script></head>
         <body><nav><span>Open Menu Close Menu</span><span>Cart ( 0 )</span></nav><main><h1>Summit Home Services</h1><p>We repair water heaters and air conditioning systems.</p>
-        <p>Final pricing requires staff review.</p><span>View fullsize</span><span>Book now</span><a href='/services'>Services</a><a href='/store'>Store</a><a href='https://outside.example/'>Outside</a></main></body></html>
+        <p>Final pricing requires staff review.</p><span>View fullsize</span><span>Book now</span><a href='/services'>Services</a><a href='/missing'>Old page</a><a href='/store'>Store</a><a href='https://outside.example/'>Outside</a></main></body></html>
     """),
     "https://example.com/services": (200, {"content-type": "text/html"}, b"""
         <html><head><title>Service Area</title></head><body><main><h1>Service area</h1>
         <p>Urgent HVAC requests are prioritized in Gilbert and Mesa.</p><p>Final pricing requires staff review.</p><span>View fullsize</span><a href='/'>Home</a></main></body></html>
     """),
+    "https://example.com/missing": (404, {"content-type": "text/html"}, b"Not found"),
 }
 
 
@@ -86,10 +87,15 @@ def main() -> int:
             "source": "OWNER_REQUESTED_PUBLIC_WEBSITE_CAPTURE",
             "runtime_truth": False,
             "provider_calls": 0,
-            "network_calls": 2,
+            "network_calls": 3,
             "production_approved": False,
         }
         assert len(package["website_capture"]["pages"]) == 2
+        assert package["website_capture"]["skipped_pages"] == [{
+            "url": "https://example.com/missing",
+            "reason": "HTTP_404",
+            "source": "DISCOVERED_LINK",
+        }]
         assert package["website_capture"]["scope"] == "SAME_ORIGIN_PUBLIC_PAGES"
         assert all(page["url"].startswith("https://example.com/") for page in package["website_capture"]["pages"])
         try:
@@ -170,12 +176,24 @@ def main() -> int:
         else:
             raise AssertionError("Cross-site redirects must be rejected")
 
+        try:
+            capture_website_knowledge(
+                {"url": "https://example.com/missing", "label": "Required missing source"},
+                resolver=public_resolver,
+                fetcher=fake_fetch,
+            )
+        except WebsiteCaptureError as error:
+            assert error.http_status == 404
+        else:
+            raise AssertionError("A missing owner-reviewed source must remain terminal")
+
         print("WEBSITE_INGESTION_V0_1_PASS")
         print(f"PACKAGE={package['package_id']}")
         print(f"PAGES={len(package['website_capture']['pages'])}")
         print(f"ENTRIES={len(compilation['entries'])}")
         print("PRIVATE_TARGET_BLOCKED=PASS")
         print("CROSS_SITE_REDIRECT_BLOCKED=PASS")
+        print("OPTIONAL_404_SKIPPED_REQUIRED_404_BLOCKED=PASS")
         print("AMBIENT_PROXY_BYPASS=PASS")
         return 0
     finally:

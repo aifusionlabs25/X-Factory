@@ -5,26 +5,37 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>X-Factory · Build an X Agent</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="studio.css">
 </head>
-<body>
+<body class="studio">
   <div class="grain" aria-hidden="true"></div>
   <header class="masthead">
     <a class="brand" href="/"><span>X</span><strong>X-FACTORY<small>BUILD AN X AGENT</small></strong></a>
     <div class="masthead-actions"><button id="global-factory-details" type="button" aria-expanded="false">Factory details</button><div class="system-state"><i></i><span id="system-state">CONNECTING</span></div></div>
   </header>
 
-  <main>
+  <aside class="studio-sidebar" aria-label="Workspace navigation">
+    <div class="studio-sidebar-heading"><span class="studio-monogram">X</span><strong>Factory Studio<small>AI Fusion Labs</small></strong></div>
+    <nav aria-label="Factory sections">
+      <button type="button" data-studio-target="create" class="selected"><span>＋</span><strong>Create an agent</strong></button>
+      <button type="button" data-studio-target="hunter"><span>◎</span><strong>Hunter prospects</strong></button>
+      <button type="button" data-studio-target="recent"><span>▤</span><strong>My builds</strong></button>
+      <button type="button" data-studio-target="crew"><span>◇</span><strong>Your crew</strong></button>
+    </nav>
+    <div class="studio-sidebar-note"><small>YOUR WORKSPACE</small><p>From a first idea to a working local X-Agent.</p><span>Local draft environment</span></div>
+  </aside>
+  <main class="workspace-main">
     <section class="hero">
       <div class="hero-copy">
-        <p class="kicker">X-AGENT FACTORY · LOCAL WORKING DRAFT</p>
-        <h1>Tell me who<br><em>you want.</em></h1>
-        <p class="lede">Describe the job, give your agent a name, and add the facts it should know. The Factory handles the complicated work.</p>
-        <button id="load-morning-example" class="hero-action" type="button">TRY THE AVA EXAMPLE →</button>
+        <p class="kicker">YOUR X-AGENT WORKSPACE</p>
+        <h1>A good idea.<br><em>A useful agent.</em></h1>
+        <p class="lede">Start with something you spotted, a company website, or a job you want done. We’ll help turn it into a working draft.</p>
+        <button id="load-morning-example" class="hero-action" type="button">Explore an example ↗</button>
       </div>
       <div class="truth-card">
-        <small>YOUR MORNING TEST</small>
-        <strong>Create → personalize → build → preview.</strong>
-        <p>Nothing is deployed, published, or sent anywhere. You can safely experiment with the entire local flow.</p>
+        <small>THE THINGS THAT MATTER</small>
+        <strong>Your idea becomes<br>a System Prompt,<br>a Knowledge Bank,<br>and an X-Agent.</strong>
+        <p>Review the facts. Make it yours. Try the complete local app.</p>
       </div>
     </section>
 
@@ -38,14 +49,83 @@
 
     <section id="chassis-depot" class="chassis-depot">
       <div class="depot-head">
-        <div><small>STEP 1 · DESCRIBE</small><h2>Start with the right<br><em>proven role.</em></h2><p>The Factory recommends a tested role foundation. You personalize it in the next step.</p></div>
+        <div><small>01 / START HERE</small><h2>Where’s the idea coming from?</h2><p>Every starting point leads into the same Factory.</p></div>
         <div class="depot-counter"><span id="chassis-count">01</span><b>PROVEN<br>ROLE</b></div>
       </div>
-      <form id="purpose-form" class="purpose-intake">
+      <div class="entry-options" role="group" aria-label="Choose your starting point">
+        <button type="button" data-entry-mode="idea" class="selected" aria-pressed="true"><span>01</span><strong>My idea</strong><small>A job, a market, or a business name.</small></button>
+        <button type="button" data-entry-mode="website" aria-pressed="false"><span>02</span><strong>Website or X post</strong><small>Bring a link and a little context.</small></button>
+        <button type="button" data-entry-mode="hunter" aria-pressed="false"><span>03</span><strong>Hunter prospects</strong><small>Choose from your research sidecar.</small></button>
+      </div>
+      <section id="idea-start-panel" aria-labelledby="idea-start-title">
+        <form id="idea-start-form">
+          <label for="idea-seed" id="idea-start-title">What sparked the idea?</label>
+          <p id="idea-seed-help">Describe the opportunity in your own words. A short idea is enough to start.</p>
+          <textarea id="idea-seed" rows="4" required minlength="3" maxlength="5000" aria-describedby="idea-seed-help" placeholder="An agent for independent moving companies that answers questions and helps customers prepare a move request…"></textarea>
+          <details class="idea-extra"><summary>Add a company, website, or pasted post <span>optional</span></summary><div class="idea-extra-fields">
+            <label>Company or project name<input id="idea-company" maxlength="160" placeholder="If you already have one"></label>
+            <label>Company website<input id="idea-website" type="url" maxlength="2048" placeholder="https://example.com"></label>
+            <label class="idea-post-field">Text from the post or additional context<textarea id="idea-post-text" rows="3" maxlength="5000" placeholder="Paste the part that inspired you. Research notes stay separate from approved company facts."></textarea></label>
+          </div></details>
+          <div class="idea-start-actions"><p>First we prepare an editable brief. You can research the website next.</p><button id="prepare-idea" type="submit">Shape my idea <span>→</span></button></div>
+          <p id="idea-error" role="alert" class="form-error"></p>
+        </form>
+        <div id="idea-result" class="idea-result" hidden>
+          <div class="idea-result-heading"><small id="idea-source-label">YOUR DRAFT</small><h3 id="idea-result-title">A starting point you can shape.</h3></div>
+          <p id="idea-result-note"></p>
+          <ul id="idea-missing"></ul>
+          <div id="idea-research-status" role="status" aria-live="polite"></div>
+          <div id="idea-research-summary" hidden></div>
+        </div>
+      </section>
+      <details id="hunter-review" class="hunter-review" hidden>
+        <summary><span>OPTIONAL · START FROM RESEARCH</span><strong>Review a Hunter prospect</strong><small>One company. Your decision. Nothing starts automatically.</small></summary>
+        <div class="hunter-review-body">
+          <p id="hunter-notice" role="status">Opening the saved research checkpoint…</p>
+          <label for="hunter-prospect">Choose one company to review</label>
+          <select id="hunter-prospect"><option value="">Choose a prospect…</option></select>
+          <p id="hunter-error" class="form-error" role="alert"></p>
+          <form id="hunter-review-form" hidden>
+            <div id="hunter-research" class="hunter-research"></div>
+            <p class="hunter-warning">Proposed behavior—not approved company knowledge. Check every promise and requested capability. Research stays here; company facts need their own Knowledge Bank review.</p>
+            <div id="hunter-fields" class="hunter-fields"></div>
+            <label>Role foundation<select id="hunter-role" required><option value="">Choose a proven role…</option></select></label>
+            <label>Appearance<select id="hunter-presence" required><option value="">Choose appearance…</option><option value="EXISTING_ANAM">Mia avatar</option><option value="CREATE_NEW_ANAM">Create later</option><option value="STOCK_IMAGE">Stock image</option><option value="TEXT_ONLY">Text only</option></select></label>
+            <p id="hunter-appearance-hint"></p>
+            <label class="hunter-consent"><input id="hunter-confirm" type="checkbox" required><span>I reviewed the company identity, proposed job and limits. These dated research claims are not approved Knowledge Bank facts or verified live capabilities.</span></label>
+            <label class="hunter-consent"><input id="hunter-replace" type="checkbox" required><span>Use this as a fresh form draft. Clear the current unsaved form, avatar, knowledge and extras selections. Existing saved agents and knowledge packages stay untouched.</span></label>
+            <button id="hunter-apply" type="submit">USE REVIEWED DRAFT →</button>
+            <p id="hunter-result" role="status">This saves a review receipt and fills the form only. Build is a separate action.</p>
+          </form>
+        </div>
+      </details>
+      <section id="hunter-inbox" class="hunter-inbox" aria-labelledby="hunter-inbox-title" hidden>
+        <div class="hunter-inbox-head"><div><small>HUNTER → FACTORY · CONTROLLED INBOX</small><h3 id="hunter-inbox-title">Choose a lead. Let the Factory prepare it.</h3><p>Refresh inbox checks saved leads—it does not search the web. Choose Research &amp; prepare this agent for automatic fresh company research, Knowledge Bank drafts and a tailored System Prompt. No copying between bots. Reviewing and approving the resulting package remain your decisions; old Hunter sales qualification is not automatically renewed.</p></div><button id="refresh-hunter-inbox" type="button">REFRESH INBOX</button></div>
+        <div id="hunter-inbox-list" class="hunter-inbox-list"><p>Checking for owner-reviewed Hunter leads…</p></div>
+        <p id="hunter-inbox-status" class="hunter-inbox-status-line" role="status">Local queue · owner approval required</p>
+      </section>
+      <form id="purpose-form" class="purpose-intake" hidden>
         <label for="owner-purpose">System Prompt Brief — What should this X-Agent do?</label>
         <p id="owner-purpose-help">Describe its job in your own words. Troy turns this short brief into the complete System Prompt later in the Factory.</p>
-        <textarea id="owner-purpose" required minlength="10" maxlength="3000" rows="6" aria-describedby="owner-purpose-help purpose-error" placeholder="For example: Answer approved customer questions, collect the details our team needs, and prepare a clear handoff for staff review."></textarea>
-        <div class="purpose-actions"><p id="purpose-recommendation" role="status">Tell us the job first. Atlas will recommend the closest proven starting point.</p><button id="recommend-chassis" type="submit">FIND THE BEST STARTING POINT →</button></div>
+        <textarea id="owner-purpose" required minlength="10" maxlength="2000" rows="6" aria-describedby="owner-purpose-help purpose-error" placeholder="For example: Answer approved customer questions, collect the details our team needs, and prepare a clear handoff for staff review."></textarea>
+        <div id="idea-manual-role" class="idea-manual-role" hidden><div><label for="idea-start-role">Starting role<select id="idea-start-role" required><option value="">Choose a role…</option></select></label><p id="idea-start-role-reason" role="status"></p><details id="idea-start-role-limit-details" class="idea-evidence-details" hidden><summary>What this role can and cannot do</summary><div class="idea-evidence-columns"><div><p id="idea-start-role-summary"></p><ul id="idea-start-role-limits"></ul></div></div></details></div><button id="refresh-idea-roles" type="button">Check role fit</button></div>
+        <div id="idea-next-actions" class="idea-next-actions" hidden><p id="idea-research-disclosure">Prepare uses Hermes with <strong>gpt-5.6-luna</strong>: up to 8 research calls and one call each for Aria, OMNARA and Troy. Your idea and captured public content go to that model. Research has at most 12 web-tool calls; draft specialists have no tools. No automatic retries, knowledge approval, build or outreach. Allow several minutes.</p><button id="research-idea" type="button" aria-describedby="idea-research-disclosure idea-research-help">Prepare my agent →</button><button id="use-idea" type="button">Use the manual editor instead</button><p id="idea-research-help">Receive a proposed job, sourced Knowledge Bank and complete System Prompt together, ready for your review.</p></div>
+        <section id="idea-research-panel" class="idea-research-panel" hidden aria-labelledby="idea-job-title">
+          <div class="idea-job-heading"><div><small>RESEARCH &amp; DIRECTION</small><h3 id="idea-job-title">Finding the best starting point.</h3></div><span id="idea-job-state" class="idea-job-state">Ready</span></div>
+          <p id="idea-job-status" role="status" aria-live="polite"></p>
+          <ol id="idea-job-progress" class="idea-job-progress" aria-label="Research progress"></ol>
+          <button id="resume-idea-research" class="idea-secondary-action" type="button" hidden>Check research progress</button>
+          <div id="idea-direction-review" hidden>
+            <p id="idea-findings-summary" class="idea-findings-summary"></p>
+            <ul id="idea-findings" class="idea-findings"></ul>
+            <details class="idea-evidence-details"><summary>Sources and open questions <span id="idea-evidence-count"></span></summary><div class="idea-evidence-columns"><div><h4>Sources consulted</h4><ul id="idea-research-sources"></ul></div><div><h4>Still to confirm</h4><ul id="idea-research-uncertainties"></ul></div></div></details>
+            <fieldset id="idea-company-resolution" class="idea-company-resolution" hidden><legend>Confirm the company</legend><p id="idea-identity-explanation"></p><ul id="idea-company-candidates"></ul><div class="idea-extra-fields"><label>Company name<input id="idea-resolved-company" maxlength="160" placeholder="The company you intend this agent to serve"></label><label>Company website<input id="idea-resolved-website" type="url" maxlength="2048" placeholder="https://example.com"></label></div></fieldset>
+            <div class="idea-role-recommendation"><small>RECOMMENDED STARTING ROLE</small><h4 id="idea-recommended-role"></h4><p id="idea-role-reason"></p><label for="idea-role-choice">Starting role<select id="idea-role-choice" required></select></label><p id="idea-role-choice-note">You can choose another available role. Your brief above stays editable.</p><details id="idea-role-limit-details" class="idea-evidence-details" hidden><summary>What this role can and cannot do</summary><div class="idea-evidence-columns"><div><p id="idea-role-summary"></p><ul id="idea-role-limits"></ul></div></div></details></div>
+            <div class="idea-direction-actions"><p>Use this direction to open personalization. Research findings still need their own Knowledge Bank review.</p><button id="accept-idea-research" type="button">Use this direction →</button></div>
+          </div>
+          <p id="idea-job-error" class="form-error" role="alert"></p>
+        </section>
+        <div id="manual-purpose-actions" class="purpose-actions"><p id="purpose-recommendation" role="status">Review the job description, then choose the next step.</p><button id="recommend-chassis" type="submit">Find a starting point →</button></div>
         <article id="recommended-fit" class="recommended-fit" hidden>
           <div><small>RECOMMENDED FIT</small><h3 id="recommended-fit-title">Proven starting point</h3><p id="recommended-fit-reason"></p></div>
           <div class="recommended-fit-actions"><button id="use-recommendation" type="button">USE RECOMMENDATION →</button><button id="choose-another" type="button">CHOOSE ANOTHER</button></div>
@@ -55,6 +135,7 @@
       <div class="depot-floor">
         <div id="chassis-list" class="chassis-list"><p>Reading the local Chassis Depot…</p></div>
         <form id="commissioning-form" class="commissioning-bay" hidden>
+          <div id="example-navigation" hidden><p>You are exploring Ava, a sample—not your own agent.</p><button id="leave-example" type="button">← Back to my idea</button></div>
           <div class="bay-title"><small>STEP 2 · PERSONALIZE</small><h3>Name it. Make it yours.</h3><button id="close-commissioning" type="button" aria-label="Close personalization form">CLOSE ×</button></div>
           <input id="commissioning-chassis-id" type="hidden">
           <div class="commission-grid">
@@ -72,6 +153,19 @@
           <fieldset class="commission-presence"><legend>How should your agent appear?</legend><div class="presence-options" role="radiogroup" aria-label="Commissioned agent presence"><button type="button" class="selected" data-commission-presence="EXISTING_ANAM" role="radio" aria-checked="true">Mia avatar</button><button type="button" data-commission-presence="CREATE_NEW_ANAM" role="radio" aria-checked="false">Create later</button><button type="button" data-commission-presence="STOCK_IMAGE" role="radio" aria-checked="false">Stock image</button><button type="button" data-commission-presence="TEXT_ONLY" role="radio" aria-checked="false">Text only</button></div></fieldset>
           <section class="quick-knowledge" aria-labelledby="quick-knowledge-title">
             <div><small>KNOWLEDGE BANK</small><h4 id="quick-knowledge-title">What should this agent know?</h4><p>Paste approved facts or question-and-answer pairs. The Factory prepares the Knowledge Bank that Troy's System Prompt will govern.</p></div>
+            <div id="hunter-knowledge" class="hunter-knowledge" hidden>
+              <small>HUNTER → OMNARA · OPTIONAL SOURCE PREPARATION</small>
+              <h5>Let the Factory prepare your first draft.</h5>
+              <p id="hunter-knowledge-company"></p>
+              <p>Use Hunter’s company links to prepare facts for review. Nothing becomes approved knowledge automatically.</p>
+              <details><summary>Sources and the reviewed job</summary><p id="hunter-knowledge-job"></p><div id="hunter-knowledge-sources"></div></details>
+              <p id="hunter-knowledge-drift" hidden>The company or job changed. Reopen the saved Hunter draft to use this handoff, or use the company website / approved facts options below for the changed brief.</p>
+              <button id="prepare-hunter-knowledge" type="button" disabled>PREPARE KNOWLEDGE BANK FROM HUNTER’S SOURCES →</button>
+              <p id="hunter-knowledge-status" role="status"></p>
+              <div id="hunter-knowledge-outline"></div>
+              <button id="hunter-knowledge-review" type="button" hidden>RETURN TO FACT REVIEW →</button>
+              <p class="hunter-knowledge-boundary">Up to six same-site public pages · no logins or access-challenge bypass · no model calls · no build or outreach</p>
+            </div>
             <textarea id="quick-knowledge-text" rows="6" placeholder="Q: What services are approved?&#10;A: Add the owner-approved answer here.&#10;&#10;Q: Can this agent promise availability?&#10;A: Add the approved boundary here."></textarea>
             <div class="quick-knowledge-actions"><button id="fill-sample-knowledge" type="button">USE SAMPLE</button><button id="prepare-quick-knowledge" type="button">ADD THIS KNOWLEDGE →</button></div>
             <p id="quick-knowledge-status" role="status">Knowledge: Missing — you can still build, but the preview will be limited.</p>
@@ -86,6 +180,14 @@
             </div>
             <p class="website-boundary">Public pages only · same website only · no logins · no provider calls · nothing approved automatically</p>
           </section>
+          <section id="knowledge-review-desk" class="knowledge-review-desk" hidden>
+            <div class="review-desk-head"><div><small>OWNER REVIEW DESK</small><h5 id="review-package-title">Inspect proposed knowledge.</h5><p id="review-desk-summary"></p></div><button id="close-review-desk" type="button">CLOSE ×</button></div>
+            <div id="review-conflict-banner" class="review-conflict-banner" hidden></div>
+            <p class="review-instruction">Choose individual facts below, or use <b>Select all safe items</b> to check every relevant, non-conflicting website fact at once.</p>
+            <div class="review-toolbar"><button id="review-safe-defaults" type="button">SELECT ALL SAFE ITEMS</button><button id="review-clear" type="button">CLEAR ALL</button><b id="review-count">0 SELECTED</b><button id="finalize-knowledge-review" class="finalize-review" type="button">FINALIZE OWNER REVIEW →</button></div>
+            <div id="knowledge-review-entries" class="knowledge-review-entries"></div>
+            <p id="review-error" class="form-error" role="alert"></p>
+          </section>
           <details id="knowledge-source-packages" class="knowledge-dock owner-disclosure">
             <summary class="department-title"><span>01A</span><div><small>ADVANCED · KNOWLEDGE SOURCES</small><h4 id="knowledge-dock-title">Source packages and history.</h4><p>The Factory keeps this evidence for you. Open it only to inspect files, select reviewed knowledge, or revisit older packages.</p></div><b class="disclosure-state" aria-hidden="true"></b></summary>
             <div class="owner-disclosure-body">
@@ -98,14 +200,6 @@
               <p id="knowledge-error" class="form-error" role="alert"></p>
               <div class="knowledge-package-overview"><p id="knowledge-package-summary">Showing the active or newest package.</p><button id="toggle-package-history" type="button" aria-expanded="false">SHOW PACKAGE HISTORY</button></div>
               <div id="knowledge-packages" class="knowledge-packages"><p>No knowledge packages loaded yet.</p></div>
-              <section id="knowledge-review-desk" class="knowledge-review-desk" hidden>
-                <div class="review-desk-head"><div><small>OWNER REVIEW DESK</small><h5 id="review-package-title">Inspect proposed knowledge.</h5><p id="review-desk-summary"></p></div><button id="close-review-desk" type="button">CLOSE ×</button></div>
-                <div id="review-conflict-banner" class="review-conflict-banner" hidden></div>
-                <p class="review-instruction">Choose individual facts below, or use <b>Select all safe items</b> to check every relevant, non-conflicting website fact at once.</p>
-                <div class="review-toolbar"><button id="review-safe-defaults" type="button">SELECT ALL SAFE ITEMS</button><button id="review-clear" type="button">CLEAR ALL</button><b id="review-count">0 SELECTED</b><button id="finalize-knowledge-review" class="finalize-review" type="button">FINALIZE OWNER REVIEW →</button></div>
-                <div id="knowledge-review-entries" class="knowledge-review-entries"></div>
-                <p id="review-error" class="form-error" role="alert"></p>
-              </section>
               <div class="knowledge-boundary"><b>FILES</b> sealed + hashed <i>→</i> <b>COMPILER</b> exact source-linked proposals <i>→</i> <b>OWNER</b> approves or rejects <i>→</i> <b>NEXT</b> instance knowledge build</div>
             </div>
           </details>
@@ -258,7 +352,9 @@
           <div class="runtime-flags"><span>NO INSTALL</span><span>NO PROVIDER</span><span>NO MEMORY</span><span>NO TOOLS</span></div>
         </div>
         <div class="runtime-test-bench">
-          <div class="test-bench-head"><div><small>SAFE LOCAL PREVIEW</small><h3>Try the local knowledge boundary.</h3></div><button id="fresh-preview-session" type="button">START FRESH SESSION</button></div>
+          <div class="test-bench-head"><div><small>TECHNICAL CHECK · NOT THE CONVERSATIONAL AGENT</small><h3>Check exact knowledge matches.</h3></div><button id="fresh-preview-session" type="button">START FRESH SESSION</button></div>
+          <p>This checker does not use the System Prompt or a language model. A missed match is not proof that the actual agent cannot answer.</p>
+          <button id="return-to-live-agent" type="button" hidden>← Talk to your actual agent</button>
           <div id="runtime-transcript" class="runtime-transcript" aria-live="polite">
             <div class="runtime-message system"><small>PROVIDER-FREE PREVIEW</small><p>No language model is active. This deterministic check returns only exact owner-approved statements.</p></div>
           </div>
@@ -389,13 +485,31 @@
       </div>
     </section>
 
-    <section class="recent factory-technical">
+    <details id="studio-crew" class="studio-crew">
+      <summary><span>Your crew</span><strong>The specialists behind the Factory</strong></summary>
+      <p>Today’s build runs local assembly and verification. Live Hermes model sessions are separate; named stations below describe responsibility, not a claim that a model is running.</p>
+      <div class="studio-crew-grid">
+        <article><b>Atlas</b><span>Turns your brief into the intake and finds a starting role.</span></article>
+        <article><b>Aria</b><span>Plans the structure and supported capabilities.</span></article>
+        <article><b>OMNARA</b><span>Organizes reviewed facts into the Knowledge Bank.</span></article>
+        <article><b>Troy</b><span>Assembles the complete System Prompt from the brief and knowledge.</span></article>
+        <article><b>Mason · Vera · Porter</b><span>Build, check, and package your local application.</span></article>
+        <article><b>Hunter · Scout</b><span>Hunter researches prospects. Scout monitors Hermes updates. Both remain optional sidecars.</span></article>
+      </div>
+    </details>
+    <section id="studio-recent" class="recent" hidden>
       <div><small>LOCAL LEDGER</small><h2>Recent Factory missions</h2></div>
       <div id="recent-list" class="recent-list"><p>No interactive missions yet.</p></div>
     </section>
   </main>
   <footer><span>X-FACTORY / AI FUSION LABS</span><span>LOCAL WORKING DRAFT · SAFE TO EXPERIMENT</span></footer>
   <script src="preview-state-model.js"></script>
+  <script src="hunter-review.js"></script>
+  <script src="hunter-knowledge.js"></script>
+  <script src="hunter-inbox.js"></script>
+  <link rel="stylesheet" href="prepared-agent.css">
+  <script src="prepared-agent.js"></script>
+  <script src="idea-start.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

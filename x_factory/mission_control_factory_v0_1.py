@@ -87,6 +87,16 @@ def normalize_brief(value: Any) -> dict[str, Any]:
     errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda item: list(item.path))
     if errors:
         raise MissionControlError("; ".join(error.message for error in errors[:5]))
+    if value.get('prepared_agent'):
+        from x_factory.prepared_agent_v0_1 import validate_commissioning
+        from x_factory.knowledge_loading_v0_1 import commissioning_reference
+        try:
+            package_id=(value.get('knowledge_package') or {}).get('package_id')
+            validate_commissioning(value['prepared_agent'],value.get('chassis_id'),{**value,'knowledge_package_id':package_id})
+            if value['knowledge_package']!=commissioning_reference(package_id):
+                raise ValueError('Prepared knowledge binding changed')
+        except ValueError as error:
+            raise MissionControlError(str(error)) from error
     serialized = json.dumps(value, ensure_ascii=False)
     if SECRET_LIKE.search(serialized):
         raise MissionControlError("Remove credentials, tokens, passwords, or private keys from the owner brief.")
@@ -155,6 +165,7 @@ def normalize_brief(value: Any) -> dict[str, Any]:
         "selected_optional_modules": selected_optional_modules,
         "knowledge_package": knowledge_package,
         "commissioning": commissioning,
+        **({'prepared_agent': deepcopy(value['prepared_agent'])} if value.get('prepared_agent') else {}),
     }
 
 
@@ -416,6 +427,15 @@ def build_blueprint(brief: dict[str, Any], mission_id: str) -> dict[str, Any]:
         "implementation_handoff": {"runtime_target": "Local deterministic candidate first; Hermes/Luna and X-Link/ANAM remain future governed review dependencies.", "reusable_patterns": [item["component_id"] for item in components], "new_work_required": ["Attach approved domain knowledge before answering domain questions", "Pass Hermes semantic review", "Run one X-Link/ANAM compatibility canary before visual provider activation"], "dependencies": ["Future governed Hermes Desktop review", "Future openai-codex/gpt-5.6-luna review", "Future X-Link ANAM adapter canary when visual mode is used"], "unresolved_implementation_questions": ["Which separately approved Hermes credential source may the future runtime use?", "What X-Link transport configuration will connect the agent core after semantic certification?", "What exact compatibility canary prerequisites and success criteria will govern visual activation?", "May visual mode be activated only after the canary passes and separate owner authorization is recorded?"]},
         "authority": {"specification_status": "FROZEN_FOR_REVIEW", "build_authorized": False, "deployment_authorized": False, "production_approved": False},
     }
+    from x_factory.role_library_v0_1 import role_for_brief
+    role = role_for_brief(brief)
+    if role and role['status'] == 'LOCAL_ROLE_RECIPE':
+        blueprint['knowledge']['required_domains'].extend(role['knowledge_needs'])
+        blueprint['evaluation_plan']['scenarios'].extend(
+            f"{case['case']}: {case['expected']}" for case in role['scenarios'])
+        blueprint['conversation']['discovery_behavior'] = '. '.join(role['method']) + '.'
+        blueprint['implementation_handoff']['new_work_required'].append(
+            'Validate the selected role scenarios against the finished agent; local recipe checks are not live conversational certification')
     Draft202012Validator(load_json(BLUEPRINT_SCHEMA)).validate(blueprint)
     return blueprint
 

@@ -148,8 +148,10 @@ function updateCommissionButton() {
   const name = $("#commission-agent-name").value.trim() || "THIS X-AGENT";
   const button = $("#run-commissioning");
   const websiteReviewPending = Boolean(capturedWebsitePackageId && selectedKnowledgePackageId !== capturedWebsitePackageId);
-  button.disabled = websiteReviewPending;
-  button.querySelector("span").textContent = websiteReviewPending ? "REVIEW WEBSITE BEFORE BUILD" : `BUILD ${name.toUpperCase()}`;
+  const hunterMismatch = globalThis.HunterKnowledge.selectionMismatch(selectedKnowledgePackageId);
+  const ideaMismatch = globalThis.IdeaStart?.bindingMismatch(selectedKnowledgePackageId);
+  button.disabled = websiteReviewPending || hunterMismatch || ideaMismatch || globalThis.HunterKnowledge.isBusy() || globalThis.IdeaStart?.isBusy();
+  button.querySelector("span").textContent = (hunterMismatch || ideaMismatch) ? 'REVIEW KNOWLEDGE FOR CHANGED BRIEF' : websiteReviewPending ? "REVIEW WEBSITE BEFORE BUILD" : `BUILD ${name.toUpperCase()}`;
   button.title = websiteReviewPending ? "Finish or discard the captured website review before building." : "";
   updateKnowledgeReceipt();
 }
@@ -263,8 +265,18 @@ function updateKnowledgeReceipt() {
   const selected = knowledgePackages.find((item) => item.package_id === selectedKnowledgePackageId);
   const captured = knowledgePackages.find((item) => item.package_id === capturedWebsitePackageId);
   const reviewPending = Boolean(capturedWebsitePackageId && selectedKnowledgePackageId !== capturedWebsitePackageId);
-  receipt.classList.toggle("ready", Boolean(selected && !reviewPending));
-  receipt.classList.toggle("pending", reviewPending);
+  const hunterMismatch = globalThis.HunterKnowledge.selectionMismatch(selectedKnowledgePackageId) || globalThis.IdeaStart?.bindingMismatch(selectedKnowledgePackageId);
+  receipt.classList.toggle("ready", Boolean(selected && !reviewPending && !hunterMismatch));
+  receipt.classList.toggle("pending", reviewPending || hunterMismatch);
+  if (hunterMismatch) {
+    $('#build-knowledge-state').textContent = 'COMPANY / JOB MISMATCH';
+    $('#build-knowledge-source').textContent = selected?.label || 'Previous source draft';
+    $('#build-knowledge-pages').textContent = 'Reviewed for the previous brief';
+    $('#build-knowledge-facts').textContent = '0 usable for the changed brief';
+    $('#build-knowledge-exclusions').textContent = 'This package was prepared for the previous company or job. Restore that brief or prepare and review new knowledge.';
+    $('#build-knowledge-binding').textContent = 'Company/job binding does not match.';
+    return;
+  }
   if (reviewPending) {
     const pages = captured?.website_capture?.pages?.length || captured?.files?.length || 0;
     $("#build-knowledge-state").textContent = "REVIEW REQUIRED BEFORE BUILD";
@@ -467,6 +479,8 @@ function renderReviewDesk(compilation) {
   $("#review-desk-summary").textContent = quality
     ? `${compilation.entries.length} relevant proposals · ${quality.boilerplate_removed} boilerplate items removed · ${quality.grouped_fragments} related fragments grouped · ${quality.duplicates_removed} duplicates removed · knowledge-bank only · zero provider calls`
     : `${compilation.entries.length} source-linked proposals · ${compilation.conflicts.length} potential conflicts · deterministic extraction · zero provider calls`;
+  const hunterOutline = globalThis.HunterKnowledge.describe(compilation.package_id);
+  if (hunterOutline) $("#review-desk-summary").textContent += `\n${hunterOutline}`;
   const conflictBanner = $("#review-conflict-banner");
   conflictBanner.hidden = !staleWebsiteCompilation && compilation.conflicts.length === 0;
   conflictBanner.textContent = staleWebsiteCompilation
@@ -586,6 +600,12 @@ async function loadModuleOptions(chassisId) {
 }
 
 function openCommissioning(chassis) {
+  const hunterPackage = globalThis.HunterKnowledge.boundPackage();
+  if (hunterPackage) {
+    if (selectedKnowledgePackageId === hunterPackage) selectedKnowledgePackageId = null;
+    if (capturedWebsitePackageId === hunterPackage) capturedWebsitePackageId = null;
+  }
+  globalThis.HunterKnowledge.reset();
   setOwnerJourney("personalize", ["define"]);
   commissioningStartedAt = Date.now();
   const changedChassis = currentChassis?.chassis_id !== chassis.chassis_id;
@@ -614,6 +634,92 @@ function openCommissioning(chassis) {
   loadModuleOptions(chassis.chassis_id).catch((error) => { $("#module-options").textContent = error instanceof Error ? error.message : String(error); });
 }
 
+function applyHunterDraft(result) {
+  globalThis.IdeaStart?.resetBinding();
+  globalThis.IdeaStart?.showManual();
+  // Explicit owner acceptance resets only unsaved UI state, never stored agents/KB.
+  window.clearInterval(presencePoll);
+  presencePoll = null;
+  currentRecord = null;
+  currentPresence = null;
+  currentChassis = null; // Force knowledge reset even when the chassis is unchanged.
+  currentCompilation = null;
+  resetRepoFoundry();
+  resetCompletionRunner();
+  resetOwnerControl();
+  resetRuntimeFoundry();
+  clearRecommendation();
+  ['#result', '#repo-foundry', '#owner-control', '#presence-preview', '#knowledge-review-desk'].forEach(id => { $(id).hidden = true; });
+  openCommissioning(result.chassis);
+  const fields = result.fields;
+  const mapping = {purpose: '#owner-purpose', x_agent_name: '#commission-agent-name', client_name: '#commission-client-name',
+    target_users: '#commission-target-users', personality: '#commission-personality',
+    additional_requirements: '#commission-requirements', additional_boundaries: '#commission-boundaries'};
+  Object.entries(mapping).forEach(([key, selector]) => { $(selector).value = fields[key]; });
+  $('#commission-client-context').value = '';
+  $('#knowledge-label').value = '';
+  $('#knowledge-files').value = '';
+  $('#knowledge-file-summary').textContent = 'No files selected';
+  setCommissioningPresence(fields.presence_mode);
+  $('#purpose-recommendation').textContent = 'Owner-reviewed Hunter draft. Research remains separate. No mission has been created.';
+  $('#commissioning-error').textContent = '';
+  setQuickKnowledgeStatus('Knowledge: Not approved yet — use Hunter’s sources below to prepare your first draft, or add verified facts yourself.');
+  globalThis.HunterKnowledge.load(result);
+  updateCommissionButton();
+  $('#commissioning-form').scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+async function applyIdeaDraft(draft, research, options = {}) {
+  let chosen = draft.recommendation.recommended;
+  if (options.selectedRole?.chassis_id) {
+    const response = await fetch(`/api/chassis/${encodeURIComponent(options.selectedRole.chassis_id)}`, {cache: 'no-store'});
+    chosen = await response.json();
+    if (!response.ok) throw new Error(chosen.error || 'This role is unavailable.');
+  }
+  if (!chosen) throw new Error('Choose a role that fits the reviewed job before personalizing.');
+  window.clearInterval(presencePoll);
+  presencePoll = null;
+  currentRecord = null; currentPresence = null; currentChassis = null; currentCompilation = null;
+  resetRepoFoundry(); resetCompletionRunner(); resetOwnerControl(); resetRuntimeFoundry(); clearRecommendation();
+  ['#result', '#repo-foundry', '#owner-control', '#presence-preview', '#knowledge-review-desk'].forEach(id => { $(id).hidden = true; });
+  openCommissioning(chosen);
+  const mapping = {purpose: '#owner-purpose', x_agent_name: '#commission-agent-name', client_name: '#commission-client-name',
+    target_users: '#commission-target-users', personality: '#commission-personality',
+    additional_requirements: '#commission-requirements', additional_boundaries: '#commission-boundaries'};
+  Object.entries(mapping).forEach(([key, selector]) => { $(selector).value = draft.fields[key] || ''; });
+  $('#commission-client-context').value = '';
+  $('#website-knowledge-url').value = draft.website || '';
+  $('#knowledge-label').value = ''; $('#knowledge-files').value = '';
+  $('#knowledge-file-summary').textContent = 'No files selected';
+  setCommissioningPresence(draft.fields.presence_mode || 'TEXT_ONLY');
+  $('#purpose-recommendation').textContent = 'Your idea is now the build brief. Changes here carry through to the commissioned agent.';
+  $('#commissioning-error').textContent = '';
+  if (research) {
+    capturedWebsitePackageId = research.package.package_id;
+    selectedBeforeWebsiteCaptureId = null; selectedKnowledgePackageId = null;
+    syncKnowledgeModule();
+    await loadKnowledgePackages();
+    renderModuleOptions();
+    $('#website-capture-result').hidden = false;
+    $('#website-knowledge-status').textContent = `${research.package.website_capture?.pages?.length || 0} public pages read. Review the proposed facts below.`;
+    $('#review-website-knowledge').hidden = false;
+    $('#review-website-knowledge').disabled = false;
+    $('#discard-website-knowledge').hidden = false;
+    setQuickKnowledgeStatus('Knowledge: Draft facts prepared. Select the facts you want to use before building.', 'needs-review');
+    renderReviewDesk(research.compilation);
+  } else {
+    setQuickKnowledgeStatus('Add your company facts, documents, or website before expecting company-specific answers.', 'needs-review');
+  }
+  updateCommissionButton();
+  if (research) {
+    $('#knowledge-review-desk').scrollIntoView({behavior: 'smooth', block: 'start'});
+    $('#review-safe-defaults').focus({preventScroll: true});
+  } else {
+    $('#commissioning-form').scrollIntoView({behavior: 'smooth', block: 'start'});
+    $('#commission-agent-name').focus({preventScroll: true});
+  }
+}
+
 function recommendationReason(chassis) {
   const features = [];
   if (chassis.modules.includes("CMP-APPROVED-KNOWLEDGE-ANSWERS")) features.push("approved-question answers");
@@ -635,7 +741,7 @@ function clearRecommendation() {
   $("#recommended-fit").hidden = true;
 }
 
-async function recommendFromPurpose() {
+async function recommendFromPurpose({scroll=true}={}) {
   const purpose = $("#owner-purpose").value.trim();
   const button = $("#recommend-chassis");
   const error = $("#purpose-error");
@@ -643,15 +749,20 @@ async function recommendFromPurpose() {
   error.textContent = "";
   if (!$("#owner-purpose").reportValidity()) return null;
   button.disabled = true;
-  button.textContent = "ATLAS IS MATCHING THE JOB…";
+  button.textContent = "MATCHING YOUR BRIEF…";
   status.textContent = "Comparing your description with the proven roles in the Chassis Depot.";
   try {
     const response = await fetch("/api/chassis/recommend", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({purpose})});
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || "Atlas could not recommend a starting point");
+    if (!result.recommended) {
+      clearRecommendation();
+      status.textContent = result.role_recommendation?.explanation || 'No role clearly fits. Refine the job or choose an available role.';
+      return null;
+    }
     status.textContent = "Atlas found a recommended fit. Review the plain-English reason below—you are free to choose another.";
     showRecommendation(result.recommended);
-    $("#recommended-fit").scrollIntoView({behavior: "smooth", block: "center"});
+    if(scroll)$("#recommended-fit").scrollIntoView({behavior: "smooth", block: "center"});
     return result;
   } catch (caught) {
     error.textContent = caught instanceof Error ? caught.message : String(caught);
@@ -838,6 +949,15 @@ function appendRuntimeMessage(label, copy, kind, technical = "") {
   }
   holder.append(message);
   holder.scrollTop = holder.scrollHeight;
+  // Keep examples and instructions above the transcript, never between the
+  // newest answer and the owner's message box. Scroll only the transcript.
+  const bench=holder.closest('.runtime-test-bench');
+  if(bench){
+    for(const selector of ['.runtime-test-guide','#runtime-suggestions']){
+      const element=bench.querySelector(selector);if(element)bench.insertBefore(element,holder);
+    }
+    requestAnimationFrame(()=>{holder.scrollTop=holder.scrollHeight;});
+  }
 }
 
 function renderRuntimeFoundry(plan) {
@@ -1214,6 +1334,7 @@ async function loadPresencePreview(show = true) {
 }
 
 function renderResult(record, options = {}) {
+  globalThis.HunterKnowledge.reset();
   document.body.classList.remove("factory-building");
   setOwnerJourney("preview", ["define", "personalize", "build"]);
   currentRecord = record;
@@ -1637,9 +1758,27 @@ $("#owner-purpose").addEventListener("input", () => {
   setOwnerJourney("define");
 });
 
+let beforeExample=null;
+function leaveExample(){
+  if(beforeExample){
+    beforeExample.fields.forEach(([node,value,checked])=>{node.value=value;node.checked=checked;});
+    currentChassis=beforeExample.chassis;selectedKnowledgePackageId=beforeExample.knowledge;
+    selectedOptionalModules=beforeExample.modules;
+    beforeExample=null;
+  }
+  $("#example-navigation").hidden=true;
+  clearRecommendation();setOwnerJourney('define');
+  globalThis.IdeaStart?.returnToStart();
+}
+$("#leave-example").addEventListener('click',leaveExample);
+document.querySelector('[data-studio-target="create"]').addEventListener('click',()=>{if(beforeExample)leaveExample();});
 $("#load-morning-example").addEventListener("click", async () => {
+  if(!beforeExample)beforeExample={fields:$$('#purpose-form input,#purpose-form textarea,#commissioning-form input,#commissioning-form textarea,#commissioning-form select').map(n=>[n,n.value,n.checked]),chassis:currentChassis,knowledge:selectedKnowledgePackageId,modules:new Set(selectedOptionalModules)};
+  $("#example-navigation").hidden=false;
+  globalThis.IdeaStart?.showManual();
+  globalThis.IdeaStart?.resetBinding();
   $("#owner-purpose").value = "Answer approved questions about XYZ Data, qualify customer inquiries, maintain visible notes, and prepare a structured handoff for staff review.";
-  const recommendation = await recommendFromPurpose();
+  const recommendation = await recommendFromPurpose({scroll:false});
   if (!recommendation) return;
   openCommissioning(recommendation.recommended);
   $("#commission-agent-name").value = "Ava";
@@ -1836,6 +1975,7 @@ $("#finalize-knowledge-review").addEventListener("click", async () => {
     if (!response.ok) throw new Error(result.error || "Owner review stopped safely");
     if (result.latest_review?.status === "OWNER_REVIEW_COMPLETE_READY_FOR_INSTANCE_BUILD") {
       selectedKnowledgePackageId = result.package_id;
+      globalThis.HunterKnowledge.markReviewed(result.package_id, result.latest_review.approved_count);
       syncKnowledgeModule();
       $("#knowledge-review-desk").hidden = true;
       $("#knowledge-error").textContent = `${result.latest_review.approved_count} entries approved and ${result.latest_review.rejected_count} rejected. The reviewed package is selected for this commissioned build.`;
@@ -1907,6 +2047,17 @@ $("#close-commissioning").addEventListener("click", () => {
 
 $("#commissioning-form").addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (globalThis.HunterKnowledge.isBusy() || globalThis.IdeaStart?.isBusy()) return;
+  if (globalThis.IdeaStart?.bindingMismatch(selectedKnowledgePackageId)) {
+    $('#commissioning-error').textContent = 'This Knowledge Bank was prepared for your earlier company or brief. Restore those details or prepare new website facts.';
+    updateCommissionButton();
+    return;
+  }
+  if (globalThis.HunterKnowledge.selectionMismatch(selectedKnowledgePackageId)) {
+    $('#commissioning-error').textContent = 'This Hunter Knowledge Bank belongs to the previous company or job. Restore the reviewed draft or prepare new knowledge for the changed brief.';
+    updateCommissionButton();
+    return;
+  }
   if (!currentChassis) return;
   const button = $("#run-commissioning");
   const error = $("#commissioning-error");
@@ -2008,7 +2159,7 @@ $("#runtime-test-form").addEventListener("submit", async (event) => {
     const serviceRequest = intent === previewStateModel.INTENTS.SERVICE_REQUEST;
     const label = serviceRequest
       ? (previewSession.primary_review_required ? "REQUEST CAPTURED · COVERAGE UNCONFIRMED" : "REQUEST CAPTURED")
-      : unknownEscalated ? "SAFETY CHECK PASSED" : "ANSWERED FROM APPROVED KNOWLEDGE";
+      : unknownEscalated ? "NO LOCAL MATCH · NOT A QUALITY PASS" : "ANSWERED FROM APPROVED KNOWLEDGE";
     const technical = [intent, result.outcome, ...(result.supporting_entry_ids || []), result.match_reason, result.matcher_version].filter(Boolean).join(" · ");
     const customerResponse = serviceRequest
       ? previewStateModel.serviceRequestResponse(previewSession, currentRecord.agent.client_name)
@@ -2016,7 +2167,7 @@ $("#runtime-test-form").addEventListener("submit", async (event) => {
     const visibleResponse = serviceRequest && previewSession.primary_review_required
       ? `This was a service request, not a knowledge question. ${currentRuntimePlan.identity.agent_name} captured the operational details, but the sealed knowledge package does not confirm that ${currentRecord.agent.client_name} provides this service.\n\nCustomer-facing response: ${customerResponse}`
       : unknownEscalated
-        ? `No approved evidence matched that question. ${currentRuntimePlan.identity.agent_name} routed it for human review instead of guessing.\n\nCustomer-facing response: ${customerResponse}`
+        ? `The local matcher found no matching statement. This does not test the conversational model, and nothing was sent to a team.\n\nFallback wording: ${customerResponse}`
         : customerResponse;
     appendRuntimeMessage(`${currentRuntimePlan.identity.agent_name.toUpperCase()} · ${label}`, visibleResponse, "agent", technical);
     if (unknownEscalated) {
@@ -2072,6 +2223,36 @@ $("#copy-nova-sync").addEventListener("click", async () => {
 });
 
 setPresence("EXISTING_ANAM");
+globalThis.HunterKnowledge.mount({
+  openReview: openReviewDesk,
+  afterBusy: updateCommissionButton,
+  acceptPreparation: async (result) => {
+    selectedBeforeWebsiteCaptureId = selectedKnowledgePackageId;
+    capturedWebsitePackageId = result.package.package_id;
+    selectedKnowledgePackageId = null;
+    syncKnowledgeModule();
+    await loadKnowledgePackages();
+    renderModuleOptions();
+    $('#website-capture-result').hidden = false;
+    $('#website-knowledge-status').textContent = 'Hunter source draft prepared. Review the facts before building; OMNARA packages approved files during Build.';
+    $('#review-website-knowledge').hidden = false;
+    $('#review-website-knowledge').disabled = false;
+    $('#review-website-knowledge').textContent = 'REVIEW CAPTURED KNOWLEDGE →';
+    $('#discard-website-knowledge').hidden = false;
+    setQuickKnowledgeStatus('Knowledge: Draft prepared — facts still need your review.', 'needs-review');
+    updateCommissionButton();
+    renderReviewDesk(result.compilation);
+  },
+});
+globalThis.HunterReview.mount({applyDraft: applyHunterDraft});
+globalThis.HunterInbox.mount({applyDraft: applyHunterDraft});
+globalThis.IdeaStart.mount({applyDraft: applyIdeaDraft, updateBuildState: updateCommissionButton});
+globalThis.openPreparedCandidate = async (missionId) => {
+  const response = await fetch(`/api/missions/${encodeURIComponent(missionId)}`, {cache:'no-store'});
+  const record = await response.json();
+  if (!response.ok) throw Error(record.error || 'Candidate unavailable');
+  renderResult(record);
+};
 refreshNovaSync();
 connectStatus();
 loadRecent();

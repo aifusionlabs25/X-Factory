@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aifusionlabs.local/contracts/hunter_refresh_request.v0.1.schema.json",
+  "title": "Hunter refresh request v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "refresh_id", "status", "created_at", "source", "prospect", "instructions", "return_contract", "guardrails"],
+  "properties": {
+    "schema_version": {"const": "hunter.factory-refresh-request.v0.1"},
+    "refresh_id": {"type": "string", "pattern": "^hr-[a-f0-9]{16}$"},
+    "status": {"enum": ["READY_FOR_HUNTER"]},
+    "created_at": {"type": "string", "format": "date-time"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "source_run_sha256", "draft_receipt_sha256"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1, "maxLength": 120},
+        "source_run_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "draft_receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "prospect": {
+      "type": "object", "additionalProperties": false,
+      "required": ["prospect_id", "company_name", "website", "location", "requested_urls"],
+      "properties": {
+        "prospect_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,95}$"},
+        "company_name": {"type": "string", "minLength": 2, "maxLength": 160},
+        "website": {"type": "string", "pattern": "^https?://", "maxLength": 2048},
+        "location": {"type": "string", "minLength": 1, "maxLength": 160},
+        "requested_urls": {"type": "array", "minItems": 1, "maxItems": 6, "items": {"type": "string", "pattern": "^https?://", "maxLength": 2048}}
+      }
+    },
+    "instructions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["prompt", "scope"],
+      "properties": {
+        "prompt": {"type": "string", "minLength": 80, "maxLength": 2000},
+        "scope": {"const": "ONE_PROSPECT_PUBLIC_SOURCE_REVERIFICATION"}
+      }
+    },
+    "return_contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["dropbox", "required_status", "owner_review_required"],
+      "properties": {
+        "dropbox": {"const": "drafts/hunter/incoming"},
+        "required_status": {"const": "OWNER_REVIEWED_DRAFT_ONLY"},
+        "owner_review_required": {"const": true}
+      }
+    },
+    "guardrails": {
+      "type": "object", "additionalProperties": false,
+      "required": ["knowledge_approved", "mission_created", "provider_calls", "outreach_performed"],
+      "properties": {
+        "knowledge_approved": {"const": false},
+        "mission_created": {"const": false},
+        "provider_calls": {"const": 0},
+        "outreach_performed": {"const": false}
+      }
+    },
+    "request_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
