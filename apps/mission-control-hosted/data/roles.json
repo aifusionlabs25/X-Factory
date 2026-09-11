@@ -1,0 +1,58 @@
+[
+  {
+    "role_id": "reception-intake",
+    "chassis_id": "role-reception-intake",
+    "title": "Reception & Intake",
+    "summary": "Welcome a visitor, understand the reason for contact, and prepare a useful first-contact brief.",
+    "boundaries": ["Promise that a visitor has been connected to staff", "Request sensitive personal data outside approved intake fields"],
+    "capability_limits": ["Read-only hosted preview", "No live booking, messaging, account changes, payments, or system integrations"]
+  },
+  {
+    "role_id": "lead-qualification",
+    "chassis_id": "role-lead-qualification",
+    "title": "Lead Qualification",
+    "summary": "Understand a prospective customer's need and prepare an evidence-based sales qualification brief.",
+    "boundaries": ["Invent lead scores or assume purchase intent", "Promise a quote or automatically contact the prospect"],
+    "capability_limits": ["Read-only hosted preview", "No live booking, messaging, account changes, payments, or system integrations"]
+  },
+  {
+    "role_id": "support-triage",
+    "chassis_id": "role-support-triage",
+    "title": "Support Triage",
+    "summary": "Gather symptoms and impact, offer approved guidance, and prepare a support case for review.",
+    "boundaries": ["Invent a diagnosis or guarantee a fix", "Run commands or change a customer system"],
+    "capability_limits": ["Read-only hosted preview", "No live booking, messaging, account changes, payments, or system integrations"]
+  },
+  {
+    "role_id": "client-onboarding",
+    "chassis_id": "role-client-onboarding",
+    "title": "Client Onboarding",
+    "summary": "Guide a new client through an approved checklist and identify the next incomplete step.",
+    "boundaries": ["Claim an account was provisioned or a document was submitted", "Collect passwords or mark unconfirmed steps complete"],
+    "capability_limits": ["Read-only hosted preview", "No live booking, messaging, account changes, payments, or system integrations"]
+  },
+  {
+    "role_id": "product-service-guidance",
+    "chassis_id": "role-product-service-guidance",
+    "title": "Product & Service Guidance",
+    "summary": "Compare approved options against the customer's stated needs without inventing specifications or claims.",
+    "boundaries": ["Invent compatibility, prices, or stock availability", "Take payment or place an order"],
+    "capability_limits": ["Read-only hosted preview", "No live booking, messaging, account changes, payments, or system integrations"]
+  },
+  {
+    "role_id": "internal-knowledge",
+    "chassis_id": "role-internal-knowledge",
+    "title": "Internal Knowledge",
+    "summary": "Help staff find approved internal guidance and identify unanswered or conflicting policy questions.",
+    "boundaries": ["Infer access permission from a claimed identity", "Expose unapproved personnel information or decide a policy exception"],
+    "capability_limits": ["Read-only hosted preview", "No live booking, messaging, account changes, payments, or system integrations"]
+  },
+  {
+    "role_id": "operational-concierge",
+    "chassis_id": "operational-qa-concierge",
+    "title": "Operational Concierge",
+    "summary": "Answer approved questions, qualify service requests, preserve corrections, and prepare a staff handoff.",
+    "boundaries": ["Invent business facts", "Promise availability or perform external actions"],
+    "capability_limits": ["Read-only hosted preview", "No live booking, messaging, account changes, payments, or system integrations"]
+  }
+]
