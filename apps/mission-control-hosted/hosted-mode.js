@@ -50,6 +50,9 @@
   const readOnly = () => payload({ error: "Hosted Mission Control is read-only. Use the local Factory for research, owner approval, build, and release.", mode: "HOSTED_READ_ONLY", local_url: "http://127.0.0.1:8877/" }, 405);
   const recommendation = (purpose = "") => payload({ schema_version: "0.1", recommended_by: "ATLAS_LOCAL_INTENT_MATCH", provider_calls: 0, fit_status: "RECOMMENDED", recommended: chassis, alternatives: roles.filter((role) => role.chassis_id !== chassis.chassis_id), role_recommendation: { recommended: roles.at(-1), ranked: roles.map((role, index) => ({ role, score: index === roles.length - 1 ? 2 : 0, reasons: index === roles.length - 1 ? [`The brief is a good fit for the contained Operational Concierge chassis${purpose ? `: ${purpose.slice(0, 120)}` : ""}.`] : [] })), capability_gaps: [] } });
   const source = (name) => ({ source_name: name, retrieved_at: new Date().toISOString(), interpretation: "EPHEMERAL_TEST_FIXTURE" });
+  const decodeProject = (encoded) => {
+    try { return JSON.parse(decodeURIComponent(escape(atob(encoded)))); } catch (_) { return null; }
+  };
   const draftFrom = (input = {}) => {
     const seed = String(input.seed || "").trim();
     const purpose = String(input.purpose || seed || "A contained concierge that answers approved questions and prepares a structured handoff.").trim();
@@ -78,6 +81,10 @@
     if (lower.includes("purpose") || lower.includes("what do you do")) return { text: `I’m ${project.fields.x_agent_name}, a contained concierge for ${project.fields.client_name}. I explain approved information, ask one useful question at a time, and prepare a structured handoff for staff review.`, handoff: { request_summary: "Visitor asked about the agent's purpose.", recommended_queue: "HUMAN_REVIEW", status: "UNSUBMITTED" } };
     return { text: "I don’t have an approved answer for that in this test package, so I would flag it for human review rather than guess.", handoff: { request_summary: message, known_unknowns: [message], recommended_queue: "HUMAN_REVIEW", status: "UNSUBMITTED" } };
   };
+  if (TEST_MODE && query.get("data")) {
+    const project = decodeProject(query.get("data"));
+    if (project?.project_id) memory.projects.set(project.project_id, project);
+  }
   const testFetch = async (input, init = {}) => {
     const url = typeof input === "string" ? input : input?.url || "";
     const method = String(init.method || (typeof input !== "string" && input?.method) || "GET").toUpperCase();
