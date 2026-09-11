@@ -217,11 +217,12 @@
       const returnButton=document.getElementById('return-to-live-agent');
       if(returnButton){returnButton.hidden=false;returnButton.onclick=()=>{panel.hidden=false;modelTest.scrollIntoView({block:'start'});modelTest.querySelector('textarea')?.focus({preventScroll:true});};}
       if(!retainedChat){
-      node('small','REAL CONVERSATION · HERMES / LUNA',modelTest);
+      const ephemeral = new URLSearchParams(location.search).get('mode') === 'ephemeral-test';
+      node('small',ephemeral ? 'EPHEMERAL REHEARSAL · NO MODEL CALLS' : 'REAL CONVERSATION · HERMES / LUNA',modelTest);
       node('h3','Talk to your agent',modelTest);
       const chatPortrait=node('img','',modelTest);chatPortrait.className='prepared-portrait';chatPortrait.alt=`${project.fields.x_agent_name} portrait`;chatPortrait.hidden=!project.portrait;if(project.portrait)chatPortrait.src=project.portrait;
       node('p',`${project.fields.x_agent_name} will answer using Troy’s reviewed System Prompt and your approved Knowledge Bank. Ask naturally—including follow-up questions.`,modelTest);
-      node('p','Each Send uses one model call. Seven messages per session. No microphone, avatar, dispatch or external actions. Test with fictional customer details.',modelTest);
+      node('p',ephemeral ? 'Each Send uses a deterministic browser fixture. Zero provider calls, no microphone, avatar, dispatch or external actions. Use fictional customer details only.' : 'Each Send uses one model call. Seven messages per session. No microphone, avatar, dispatch or external actions. Test with fictional customer details.',modelTest);
       let session=null,nextTurn=1;
       const progress=node('p','Ready. Type a message or choose a starter below.',modelTest);progress.setAttribute('role','status');
       const transcript=node('div','',modelTest);transcript.className='prepared-model-transcript';transcript.setAttribute('aria-live','polite');
