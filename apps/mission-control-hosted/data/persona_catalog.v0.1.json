@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "catalog_status": "LOCAL_REFERENCE_ONLY",
+  "personas": [
+    {
+      "catalog_id": "ANAM-STOCK-MIA-SUPPORT-GUIDE",
+      "provider": "ANAM",
+      "name": "Mia",
+      "template_name": "Mia - Support Guide",
+      "category": "Expert",
+      "description": "A patient, upbeat support guide suited to concierge, qualification, and handoff experiences.",
+      "avatar_id": "edf6fdcb-acab-44b8-b974-ded72665ee26",
+      "voice_name": "Dana - Balanced Spirit (Sonic 3.5)",
+      "voice_id": "8cc80a30-4fc0-11f1-84b0-52bacf74fa75",
+      "expressivity": 0.58,
+      "portrait_path": "assets/anam/mia-support-guide/portrait.webp",
+      "selection_status": "FACTORY_RECOMMENDED",
+      "runtime_status": "NOT_CONNECTED",
+      "provider_mutation_authorized": false
+    }
+  ]
+}
