@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>X-Factory · Build an X Agent</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="studio.css">
+  <style>
+    .hosted-mode-banner{position:sticky;top:0;z-index:1000;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;padding:.7rem 1.2rem;background:#123d34;color:#f8f5eb;font:600 .78rem/1.3 system-ui,sans-serif;letter-spacing:.02em;box-shadow:0 2px 14px rgba(0,0,0,.18)}
+    .hosted-mode-banner strong{color:#d7ef62;letter-spacing:.08em}.hosted-mode-banner span{font-weight:500;opacity:.9}.hosted-mode-banner a{margin-left:auto;color:#d7ef62;text-decoration:underline;white-space:nowrap}
+  </style>
+</head>
+<body class="studio">
+  <script src="hosted-mode.js"></script>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <a class="brand" href="/"><span>X</span><strong>X-FACTORY<small>BUILD AN X AGENT</small></strong></a>
+    <div class="masthead-actions"><button id="global-factory-details" type="button" aria-expanded="false">Factory details</button><div class="system-state"><i></i><span id="system-state">CONNECTING</span></div></div>
+  </header>
+
+  <aside class="studio-sidebar" aria-label="Workspace navigation">
+    <div class="studio-sidebar-heading"><span class="studio-monogram">X</span><strong>Factory Studio<small>AI Fusion Labs</small></strong></div>
+    <nav aria-label="Factory sections">
+      <button type="button" data-studio-target="create" class="selected"><span>＋</span><strong>Create an agent</strong></button>
+      <button type="button" data-studio-target="hunter"><span>◎</span><strong>Hunter prospects</strong></button>
+      <button type="button" data-studio-target="recent"><span>▤</span><strong>My builds</strong></button>
+      <button type="button" data-studio-target="crew"><span>◇</span><strong>Your crew</strong></button>
+    </nav>
+    <div class="studio-sidebar-note"><small>YOUR WORKSPACE</small><p>From a first idea to a working local X-Agent.</p><span>Local draft environment</span></div>
+  </aside>
+  <main class="workspace-main">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="kicker">YOUR X-AGENT WORKSPACE</p>
+        <h1>A good idea.<br><em>A useful agent.</em></h1>
+        <p class="lede">Start with something you spotted, a company website, or a job you want done. We’ll help turn it into a working draft.</p>
+        <button id="load-morning-example" class="hero-action" type="button">Explore an example ↗</button>
+      </div>
+      <div class="truth-card">
+        <small>THE THINGS THAT MATTER</small>
+        <strong>Your idea becomes<br>a System Prompt,<br>a Knowledge Bank,<br>and an X-Agent.</strong>
+        <p>Review the facts. Make it yours. Try the complete local app.</p>
+      </div>
+    </section>
+
+    <nav class="owner-journey" aria-label="X-Factory owner workflow">
+      <article id="journey-define" class="active"><span>1</span><div><small>SYSTEM PROMPT</small><strong>Describe the job</strong><p>Give Troy the plain-English brief.</p></div><b>NOW</b></article>
+      <article id="journey-personalize"><span>2</span><div><small>KNOWLEDGE + IDENTITY</small><strong>Make it yours</strong><p>Name, company, Knowledge Bank, capabilities, and ANAM presence.</p></div><b>NEXT</b></article>
+      <article id="journey-build"><span>3</span><div><small>BUILD</small><strong>Factory works</strong><p>We assemble and check the candidate.</p></div><b>WAITING</b></article>
+      <article id="journey-preview"><span>4</span><div><small>PREVIEW</small><strong>Try the agent</strong><p>Ask what it knows and what it does not.</p></div><b>WAITING</b></article>
+      <article id="journey-release"><span>5</span><div><small>RELEASE</small><strong>Prepare the repo</strong><p>Create the complete local application package.</p></div><b>LOCKED</b></article>
+    </nav>
+
+    <section id="chassis-depot" class="chassis-depot">
+      <div class="depot-head">
+        <div><small>01 / START HERE</small><h2>Where’s the idea coming from?</h2><p>Every starting point leads into the same Factory.</p></div>
+        <div class="depot-counter"><span id="chassis-count">01</span><b>PROVEN<br>ROLE</b></div>
+      </div>
+      <div class="entry-options" role="group" aria-label="Choose your starting point">
+        <button type="button" data-entry-mode="idea" class="selected" aria-pressed="true"><span>01</span><strong>My idea</strong><small>A job, a market, or a business name.</small></button>
+        <button type="button" data-entry-mode="website" aria-pressed="false"><span>02</span><strong>Website or X post</strong><small>Bring a link and a little context.</small></button>
+        <button type="button" data-entry-mode="hunter" aria-pressed="false"><span>03</span><strong>Hunter prospects</strong><small>Choose from your research sidecar.</small></button>
+      </div>
+      <section id="idea-start-panel" aria-labelledby="idea-start-title">
+        <form id="idea-start-form">
+          <label for="idea-seed" id="idea-start-title">What sparked the idea?</label>
+          <p id="idea-seed-help">Describe the opportunity in your own words. A short idea is enough to start.</p>
+          <textarea id="idea-seed" rows="4" required minlength="3" maxlength="5000" aria-describedby="idea-seed-help" placeholder="An agent for independent moving companies that answers questions and helps customers prepare a move request…"></textarea>
+          <details class="idea-extra"><summary>Add a company, website, or pasted post <span>optional</span></summary><div class="idea-extra-fields">
+            <label>Company or project name<input id="idea-company" maxlength="160" placeholder="If you already have one"></label>
+            <label>Company website<input id="idea-website" type="url" maxlength="2048" placeholder="https://example.com"></label>
+            <label class="idea-post-field">Text from the post or additional context<textarea id="idea-post-text" rows="3" maxlength="5000" placeholder="Paste the part that inspired you. Research notes stay separate from approved company facts."></textarea></label>
+          </div></details>
+          <div class="idea-start-actions"><p>First we prepare an editable brief. You can research the website next.</p><button id="prepare-idea" type="submit">Shape my idea <span>→</span></button></div>
+          <p id="idea-error" role="alert" class="form-error"></p>
+        </form>
+        <div id="idea-result" class="idea-result" hidden>
+          <div class="idea-result-heading"><small id="idea-source-label">YOUR DRAFT</small><h3 id="idea-result-title">A starting point you can shape.</h3></div>
+          <p id="idea-result-note"></p>
+          <ul id="idea-missing"></ul>
+          <div id="idea-research-status" role="status" aria-live="polite"></div>
+          <div id="idea-research-summary" hidden></div>
+        </div>
+      </section>
+      <details id="hunter-review" class="hunter-review" hidden>
+        <summary><span>OPTIONAL · START FROM RESEARCH</span><strong>Review a Hunter prospect</strong><small>One company. Your decision. Nothing starts automatically.</small></summary>
+        <div class="hunter-review-body">
+          <p id="hunter-notice" role="status">Opening the saved research checkpoint…</p>
+          <label for="hunter-prospect">Choose one company to review</label>
+          <select id="hunter-prospect"><option value="">Choose a prospect…</option></select>
+          <p id="hunter-error" class="form-error" role="alert"></p>
+          <form id="hunter-review-form" hidden>
+            <div id="hunter-research" class="hunter-research"></div>
+            <p class="hunter-warning">Proposed behavior—not approved company knowledge. Check every promise and requested capability. Research stays here; company facts need their own Knowledge Bank review.</p>
+            <div id="hunter-fields" class="hunter-fields"></div>
+            <label>Role foundation<select id="hunter-role" required><option value="">Choose a proven role…</option></select></label>
+            <label>Appearance<select id="hunter-presence" required><option value="">Choose appearance…</option><option value="EXISTING_ANAM">Mia avatar</option><option value="CREATE_NEW_ANAM">Create later</option><option value="STOCK_IMAGE">Stock image</option><option value="TEXT_ONLY">Text only</option></select></label>
+            <p id="hunter-appearance-hint"></p>
+            <label class="hunter-consent"><input id="hunter-confirm" type="checkbox" required><span>I reviewed the company identity, proposed job and limits. These dated research claims are not approved Knowledge Bank facts or verified live capabilities.</span></label>
+            <label class="hunter-consent"><input id="hunter-replace" type="checkbox" required><span>Use this as a fresh form draft. Clear the current unsaved form, avatar, knowledge and extras selections. Existing saved agents and knowledge packages stay untouched.</span></label>
+            <button id="hunter-apply" type="submit">USE REVIEWED DRAFT →</button>
+            <p id="hunter-result" role="status">This saves a review receipt and fills the form only. Build is a separate action.</p>
+          </form>
+        </div>
+      </details>
+      <section id="hunter-inbox" class="hunter-inbox" aria-labelledby="hunter-inbox-title" hidden>
+        <div class="hunter-inbox-head"><div><small>HUNTER → FACTORY · CONTROLLED INBOX</small><h3 id="hunter-inbox-title">Choose a lead. Let the Factory prepare it.</h3><p>Refresh inbox checks saved leads—it does not search the web. Choose Research &amp; prepare this agent for automatic fresh company research, Knowledge Bank drafts and a tailored System Prompt. No copying between bots. Reviewing and approving the resulting package remain your decisions; old Hunter sales qualification is not automatically renewed.</p></div><button id="refresh-hunter-inbox" type="button">REFRESH INBOX</button></div>
+        <div id="hunter-inbox-list" class="hunter-inbox-list"><p>Checking for owner-reviewed Hunter leads…</p></div>
+        <p id="hunter-inbox-status" class="hunter-inbox-status-line" role="status">Local queue · owner approval required</p>
+      </section>
+      <form id="purpose-form" class="purpose-intake" hidden>
+        <label for="owner-purpose">System Prompt Brief — What should this X-Agent do?</label>
+        <p id="owner-purpose-help">Describe its job in your own words. Troy turns this short brief into the complete System Prompt later in the Factory.</p>
+        <textarea id="owner-purpose" required minlength="10" maxlength="2000" rows="6" aria-describedby="owner-purpose-help purpose-error" placeholder="For example: Answer approved customer questions, collect the details our team needs, and prepare a clear handoff for staff review."></textarea>
+        <div id="idea-manual-role" class="idea-manual-role" hidden><div><label for="idea-start-role">Starting role<select id="idea-start-role" required><option value="">Choose a role…</option></select></label><p id="idea-start-role-reason" role="status"></p><details id="idea-start-role-limit-details" class="idea-evidence-details" hidden><summary>What this role can and cannot do</summary><div class="idea-evidence-columns"><div><p id="idea-start-role-summary"></p><ul id="idea-start-role-limits"></ul></div></div></details></div><button id="refresh-idea-roles" type="button">Check role fit</button></div>
+        <div id="idea-next-actions" class="idea-next-actions" hidden><p id="idea-research-disclosure">Prepare uses Hermes with <strong>gpt-5.6-luna</strong>: up to 8 research calls and one call each for Aria, OMNARA and Troy. Your idea and captured public content go to that model. Research has at most 12 web-tool calls; draft specialists have no tools. No automatic retries, knowledge approval, build or outreach. Allow several minutes.</p><button id="research-idea" type="button" aria-describedby="idea-research-disclosure idea-research-help">Prepare my agent →</button><button id="use-idea" type="button">Use the manual editor instead</button><p id="idea-research-help">Receive a proposed job, sourced Knowledge Bank and complete System Prompt together, ready for your review.</p></div>
+        <section id="idea-research-panel" class="idea-research-panel" hidden aria-labelledby="idea-job-title">
+          <div class="idea-job-heading"><div><small>RESEARCH &amp; DIRECTION</small><h3 id="idea-job-title">Finding the best starting point.</h3></div><span id="idea-job-state" class="idea-job-state">Ready</span></div>
+          <p id="idea-job-status" role="status" aria-live="polite"></p>
+          <ol id="idea-job-progress" class="idea-job-progress" aria-label="Research progress"></ol>
+          <button id="resume-idea-research" class="idea-secondary-action" type="button" hidden>Check research progress</button>
+          <div id="idea-direction-review" hidden>
+            <p id="idea-findings-summary" class="idea-findings-summary"></p>
+            <ul id="idea-findings" class="idea-findings"></ul>
+            <details class="idea-evidence-details"><summary>Sources and open questions <span id="idea-evidence-count"></span></summary><div class="idea-evidence-columns"><div><h4>Sources consulted</h4><ul id="idea-research-sources"></ul></div><div><h4>Still to confirm</h4><ul id="idea-research-uncertainties"></ul></div></div></details>
+            <fieldset id="idea-company-resolution" class="idea-company-resolution" hidden><legend>Confirm the company</legend><p id="idea-identity-explanation"></p><ul id="idea-company-candidates"></ul><div class="idea-extra-fields"><label>Company name<input id="idea-resolved-company" maxlength="160" placeholder="The company you intend this agent to serve"></label><label>Company website<input id="idea-resolved-website" type="url" maxlength="2048" placeholder="https://example.com"></label></div></fieldset>
+            <div class="idea-role-recommendation"><small>RECOMMENDED STARTING ROLE</small><h4 id="idea-recommended-role"></h4><p id="idea-role-reason"></p><label for="idea-role-choice">Starting role<select id="idea-role-choice" required></select></label><p id="idea-role-choice-note">You can choose another available role. Your brief above stays editable.</p><details id="idea-role-limit-details" class="idea-evidence-details" hidden><summary>What this role can and cannot do</summary><div class="idea-evidence-columns"><div><p id="idea-role-summary"></p><ul id="idea-role-limits"></ul></div></div></details></div>
+            <div class="idea-direction-actions"><p>Use this direction to open personalization. Research findings still need their own Knowledge Bank review.</p><button id="accept-idea-research" type="button">Use this direction →</button></div>
+          </div>
+          <p id="idea-job-error" class="form-error" role="alert"></p>
+        </section>
+        <div id="manual-purpose-actions" class="purpose-actions"><p id="purpose-recommendation" role="status">Review the job description, then choose the next step.</p><button id="recommend-chassis" type="submit">Find a starting point →</button></div>
+        <article id="recommended-fit" class="recommended-fit" hidden>
+          <div><small>RECOMMENDED FIT</small><h3 id="recommended-fit-title">Proven starting point</h3><p id="recommended-fit-reason"></p></div>
+          <div class="recommended-fit-actions"><button id="use-recommendation" type="button">USE RECOMMENDATION →</button><button id="choose-another" type="button">CHOOSE ANOTHER</button></div>
+        </article>
+        <p id="purpose-error" class="form-error" role="alert"></p>
+      </form>
+      <div class="depot-floor">
+        <div id="chassis-list" class="chassis-list"><p>Reading the local Chassis Depot…</p></div>
+        <form id="commissioning-form" class="commissioning-bay" hidden>
+          <div id="example-navigation" hidden><p>You are exploring Ava, a sample—not your own agent.</p><button id="leave-example" type="button">← Back to my idea</button></div>
+          <div class="bay-title"><small>STEP 2 · PERSONALIZE</small><h3>Name it. Make it yours.</h3><button id="close-commissioning" type="button" aria-label="Close personalization form">CLOSE ×</button></div>
+          <input id="commissioning-chassis-id" type="hidden">
+          <div class="commission-grid">
+            <label>X-Agent name<input id="commission-agent-name" required value="Ava" maxlength="80"><small>The person your users will meet.</small></label>
+            <label>Client or company<input id="commission-client-name" required placeholder="For example: Summit Home Services" maxlength="160"><small>The organization this instance serves.</small></label>
+            <label class="factory-technical">Role foundation<input id="commission-role-title" readonly><small>The tested job template.</small></label>
+            <label class="personalization-extra">Who will use this?<input id="commission-target-users" required value="Prospective and existing customers"><small>The people this agent helps.</small></label>
+          </div>
+          <label>Personality and communication style<input id="commission-personality" required value="Warm, concise, transparent, capable, and reassuring"></label>
+          <label class="personalization-extra">Anything else about the company?<textarea id="commission-client-context" rows="3" placeholder="Optional plain-English background. Do not paste credentials or private keys."></textarea></label>
+          <div class="commission-grid personalization-extra">
+            <label>Additional requirements<textarea id="commission-requirements" rows="3" placeholder="Optional client-specific jobs, separated by semicolons"></textarea></label>
+            <label>Additional boundaries<textarea id="commission-boundaries" rows="3" placeholder="Optional promises or actions this agent must never make"></textarea></label>
+          </div>
+          <fieldset class="commission-presence"><legend>How should your agent appear?</legend><div class="presence-options" role="radiogroup" aria-label="Commissioned agent presence"><button type="button" class="selected" data-commission-presence="EXISTING_ANAM" role="radio" aria-checked="true">Mia avatar</button><button type="button" data-commission-presence="CREATE_NEW_ANAM" role="radio" aria-checked="false">Create later</button><button type="button" data-commission-presence="STOCK_IMAGE" role="radio" aria-checked="false">Stock image</button><button type="button" data-commission-presence="TEXT_ONLY" role="radio" aria-checked="false">Text only</button></div></fieldset>
+          <section class="quick-knowledge" aria-labelledby="quick-knowledge-title">
+            <div><small>KNOWLEDGE BANK</small><h4 id="quick-knowledge-title">What should this agent know?</h4><p>Paste approved facts or question-and-answer pairs. The Factory prepares the Knowledge Bank that Troy's System Prompt will govern.</p></div>
+            <div id="hunter-knowledge" class="hunter-knowledge" hidden>
+              <small>HUNTER → OMNARA · OPTIONAL SOURCE PREPARATION</small>
+              <h5>Let the Factory prepare your first draft.</h5>
+              <p id="hunter-knowledge-company"></p>
+              <p>Use Hunter’s company links to prepare facts for review. Nothing becomes approved knowledge automatically.</p>
+              <details><summary>Sources and the reviewed job</summary><p id="hunter-knowledge-job"></p><div id="hunter-knowledge-sources"></div></details>
+              <p id="hunter-knowledge-drift" hidden>The company or job changed. Reopen the saved Hunter draft to use this handoff, or use the company website / approved facts options below for the changed brief.</p>
+              <button id="prepare-hunter-knowledge" type="button" disabled>PREPARE KNOWLEDGE BANK FROM HUNTER’S SOURCES →</button>
+              <p id="hunter-knowledge-status" role="status"></p>
+              <div id="hunter-knowledge-outline"></div>
+              <button id="hunter-knowledge-review" type="button" hidden>RETURN TO FACT REVIEW →</button>
+              <p class="hunter-knowledge-boundary">Up to six same-site public pages · no logins or access-challenge bypass · no model calls · no build or outreach</p>
+            </div>
+            <textarea id="quick-knowledge-text" rows="6" placeholder="Q: What services are approved?&#10;A: Add the owner-approved answer here.&#10;&#10;Q: Can this agent promise availability?&#10;A: Add the approved boundary here."></textarea>
+            <div class="quick-knowledge-actions"><button id="fill-sample-knowledge" type="button">USE SAMPLE</button><button id="prepare-quick-knowledge" type="button">ADD THIS KNOWLEDGE →</button></div>
+            <p id="quick-knowledge-status" role="status">Knowledge: Missing — you can still build, but the preview will be limited.</p>
+          </section>
+          <section class="website-knowledge" aria-labelledby="website-knowledge-title">
+            <div><small>WEBSITE KNOWLEDGE</small><h4 id="website-knowledge-title">Use the company website.</h4><p>The Factory can capture up to six public pages from one website. You review the extracted facts before anything is approved.</p></div>
+            <label for="website-knowledge-url">Company website</label>
+            <div class="website-capture-row"><input id="website-knowledge-url" type="url" inputmode="url" maxlength="2048" placeholder="https://example.com"><button id="capture-website-knowledge" type="button">CAPTURE FOR REVIEW →</button></div>
+            <div id="website-capture-result" class="website-capture-result" hidden>
+              <p id="website-knowledge-status" role="status"></p>
+              <div class="website-review-actions"><button id="review-website-knowledge" type="button">REVIEW CAPTURED KNOWLEDGE →</button><button id="discard-website-knowledge" class="discard" type="button">USE PREVIOUS KNOWLEDGE INSTEAD</button></div>
+            </div>
+            <p class="website-boundary">Public pages only · same website only · no logins · no provider calls · nothing approved automatically</p>
+          </section>
+          <section id="knowledge-review-desk" class="knowledge-review-desk" hidden>
+            <div class="review-desk-head"><div><small>OWNER REVIEW DESK</small><h5 id="review-package-title">Inspect proposed knowledge.</h5><p id="review-desk-summary"></p></div><button id="close-review-desk" type="button">CLOSE ×</button></div>
+            <div id="review-conflict-banner" class="review-conflict-banner" hidden></div>
+            <p class="review-instruction">Choose individual facts below, or use <b>Select all safe items</b> to check every relevant, non-conflicting website fact at once.</p>
+            <div class="review-toolbar"><button id="review-safe-defaults" type="button">SELECT ALL SAFE ITEMS</button><button id="review-clear" type="button">CLEAR ALL</button><b id="review-count">0 SELECTED</b><button id="finalize-knowledge-review" class="finalize-review" type="button">FINALIZE OWNER REVIEW →</button></div>
+            <div id="knowledge-review-entries" class="knowledge-review-entries"></div>
+            <p id="review-error" class="form-error" role="alert"></p>
+          </section>
+          <details id="knowledge-source-packages" class="knowledge-dock owner-disclosure">
+            <summary class="department-title"><span>01A</span><div><small>ADVANCED · KNOWLEDGE SOURCES</small><h4 id="knowledge-dock-title">Source packages and history.</h4><p>The Factory keeps this evidence for you. Open it only to inspect files, select reviewed knowledge, or revisit older packages.</p></div><b class="disclosure-state" aria-hidden="true"></b></summary>
+            <div class="owner-disclosure-body">
+              <p class="department-copy">Load up to eight small text documents. The Dock seals them locally; the Compiler extracts source-linked proposed knowledge; then you approve or reject every entry. None of these steps installs runtime truth.</p>
+              <div class="knowledge-upload-row">
+                <label>Package label<input id="knowledge-label" placeholder="Client name · approved operating materials" maxlength="120"></label>
+                <label class="file-picker">Choose documents<input id="knowledge-files" type="file" multiple accept=".txt,.md,.json,.csv,.yaml,.yml"><span id="knowledge-file-summary">TXT · MD · JSON · CSV · YAML</span></label>
+                <button id="ingest-knowledge" type="button">SEAL LOCAL PACKAGE →</button>
+              </div>
+              <p id="knowledge-error" class="form-error" role="alert"></p>
+              <div class="knowledge-package-overview"><p id="knowledge-package-summary">Showing the active or newest package.</p><button id="toggle-package-history" type="button" aria-expanded="false">SHOW PACKAGE HISTORY</button></div>
+              <div id="knowledge-packages" class="knowledge-packages"><p>No knowledge packages loaded yet.</p></div>
+              <div class="knowledge-boundary"><b>FILES</b> sealed + hashed <i>→</i> <b>COMPILER</b> exact source-linked proposals <i>→</i> <b>OWNER</b> approves or rejects <i>→</i> <b>NEXT</b> instance knowledge build</div>
+            </div>
+          </details>
+          <details id="module-options-bay" class="module-options-bay owner-disclosure">
+            <summary class="department-title"><span>+</span><div><small>OPTIONAL · CAPABILITIES</small><h4 id="module-options-title">Useful extras.</h4><p>The essentials are included. Open this only when you want additional features.</p></div><b class="disclosure-state" aria-hidden="true"></b></summary>
+            <div class="owner-disclosure-body"><p class="department-copy">The essentials are already included. Add only what this agent really needs.</p><div id="module-options" class="module-options"><p>Reading compatible options…</p></div></div>
+          </details>
+          <section id="build-knowledge-receipt" class="build-knowledge-receipt" aria-labelledby="build-knowledge-title" aria-live="polite">
+            <div class="receipt-head"><div><small>FINAL BUILD CHECK</small><h4 id="build-knowledge-title">Knowledge being used</h4></div><b id="build-knowledge-state">NO APPROVED KNOWLEDGE</b></div>
+            <div class="receipt-grid"><div><span>Source</span><strong id="build-knowledge-source">No reviewed package selected</strong></div><div><span>Reviewed source</span><strong id="build-knowledge-pages">0 files</strong></div><div><span>Approved facts</span><strong id="build-knowledge-facts">0</strong></div></div>
+            <div class="receipt-exclusions"><span>Not included</span><p id="build-knowledge-exclusions">Unapproved website content and older packages are not included.</p></div>
+            <details class="receipt-technical factory-technical"><summary>VIEW EXACT PACKAGE BINDING</summary><code id="build-knowledge-binding">No package ID or review hash is bound.</code></details>
+          </section>
+          <button id="run-commissioning" class="commission-button" type="submit"><span>BUILD AVA</span><b>→</b></button>
+          <p class="micro">Safe local build. Nothing is installed, deployed, published, or sent.</p>
+          <p id="commissioning-note" class="revision-note" hidden></p>
+          <p id="commissioning-error" class="form-error" role="alert"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="manual-entry-gate factory-technical">
+      <div><small>ALTERNATE ENTRANCE · ADVANCED</small><h2>Need a role we have never built?</h2><p>Start from a blank brief only when no validated chassis fits. For normal client work, stay in the Commissioning Bay above.</p></div>
+      <button id="toggle-blank-build" type="button" aria-expanded="false" aria-controls="mission-form">OPEN BLANK-BRIEF WORKBENCH</button>
+    </section>
+
+    <section id="blank-factory" class="factory-grid blank-closed">
+      <form id="mission-form" class="panel brief-panel" hidden>
+        <div class="panel-head"><span>01</span><div><strong>ADVANCED BLANK BRIEF</strong><small>Use only when no chassis fits the role.</small></div></div>
+        <div class="form-body">
+          <label>Purpose<textarea id="purpose" required minlength="10" rows="3" placeholder="Describe the entirely new role and what it must accomplish."></textarea></label>
+          <div class="split">
+            <label>X-Agent name<input id="x-agent-name" placeholder="The person users will meet"></label>
+            <label>Client or company<input id="client-name" placeholder="The organization this agent serves"></label>
+          </div>
+          <div class="split">
+            <label>Role or project<input id="agent-or-client" required placeholder="A role not available in the Chassis Depot"></label>
+            <label>Target users<input id="target-users" placeholder="Who this agent helps"></label>
+          </div>
+          <label>Personality<input id="personality" required placeholder="Communication style and temperament"></label>
+          <label>Must accomplish<textarea id="must-accomplish" required rows="3" placeholder="Required jobs, separated by semicolons"></textarea></label>
+          <label>Never do<textarea id="never-do" required rows="2" placeholder="Forbidden promises, claims, and actions"></textarea></label>
+          <label>Primary output<input id="output-artifact" placeholder="The concrete artifact this agent prepares"></label>
+
+          <fieldset>
+            <legend>How should this agent appear?</legend>
+            <div class="presence-options" role="radiogroup" aria-label="Agent presence">
+              <button type="button" class="selected" data-presence="EXISTING_ANAM" role="radio" aria-checked="true">Existing ANAM</button>
+              <button type="button" data-presence="CREATE_NEW_ANAM" role="radio" aria-checked="false">Create ANAM</button>
+              <button type="button" data-presence="STOCK_IMAGE" role="radio" aria-checked="false">Stock image</button>
+              <button type="button" data-presence="TEXT_ONLY" role="radio" aria-checked="false">Text only</button>
+            </div>
+          </fieldset>
+
+          <div class="persona-recommendation" id="persona-card">
+            <img src="/assets/mia.webp" alt="Mia, an ANAM stock support persona">
+            <div><small>FACTORY RECOMMENDATION</small><strong>Mia · Support Guide</strong><p>ANAM stock persona · Dana voice · patient, upbeat support style</p></div>
+            <b>READY</b>
+          </div>
+
+          <button class="run-button" type="submit"><span>BUILD BLANK-SLATE X-AGENT</span><b>→</b></button>
+          <p class="micro">Creates a new contained local candidate. No provider, deployment, or production action.</p>
+          <p id="revision-note" class="revision-note" hidden></p>
+          <p id="form-error" class="form-error" role="alert"></p>
+        </div>
+      </form>
+
+      <section class="panel floor-panel" aria-live="polite">
+        <div class="panel-head"><span>3</span><div><strong>BUILD</strong><small id="floor-summary">Ready when you are</small></div><button id="toggle-factory-details" type="button" aria-expanded="false">FACTORY DETAILS</button><b id="progress">0%</b></div>
+        <div id="factory-detail-body" hidden>
+        <div class="rail"><i id="rail-fill"></i></div>
+        <div class="stations" id="stations">
+          <article data-stage="01"><div class="station-icon atlas">A</div><div><small>INTAKE FOREMAN</small><h2>Atlas</h2><p>Normalizes the brief and locks its boundary.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="02"><div class="station-icon aria">A</div><div><small>SYSTEM ARCHITECT</small><h2>Aria</h2><p>Assembles the blueprint and selects modules.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="03"><div class="station-icon vera">V</div><div><small>SPECIFICATION GATE</small><h2>Vera</h2><p>Validates schema, authority, and boundaries.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="04"><div class="station-icon mason">M</div><div><small>MASTER BUILDER</small><h2>Mason</h2><p>Compiles two candidate bundles for comparison.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="05"><div class="station-icon forge">S</div><div><small>IMMUTABLE SOURCE VAULT</small><h2>Source Vault</h2><p>Preserves every owner-approved source fact unchanged.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="06"><div class="station-icon omnara">O</div><div><small>KNOWLEDGE ENGINEERING LEAD</small><h2>OMNARA</h2><p>Turns approved evidence into a clear, traceable Knowledge Bank.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="07"><div class="station-icon troy">T</div><div><small>PROMPT ENGINEERING LEAD</small><h2>Troy</h2><p>Turns the brief, blueprint, and curated Knowledge Bank into the complete System Prompt.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="08"><div class="station-icon vera final">V</div><div><small>FINAL CERTIFICATION</small><h2>Vera</h2><p>Certifies the candidate, OMNARA Knowledge Bank, tests, and Troy System Prompt.</p></div><mark>QUEUED</mark></article>
+          <article data-stage="09"><div class="station-icon runtime">R</div><div><small>INSTANCE RUNTIME FOUNDRY</small><h2>Hermes Console</h2><p>Seals the profile blueprint and one-call Luna canary.</p></div><mark>QUEUED</mark></article>
+        </div>
+        <div class="boundary-strip"><span><small>MODEL REVIEW</small><b>GPT-5.6 LUNA</b><em>Atlas · Aria · Vera passed</em></span><span><small>EXPERIENCE</small><b>ANAM / X-LINK</b><em>Mia transport proven</em></span><span><small>AUTHORITY</small><b>LOCAL DRAFT</b><em>Production not approved</em></span></div>
+        </div>
+      </section>
+    </section>
+
+    <section id="result" class="result-panel" hidden>
+      <div class="result-head"><div><small>STEP 4 · READY TO PREVIEW</small><h2 id="result-name">Your X Agent</h2><p id="result-purpose"></p></div><div class="cert-stamp"><span>LOCAL</span><b>READY</b></div></div>
+      <div class="result-grid">
+        <div class="result-identity">
+          <div class="result-avatar"><img id="result-avatar" src="/assets/mia.webp" alt="Selected persona"><span id="result-persona">MIA · FACTORY RECOMMENDED</span></div>
+          <small class="factory-technical">MISSION</small><code id="result-mission" class="factory-technical"></code>
+          <small class="factory-technical">BUILD DIGEST</small><code id="result-digest" class="factory-technical"></code>
+        </div>
+        <div class="result-main">
+          <div class="result-status"><i></i><div><strong>Ready to preview</strong><p id="result-summary">Your local agent passed its build checks.</p></div></div>
+          <div id="instance-knowledge-status" class="instance-knowledge-status gated"><div><small>INSTANCE KNOWLEDGE CORE</small><strong id="instance-knowledge-title">No reviewed package attached</strong><p id="instance-knowledge-copy">The candidate will remain honest about unknown client facts.</p></div><b id="instance-knowledge-count">GATED</b></div>
+          <h3>Selected modules</h3><div id="module-chips" class="module-chips"></div>
+          <div class="factory-technical"><h3>Factory files</h3><div id="artifact-links" class="artifact-links"></div></div>
+        </div>
+        <aside class="next-gate">
+          <small>YOUR NEXT STEP</small>
+          <h3 id="presence-gate-title">Try your agent</h3>
+          <ol class="gate-list factory-technical"><li><i id="gate-local"></i>Local candidate built</li><li><i id="gate-semantic"></i>Hermes/Luna semantic review</li><li><i id="gate-anam"></i>ANAM visual transport</li><li><i id="gate-activation"></i>One-session activation packet</li></ol>
+          <p id="presence-gate-copy">Checking the candidate's governed presence path. No provider action occurs here.</p>
+          <div class="result-actions"><button id="meet-agent" type="button">START PREVIEW →</button><button id="revise-agent" type="button">MAKE A CHANGE</button><button id="copy-record" class="factory-technical" type="button">COPY BUILD RECORD</button></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="mission-runner" class="mission-runner" hidden aria-live="polite">
+      <div class="runner-head">
+        <div><small>AUTOMATIC FINISH · ONE LOCAL RUN</small><h2>The crew takes it<br><em>to the crate.</em></h2><p>After the build, the Factory independently checks the candidate and asks Porter to prepare the complete local app.</p></div>
+        <div class="runner-state"><i></i><span>FACTORY STATE</span><strong id="runner-status">WAITING</strong></div>
+      </div>
+      <div id="runner-route" class="runner-route" aria-label="Automatic Factory route">
+        <article data-runner-order="1"><span>01</span><div><small>FOREMAN</small><strong>Atlas</strong><p>Locks the owner intent.</p></div><b>WAITING</b></article>
+        <article data-runner-order="2"><span>02</span><div><small>ARCHITECT</small><strong>Aria</strong><p>Draws the blueprint.</p></div><b>WAITING</b></article>
+        <article data-runner-order="3"><span>03</span><div><small>SPEC GATE</small><strong>Vera</strong><p>Checks the design.</p></div><b>WAITING</b></article>
+        <article data-runner-order="4"><span>04</span><div><small>BUILDER</small><strong>Mason</strong><p>Compiles it twice.</p></div><b>WAITING</b></article>
+        <article data-runner-order="5"><span>05</span><div><small>CERTIFIER</small><strong>Vera</strong><p>Proves repeatability.</p></div><b>WAITING</b></article>
+        <article data-runner-order="6"><span>06</span><div><small>SECOND EYES</small><strong>Rook</strong><p>Reruns and challenges.</p></div><b>WAITING</b></article>
+        <article data-runner-order="7"><span>07</span><div><small>PACKAGER</small><strong>Porter</strong><p>Builds the local repo.</p></div><b>WAITING</b></article>
+      </div>
+      <div class="runner-outcome">
+        <div><small>INDEPENDENT REVIEW</small><strong id="runner-review">Prepared after certification</strong><p id="runner-copy">Rook checks the complete evidence chain without model calls. Hermes <code>/review</code> remains prepared but inactive until separately requested.</p></div>
+        <button id="retry-completion" type="button" hidden>TRY THE SAFE LOCAL FINISH AGAIN</button>
+        <span>0 PROVIDER CALLS · 0 NETWORK ATTEMPTS · NO DEPLOYMENT</span>
+      </div>
+    </section>
+
+    <section id="runtime-foundry" class="runtime-foundry" hidden>
+      <div class="runtime-foundry-head">
+        <div><small>STEP 4 · PREVIEW</small><h2>Test approved<br><em>knowledge.</em></h2><p>This provider-free preview checks exactly what the approved knowledge can and cannot answer.</p></div>
+        <div class="runtime-seal"><span>R</span><b>PROFILE<br>SEALED</b></div>
+      </div>
+      <div class="runtime-route" aria-label="Runtime route">
+        <span><small>ENGINE</small><b id="runtime-harness">Provider-free matcher</b></span>
+        <span><small>HERMES / LUNA</small><b id="runtime-model">NOT ACTIVE</b></span>
+        <span><small>TOOLS</small><b>0 · LOCKED</b></span>
+        <span><small>LIVE STATE</small><b id="runtime-live-state">INACTIVE</b></span>
+      </div>
+      <div class="runtime-foundry-grid">
+        <div class="runtime-manifest">
+          <small>THE RUNTIME CRATE</small>
+          <h3 id="runtime-status-title">Knowledge Core required</h3>
+          <p id="runtime-status-copy">Attach and approve client knowledge to build a personalized runtime package.</p>
+          <dl><div><dt>PROFILE</dt><dd id="runtime-profile">Not created</dd></div><div><dt>INSTANCE LOCK</dt><dd id="runtime-contract">Waiting for reviewed knowledge</dd></div><div><dt>PLAN</dt><dd id="runtime-plan">Waiting for reviewed knowledge</dd></div><div><dt>CANARY</dt><dd id="runtime-canary">Inactive</dd></div></dl>
+          <div class="runtime-flags"><span>NO INSTALL</span><span>NO PROVIDER</span><span>NO MEMORY</span><span>NO TOOLS</span></div>
+        </div>
+        <div class="runtime-test-bench">
+          <div class="test-bench-head"><div><small>TECHNICAL CHECK · NOT THE CONVERSATIONAL AGENT</small><h3>Check exact knowledge matches.</h3></div><button id="fresh-preview-session" type="button">START FRESH SESSION</button></div>
+          <p>This checker does not use the System Prompt or a language model. A missed match is not proof that the actual agent cannot answer.</p>
+          <button id="return-to-live-agent" type="button" hidden>← Talk to your actual agent</button>
+          <div id="runtime-transcript" class="runtime-transcript" aria-live="polite">
+            <div class="runtime-message system"><small>PROVIDER-FREE PREVIEW</small><p>No language model is active. This deterministic check returns only exact owner-approved statements.</p></div>
+          </div>
+          <div class="runtime-test-guide" aria-label="How to test this preview">
+            <p><strong>1 · KNOWN-ANSWER TEST</strong> Choose one of the approved questions below. Each one comes from the knowledge package actually built into this X-Agent.</p>
+            <p><strong>2 · SAFETY TEST</strong> Type a different topic to confirm the X-Agent routes unsupported questions for review instead of guessing.</p>
+          </div>
+          <div id="runtime-suggestions" class="runtime-suggestions" aria-label="Suggested knowledge checks"></div>
+          <form id="runtime-test-form">
+            <label for="runtime-test-message">Ask another question</label>
+            <div><input id="runtime-test-message" maxlength="2000" placeholder="Ask about the selected knowledge" disabled><button id="runtime-test-submit" type="submit" disabled>TEST QUESTION →</button></div>
+          </form>
+          <p id="preview-check-status" class="preview-check-status" role="status">Preview checks: not started.</p>
+          <aside class="preview-handoff-card" aria-live="polite">
+            <div class="preview-handoff-heading"><small>VISIBLE HANDOFF</small><strong>What your staff would receive</strong></div>
+            <dl><div class="handoff-primary"><dt>REQUEST</dt><dd id="preview-handoff-request">Waiting for a service request</dd></div><div class="handoff-primary"><dt>SERVICE</dt><dd id="preview-handoff-service">Not provided</dd></div><div class="handoff-primary"><dt>LOCATION</dt><dd id="preview-handoff-location">Not provided</dd></div><div class="handoff-primary"><dt>URGENCY</dt><dd id="preview-handoff-urgency">Not provided</dd></div><div class="handoff-primary handoff-queue"><dt>QUEUE</dt><dd id="preview-handoff-routing">HUMAN_REVIEW</dd></div><div class="handoff-wide"><dt>SECONDARY QUESTION</dt><dd id="preview-handoff-unknowns">None yet</dd></div><div class="handoff-half"><dt>REVIEW FLAG</dt><dd id="preview-handoff-flags">None</dd></div><div class="handoff-half"><dt>CORRECTION</dt><dd id="preview-handoff-corrections">None yet</dd></div><div class="handoff-wide handoff-routing-note"><dt>ROUTING NOTE</dt><dd id="preview-handoff-routing-note">None</dd></div></dl>
+            <button id="copy-preview-handoff" type="button">COPY HANDOFF</button>
+          </aside>
+        </div>
+        <aside class="runtime-canary-console">
+          <small>ONE-CALL LIVE CANARY</small>
+          <h3>Prepared.<br>Not activated.</h3>
+          <p>The exact prompt and payload are hash-bound for one guarded Hermes Desktop transaction through GPT-5.6 Luna.</p>
+          <ul><li>One call maximum</li><li>Zero retries</li><li>No tools or memory</li><li>No authentication changes</li></ul>
+          <code id="runtime-plan-hash">No runtime plan yet</code>
+          <button type="button" disabled>LIVE CANARY LOCKED</button>
+          <p class="runtime-boundary">Creating this package makes zero provider calls and installs no Hermes profile.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="presence-preview" class="presence-preview" hidden>
+      <div class="presence-head"><div><small>05 · CONTAINED PRESENCE</small><h2>Meet <span id="preview-persona">the agent</span>.</h2><p id="preview-agent-name"></p></div><button id="close-presence-preview" type="button" aria-label="Close presence preview">CLOSE ×</button></div>
+      <div class="presence-grid">
+        <div class="presence-portrait">
+          <img id="preview-portrait" src="/assets/mia.webp" alt="Selected ANAM persona">
+          <div class="presence-live-mark"><i></i><span id="preview-mode">STATIC LOCAL PREVIEW</span></div>
+          <div class="presence-identity"><small>SELECTED PRESENCE</small><strong id="preview-persona-label">Mia · Support Guide</strong><span id="preview-voice"></span></div>
+        </div>
+        <div class="presence-script">
+          <small>CERTIFIED TEST QUESTION</small>
+          <h3 id="preview-question">What can this agent help with?</h3>
+          <small>VISIBLE TEXT FALLBACK</small>
+          <blockquote id="preview-fallback"></blockquote>
+          <div class="preview-truth"><b>What happens when you launch</b><p>Mia opens in one ephemeral ANAM session, receives this exact text once, and can be ended immediately. The visual layer does not install or deploy the agent.</p></div>
+        </div>
+        <aside class="presence-console">
+          <small>GOVERNED LAUNCH</small>
+          <h3 id="preview-status">Reading gates…</h3>
+          <div id="preview-gates" class="preview-gates"></div>
+          <p id="preview-runtime-copy">The live control remains locked until its exact activation packet is approved and running.</p>
+          <button id="copy-preview-approval" type="button" disabled>COPY ACTIVATION APPROVAL</button>
+          <button id="launch-live-preview" class="launch-live" type="button" disabled>LIVE SESSION NOT ARMED</button>
+          <p class="presence-boundary">0 new model calls · 1 ANAM session maximum · microphone disabled · no production authority</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="repo-foundry" class="repo-foundry" hidden>
+      <div class="repo-foundry-head">
+        <div><small>STEP 5 · RELEASE</small><h2>Prepare the complete app.</h2><p>Create a tested local repository you can inspect and continue developing.</p></div>
+        <div class="porter-mark" aria-hidden="true"><span>P</span><b>PORTER</b></div>
+      </div>
+      <div class="repo-foundry-grid">
+        <div class="repo-manifest">
+          <small>WHAT GOES IN THE CRATE</small>
+          <ul><li>Runnable localhost web preview</li><li>Agent instructions and specification</li><li>Reviewed KB and system prompt when attached</li><li>X-Link candidate and registry files</li><li>ANAM persona binding</li><li>Tests, start scripts, and README</li><li>Full Factory certification record</li></ul>
+        </div>
+        <div class="repo-safety">
+          <small>PORTER'S SHIPPING RULES</small>
+          <h3>New repo only. No surprises.</h3>
+          <p>Porter writes into the Factory-owned local repo yard. Existing repos are never overwritten, real credentials are never copied, and deployment remains locked.</p>
+          <div class="repo-flags"><span>NO OVERWRITE</span><span>NO SECRETS</span><span>NO DEPLOY</span></div>
+        </div>
+        <aside class="repo-console">
+          <small>LOCAL APPLICATION REPO</small>
+          <h3 id="repo-status-title">Ready to package</h3>
+          <p id="repo-status-copy">Create the complete local application folder and run its tests.</p>
+          <code id="repo-path" hidden></code>
+          <button id="create-local-repo" type="button">CREATE COMPLETE LOCAL APP →</button>
+          <a id="open-repo-preview" href="#" target="_blank" rel="noopener" hidden>OPEN THE COMPLETE APP ↗</a>
+          <div id="repo-artifacts" class="repo-artifacts"></div>
+          <button id="copy-repo-path" class="quiet" type="button" hidden>COPY REPO PATH</button>
+        </aside>
+      </div>
+    </section>
+
+    <section id="owner-control" class="owner-control factory-technical" hidden>
+      <div class="owner-control-head"><div><small>07 · OWNER CONTROL</small><h2>One decision. Plain English.</h2><p>Prepare the next controlled actions without copying technical manifests or activating anything.</p></div><b>INACTIVE<br>BY DESIGN</b></div>
+      <div class="owner-control-grid">
+        <article class="control-lane hermes-lane">
+          <small>HERMES CREW REVIEW</small>
+          <h3>Atlas → Aria → Vera</h3>
+          <p>Three Luna calls review intent, architecture, and the final specification. No tools, retries, credential changes, builds, or deployment.</p>
+          <dl><div><dt>MODEL</dt><dd>GPT-5.6 Luna · low reasoning</dd></div><div><dt>MAXIMUM</dt><dd>3 calls · 0 retries</dd></div><div><dt>RESULT</dt><dd>Pass or precise revision findings</dd></div></dl>
+          <code id="governed-run-hash" hidden></code>
+          <button id="prepare-governed-run" type="button">PREPARE GOVERNED REVIEW</button>
+          <button id="request-governed-run" class="request-action" type="button" hidden>REQUEST REVIEW EXECUTION</button>
+          <div id="semantic-result" class="control-result" hidden></div>
+          <p id="governed-run-status" class="control-status">Preparation is local and makes zero provider calls.</p>
+        </article>
+        <article class="control-lane dock-lane">
+          <small>OFFICIAL REPO HANDOFF</small>
+          <h3>Porter → X-Agent Repos</h3>
+          <p>Plan a new-directory-only handoff from the sealed Factory repo into your official local X-Agent repository yard.</p>
+          <dl><div><dt>SOURCE</dt><dd>Hash-bound Porter repository</dd></div><div><dt>TARGET</dt><dd>Official X AGENTS / REPOS root</dd></div><div><dt>RULE</dt><dd>No overwrite · no credentials</dd></div></dl>
+          <code id="promotion-target" hidden></code>
+          <button id="prepare-repo-promotion" type="button">PREPARE OFFICIAL HANDOFF</button>
+          <button id="request-repo-promotion" class="request-action" type="button" hidden>REQUEST OFFICIAL REPO CREATION</button>
+          <p id="promotion-status" class="control-status">Preparation does not copy or install anything.</p>
+        </article>
+      </div>
+      <div class="owner-control-boundary"><span><b>PREPARE</b> local plan</span><span><b>REQUEST</b> one owner click</span><span><b>EXECUTE</b> guarded separately</span><span><b>PRODUCTION</b> locked</span></div>
+    </section>
+
+    <section id="nova-sync" class="nova-sync factory-technical" aria-labelledby="nova-sync-title">
+      <div>
+        <small>COORDINATION · NOVA SYNC</small>
+        <h2 id="nova-sync-title">One clean handoff.</h2>
+        <p>Mission Control prepares a current, customer-safe implementation summary for Nova. Copying does not send anything.</p>
+      </div>
+      <div class="nova-sync-console">
+        <textarea id="nova-sync-message" readonly aria-label="Prepared Nova milestone update"></textarea>
+        <div class="nova-sync-actions">
+          <button id="copy-nova-sync" type="button">COPY NOVA UPDATE</button>
+          <span id="nova-sync-status">Prepared locally · not sent</span>
+        </div>
+      </div>
+    </section>
+
+    <details id="studio-crew" class="studio-crew">
+      <summary><span>Your crew</span><strong>The specialists behind the Factory</strong></summary>
+      <p>Today’s build runs local assembly and verification. Live Hermes model sessions are separate; named stations below describe responsibility, not a claim that a model is running.</p>
+      <div class="studio-crew-grid">
+        <article><b>Atlas</b><span>Turns your brief into the intake and finds a starting role.</span></article>
+        <article><b>Aria</b><span>Plans the structure and supported capabilities.</span></article>
+        <article><b>OMNARA</b><span>Organizes reviewed facts into the Knowledge Bank.</span></article>
+        <article><b>Troy</b><span>Assembles the complete System Prompt from the brief and knowledge.</span></article>
+        <article><b>Mason · Vera · Porter</b><span>Build, check, and package your local application.</span></article>
+        <article><b>Hunter · Scout</b><span>Hunter researches prospects. Scout monitors Hermes updates. Both remain optional sidecars.</span></article>
+      </div>
+    </details>
+    <section id="studio-recent" class="recent" hidden>
+      <div><small>LOCAL LEDGER</small><h2>Recent Factory missions</h2></div>
+      <div id="recent-list" class="recent-list"><p>No interactive missions yet.</p></div>
+    </section>
+  </main>
+  <footer><span>X-FACTORY / AI FUSION LABS</span><span>LOCAL WORKING DRAFT · SAFE TO EXPERIMENT</span></footer>
+  <script src="preview-state-model.js"></script>
+  <script src="hunter-review.js"></script>
+  <script src="hunter-knowledge.js"></script>
+  <script src="hunter-inbox.js"></script>
+  <link rel="stylesheet" href="prepared-agent.css">
+  <script src="prepared-agent.js"></script>
+  <script src="idea-start.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
